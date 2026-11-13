@@ -66,9 +66,9 @@ export default function ChaveCard({ provider, titulo, descricao, placeholder, at
             className="min-h-12 rounded-2xl border border-line bg-surface px-4 font-mono text-sm" />
           {pedeRegiao && (
             <>
-              <label htmlFor={`regiao-${provider}`} className="text-sm font-semibold">Região do recurso</label>
-              <input id={`regiao-${provider}`} name="regiao" required placeholder="ex.: East US ou Brazil South" className="min-h-12 rounded-2xl border border-line bg-surface px-4 text-sm" />
-              <p className="text-xs text-ink-soft">Está em portal.azure.com → seu recurso → Visão geral → Local.</p>
+              <label htmlFor={`regiao-${provider}`} className="text-sm font-semibold">Região do recurso <span className="font-normal text-ink-soft">(opcional)</span></label>
+              <input id={`regiao-${provider}`} name="regiao" placeholder="Deixe em branco para detectar automaticamente" className="min-h-12 rounded-2xl border border-line bg-surface px-4 text-sm" />
+              <p className="text-xs text-ink-soft">Se souber, está em portal.azure.com → seu recurso → Visão geral → Local (ex.: East US). Em branco, testamos a chave nas regiões da Azure e usamos a que funcionar.</p>
             </>
           )}
           <label htmlFor={`motivo-${provider}`} className="text-sm font-semibold">Motivo (vai para a auditoria)</label>

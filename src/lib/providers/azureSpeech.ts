@@ -11,8 +11,40 @@ export async function emitirTokenAzure(chave: string, regiao: string, f: typeof 
   return r.text();
 }
 
-export async function validarAzure(chave: string, regiao: string, f: typeof fetch = fetch): Promise<{ ok: true } | { ok: false; motivo: string }> {
-  if (!/^[a-z0-9]{4,40}$/.test(normalizarRegiao(regiao))) return { ok: false, motivo: "Informe a região do recurso (ex.: East US ou Brazil South)." };
+/** Regiões da Azure com o serviço de voz. A chave só emite token na região do recurso. */
+export const REGIOES_AZURE = [
+  "eastus", "eastus2", "westus", "westus2", "westus3", "centralus", "northcentralus", "southcentralus", "westcentralus",
+  "canadacentral", "canadaeast", "brazilsouth", "mexicocentral", "northeurope", "westeurope", "uksouth", "ukwest", "francecentral",
+  "germanywestcentral", "swedencentral", "switzerlandnorth", "switzerlandwest", "norwayeast", "italynorth", "polandcentral",
+  "spaincentral", "eastasia", "southeastasia", "japaneast", "japanwest", "koreacentral", "australiaeast", "centralindia",
+  "southindia", "westindia", "uaenorth", "qatarcentral", "southafricanorth", "israelcentral",
+];
+
+/** Descobre a região testando a chave em todas as regiões em paralelo (só a certa responde 200). */
+export async function descobrirRegiao(chave: string, f: typeof fetch = fetch, regioes = REGIOES_AZURE): Promise<string | null> {
+  const tentativas = regioes.map(async (r) => {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 8000);
+    try {
+      const resp = await f(urlTokenAzure(r), { method: "POST", headers: { "Ocp-Apim-Subscription-Key": chave, "Content-Length": "0" }, signal: ctl.signal });
+      if (resp.ok) return r;
+    } catch {}
+    finally { clearTimeout(t); }
+    throw new Error("não");
+  });
+  try {
+    return await Promise.any(tentativas);
+  } catch {
+    return null;
+  }
+}
+
+export async function validarAzure(chave: string, regiao: string, f: typeof fetch = fetch): Promise<{ ok: true; regiao?: string } | { ok: false; motivo: string }> {
+  if (!normalizarRegiao(regiao)) {
+    const achada = await descobrirRegiao(chave, f);
+    return achada ? { ok: true, regiao: achada } : { ok: false, motivo: "Não encontramos nenhuma região em que essa chave funcione. Confira se copiou a chave inteira." };
+  }
+  if (!/^[a-z0-9]{4,40}$/.test(normalizarRegiao(regiao))) return { ok: false, motivo: "Região inválida (ex.: East US ou Brazil South), ou deixe em branco para detectar." };
   try {
     await emitirTokenAzure(chave, regiao, f);
     return { ok: true };
