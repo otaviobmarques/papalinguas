@@ -1,57 +1,92 @@
 "use client";
-import { useRef, useState } from "react";
-import TutorCharacter from "@/components/TutorCharacter";
-import { visemaDeLetra } from "@/lib/client/useLipSync";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import TutorFoto from "@/components/TutorFoto";
+import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import { TUTORES } from "@/lib/demo/data";
 import { LANGUAGES, type LangCode } from "@/lib/domain/types";
-import type { Visema } from "@/lib/domain/lipsync";
+import { fotoDoTutor, temFotoAnimada } from "@/lib/tutores/fotos";
+import Icone from "./Icone";
 
-const TTS = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
+const BANDEIRA: Record<string, string> = { americano: "🇺🇸", britânico: "🇬🇧", mexicano: "🇲🇽", espanhol: "🇪🇸", paulista: "🇧🇷", carioca: "🇧🇷", mineiro: "🇧🇷" };
 
+/** Tutores do site: foto, sotaque, estilo e a voz real (amostra gerada pela OpenAI). */
 export default function TutoresSite() {
   const [idioma, setIdioma] = useState<LangCode | "todos">("todos");
-  const [falando, setFalando] = useState<{ slug: string; visema: Visema } | null>(null);
-  const timer = useRef<ReturnType<typeof setInterval>>(undefined);
+  const [tocando, setTocando] = useState<string | null>(null);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const { visema } = useLipSyncElemento(audio);
   const lista = TUTORES.filter((t) => idioma === "todos" || t.idioma === idioma);
 
+  useEffect(() => {
+    if (!audio) return;
+    const fim = () => setTocando(null);
+    audio.addEventListener("ended", fim);
+    return () => audio.removeEventListener("ended", fim);
+  }, [audio]);
+
   function ouvir(slug: string) {
-    const t = TUTORES.find((x) => x.slug === slug)!;
-    clearInterval(timer.current);
-    try {
-      const u = new SpeechSynthesisUtterance(t.saudacao);
-      u.lang = TTS[t.idioma];
-      speechSynthesis.cancel();
-      speechSynthesis.speak(u);
-    } catch {}
-    let i = 0;
-    timer.current = setInterval(() => {
-      if (i > t.saudacao.length) { clearInterval(timer.current); return setFalando(null); }
-      setFalando({ slug, visema: visemaDeLetra(t.saudacao[i++] ?? " ") });
-    }, 70);
+    if (!audio) return;
+    if (tocando === slug) {
+      audio.pause();
+      setTocando(null);
+      return;
+    }
+    audio.src = `/tutores/audio/${slug}.mp3`;
+    audio.currentTime = 0;
+    setTocando(slug);
+    void audio.play().catch(() => setTocando(null));
   }
 
   return (
     <div>
       <div className="flex flex-wrap justify-center gap-2" role="group" aria-label="Filtrar por idioma">
-        <button className="chip" aria-pressed={idioma === "todos"} onClick={() => setIdioma("todos")}>Todos</button>
-        {(Object.keys(LANGUAGES) as LangCode[]).map((l) => (
-          <button key={l} className="chip" aria-pressed={idioma === l} onClick={() => setIdioma(l)}>{LANGUAGES[l].bandeira} {LANGUAGES[l].nome.split(" ")[0]}</button>
+        {(["todos", ...Object.keys(LANGUAGES)] as const).map((l) => (
+          <button key={l} type="button" aria-pressed={idioma === l} onClick={() => setIdioma(l as LangCode | "todos")}
+            className={`min-h-11 rounded-full border px-5 text-sm font-semibold transition ${idioma === l ? "border-brand bg-brand/15 text-ink" : "border-line text-ink-soft hover:text-ink"}`}>
+            {l === "todos" ? "Todos" : LANGUAGES[l as LangCode].nome.split(" ")[0]}
+          </button>
         ))}
       </div>
-      <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {lista.map((t) => (
-          <li key={t.slug} className="card flex flex-col items-center p-4 text-center transition hover:-translate-y-1 hover:shadow-lg">
-            <div className="h-36 w-32 overflow-hidden rounded-2xl bg-surface-2">
-              <TutorCharacter visual={t.visual} nome={t.nome} estado={falando?.slug === t.slug ? "falando" : "repouso"} visema={falando?.slug === t.slug ? falando.visema : 0} className="h-full w-full" />
-            </div>
-            <p className="mt-3 text-lg font-extrabold">{t.nome}</p>
-            <p className="text-xs text-ink-soft">{LANGUAGES[t.idioma].bandeira} sotaque {t.sotaque}</p>
-            <p className="mt-1 text-sm">{t.estilo}</p>
-            <button className="mt-2 min-h-11 text-sm font-bold text-brand" onClick={() => ouvir(t.slug)}>▶ Ouvir {t.nome}</button>
-          </li>
-        ))}
+
+      <ul className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {lista.map((t) => {
+          const fala = tocando === t.slug;
+          const foto = fotoDoTutor(t.slug);
+          return (
+            <li key={t.slug} className="holofote group overflow-hidden rounded-3xl border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:border-white/20">
+              <div className="relative aspect-square overflow-hidden bg-[#efe3d3]">
+                {temFotoAnimada(t.slug) ? (
+                  <TutorFoto slug={t.slug} nome={t.nome} estado={fala ? "falando" : "repouso"} visema={fala ? visema : 0} className="absolute inset-0 h-full w-full" />
+                ) : foto ? (
+                  <Image src={foto.card} alt={`${t.nome}, ${t.genero === "masculino" ? "tutor" : "tutora"} de IA`} fill sizes="(min-width:1024px) 270px, 50vw"
+                    className={`object-cover transition duration-700 group-hover:scale-[1.04] ${fala ? "scale-[1.03]" : ""}`} />
+                ) : null}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0b1220]/70 to-transparent" />
+                {fala && <span className="pointer-events-none absolute inset-0 rounded-t-3xl ring-4 ring-inset ring-brand/70 anim-ring" aria-hidden />}
+                <span className="absolute left-3 top-3 rounded-full bg-[#0b1220]/75 px-3 py-1 text-xs font-bold text-white backdrop-blur">
+                  {BANDEIRA[t.sotaque]} {LANGUAGES[t.idioma].nome.split(" ")[0]}
+                </span>
+              </div>
+              <div className="p-4">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-lg font-extrabold">{t.nome}</p>
+                  <p className="text-xs text-ink-soft">sotaque {t.sotaque}</p>
+                </div>
+                <p className="mt-1 text-sm text-ink-soft">{t.estilo[0].toUpperCase() + t.estilo.slice(1)}. {t.bio}</p>
+                <button type="button" onClick={() => ouvir(t.slug)} aria-pressed={fala}
+                  className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-4 text-sm font-bold text-ink transition hover:border-brand hover:text-brand">
+                  <Icone nome={fala ? "fechar" : "som"} className="size-4" /> {fala ? "Parar" : `Ouvir ${t.nome}`}
+                </button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
-      <p className="mt-4 text-center text-xs text-ink-soft">Os tutores são inteligências artificiais com personagens ilustrados. No app, a voz é gerada em tempo real; aqui no site, a amostra usa a voz do seu navegador.</p>
+      {/* um único <audio> para todos: o navegador só deixa ligar um elemento ao analisador uma vez */}
+      <audio ref={setAudio} preload="none" crossOrigin="anonymous" />
+      <p className="mt-6 text-center text-xs text-ink-soft">Os tutores são personagens de inteligência artificial; as fotos foram geradas por IA e não retratam pessoas reais. As amostras usam a mesma voz da aula.</p>
     </div>
   );
 }
+

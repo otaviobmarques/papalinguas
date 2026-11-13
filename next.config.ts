@@ -7,7 +7,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "media-src 'self' blob:",
+  "media-src 'self' blob: data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://*.stt.speech.microsoft.com wss://*.stt.speech.microsoft.com https://*.posthog.com https://*.sentry.io",
   "frame-src https://*.asaas.com",
   "frame-ancestors 'none'",

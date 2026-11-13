@@ -12,7 +12,9 @@ interface Props {
   expressao?: Expressao;
   className?: string;
   /** Retrato quadrado (padrão) ou recorte do rosto, para avatares pequenos */
-  enquadramento?: "busto" | "rosto";
+  enquadramento?: "busto" | "rosto" | "preencher";
+  /** Controle externo do piscar (vídeos Remotion); sem ele, o piscar é aleatório */
+  piscando?: boolean;
 }
 
 const pos = (r: Regiao) => ({ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.w * 100}%`, height: `${r.h * 100}%` });
@@ -22,12 +24,14 @@ const pos = (r: Regiao) => ({ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width
  * Só a região da boca e dos olhos troca, sobre um retrato fixo: cabeça, cabelo e luz não tremem.
  * As bocas trocam com transição de ~110 ms; o piscar é aleatório (2,5 a 6 s), como o de uma pessoa.
  */
-export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, expressao = "neutra", className = "", enquadramento = "busto" }: Props) {
+export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, expressao = "neutra", className = "", enquadramento = "busto", piscando: piscarExterno }: Props) {
   const f = fotoDoTutor(slug);
-  const [piscando, setPiscando] = useState(false);
+  const [piscarInterno, setPiscando] = useState(false);
+  const controlado = piscarExterno !== undefined;
+  const piscando = controlado ? piscarExterno : piscarInterno;
 
   useEffect(() => {
-    if (!f?.animado || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (controlado || !f?.animado || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let t: ReturnType<typeof setTimeout>;
     const agendar = () => {
       t = setTimeout(() => {
@@ -42,7 +46,7 @@ export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, 
     };
     agendar();
     return () => clearTimeout(t);
-  }, [f?.animado]);
+  }, [f?.animado, controlado]);
 
   if (!f) return null;
   const falando = estado === "falando";
@@ -52,7 +56,7 @@ export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, 
 
   return (
     <div className={`relative flex items-center justify-center ${className}`} role="img" aria-label={`${nome}, personagem de IA${falando ? ", falando" : ""}`}>
-      <div className="relative aspect-square h-full max-h-full max-w-full overflow-hidden">
+      <div className={enquadramento === "preencher" ? "absolute left-1/2 top-0 aspect-square h-full -translate-x-1/2" : "relative aspect-square h-full max-h-full max-w-full overflow-hidden"}>
         <div className={`absolute inset-0 ${zoom}`}>
         <div className={`absolute inset-0 ${falando ? "anim-fala" : estado === "ouvindo" ? "anim-ouvir" : "anim-respirar"}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
