@@ -6,8 +6,8 @@ import { supabaseAdmin } from "@/lib/supabase/server";
 import { cifrar, decifrar } from "@/lib/security/secretBox";
 
 /** Cofre de chaves de integração (painel → Chaves de integração). */
-export type Provedor = "openai" | "anthropic";
-export type Slot = "principal" | "backup";
+export type Provedor = "openai" | "anthropic" | "asaas";
+export type Slot = "principal" | "backup" | "webhook";
 export type StatusChave = "valida" | "invalida" | "nao_validada";
 
 export interface RegistroChave {
@@ -18,6 +18,7 @@ export interface RegistroChave {
   status: StatusChave;
   validated_at: string | null;
   updated_at: string;
+  external_ref?: string | null;
 }
 
 interface Store {
@@ -30,7 +31,7 @@ interface Store {
 const supabaseStore: Store = {
   async listar() {
     const { data, error } = await supabaseAdmin().from("integration_keys")
-      .select("provider, slot, ciphertext, last4, status, validated_at, updated_at");
+      .select("provider, slot, ciphertext, last4, status, validated_at, updated_at, external_ref");
     if (error) throw error;
     return (data ?? []) as RegistroChave[];
   },
@@ -75,7 +76,7 @@ const arquivoStore: Store = {
 
 export const cofre = (): Store => (isSupabaseConfigured() ? supabaseStore : arquivoStore);
 
-export async function guardarChave(p: { provider: Provedor; slot: Slot; valor: string; status: StatusChave; adminId?: string }) {
+export async function guardarChave(p: { provider: Provedor; slot: Slot; valor: string; status: StatusChave; adminId?: string; externalRef?: string | null }) {
   await cofre().salvar(
     {
       provider: p.provider,
@@ -84,6 +85,7 @@ export async function guardarChave(p: { provider: Provedor; slot: Slot; valor: s
       last4: p.valor.slice(-4),
       status: p.status,
       validated_at: p.status === "valida" ? new Date().toISOString() : null,
+      ...(p.externalRef !== undefined ? { external_ref: p.externalRef } : {}),
     },
     p.adminId,
   );
@@ -97,9 +99,12 @@ export async function lerChave(provider: Provedor, slot: Slot = "principal"): Pr
   } catch (e) {
     console.error("cofre de chaves indisponível", e);
   }
-  if (slot === "principal") {
-    const env = provider === "openai" ? process.env.OPENAI_API_KEY : process.env.ANTHROPIC_API_KEY;
-    return env && env.length > 0 ? env : null;
-  }
-  return null;
+  const ENV: Partial<Record<`${Provedor}:${Slot}`, string | undefined>> = {
+    "openai:principal": process.env.OPENAI_API_KEY,
+    "anthropic:backup": process.env.ANTHROPIC_API_KEY,
+    "asaas:principal": process.env.ASAAS_API_KEY,
+    "asaas:webhook": process.env.ASAAS_WEBHOOK_TOKEN,
+  };
+  const env = ENV[`${provider}:${slot}`];
+  return env && env.length > 0 ? env : null;
 }

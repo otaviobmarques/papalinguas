@@ -12,6 +12,7 @@ import type { KillSwitchMode, LangCode } from "@/lib/domain/types";
 const Body = z.object({
   idioma: z.enum(["en", "es", "pt"]),
   cenarioId: z.string().uuid().optional(),
+  cenarioSlug: z.string().max(80).optional(),
   modo: z.enum(["aula", "livre"]).default("aula"),
 });
 
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
   if (!user) return erro(401, "nao_autenticado");
   const parsed = Body.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return erro(400, "requisicao_invalida");
-  const { idioma, cenarioId, modo } = parsed.data;
+  const { idioma, cenarioId, cenarioSlug, modo } = parsed.data;
 
   const sb = supabaseAdmin();
   const settings = await lerSettings(sb);
@@ -73,10 +74,13 @@ export async function POST(req: Request) {
     : await tutorQ.limit(1).maybeSingle();
   if (!tutor) return erro(409, "sem_tutor");
 
+  const camposCenario = "id, title, situation, missions, vocabulary, tutor_script, fluente_only";
   const { data: cenario } = cenarioId
-    ? await sb.from("scenarios").select("id, title, situation, missions, vocabulary, tutor_script, fluente_only").eq("id", cenarioId).eq("status", "publicado").maybeSingle()
-    : { data: null };
-  if (cenarioId && !cenario) return erro(404, "cenario_nao_encontrado");
+    ? await sb.from("scenarios").select(camposCenario).eq("id", cenarioId).eq("status", "publicado").maybeSingle()
+    : cenarioSlug
+      ? await sb.from("scenarios").select(camposCenario).eq("slug", cenarioSlug).eq("status", "publicado").maybeSingle()
+      : { data: null };
+  if ((cenarioId || cenarioSlug) && !cenario) return erro(404, "cenario_nao_encontrado");
   if (cenario?.fluente_only && plano?.code !== "fluente") return erro(403, "requer_fluente");
 
   const { data: memoria } = await sb.from("memory_facts").select("fact").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10);

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import OnboardingShell from "@/components/OnboardingShell";
 import TutorCharacter from "@/components/TutorCharacter";
 import { useOnboarding } from "@/lib/client/onboarding";
+import { supabaseBrowser } from "@/lib/supabase/client";
 import { visemaDeLetra } from "@/lib/client/useLipSync";
 import { TUTORES, type TutorDemo } from "@/lib/demo/data";
 import { CEFR_DESCRICAO, LANGUAGES, type LangCode } from "@/lib/domain/types";
@@ -85,10 +86,20 @@ export default function EscolhaTutor() {
       </div>
 
       <div className="sticky bottom-0 mt-auto bg-bg pb-2 pt-6">
-        <button className="btn-primary w-full" disabled={!tutor} onClick={() => { atualizar({ tutorSlug: tutor!.slug, idioma, passo: "/comecar/planos" }); router.push("/comecar/planos"); }}>
+        <button className="btn-primary w-full" disabled={!tutor} onClick={async () => { await salvarTutorNoPerfil(tutor!.slug, idioma); atualizar({ tutorSlug: tutor!.slug, idioma, passo: "/comecar/planos" }); router.push("/comecar/planos"); }}>
           {tutor ? `Começar com ${tutor.nome}` : "Escolha um tutor"}
         </button>
       </div>
     </OnboardingShell>
   );
+}
+
+/** Com aluno logado, grava o tutor escolhido no perfil (RLS permite ao aluno alterar tutor_id do próprio perfil). */
+async function salvarTutorNoPerfil(slug: string, idioma: LangCode) {
+  const sb = supabaseBrowser();
+  if (!sb) return;
+  const { data: u } = await sb.auth.getUser();
+  if (!u.user) return;
+  const { data: t } = await sb.from("tutors").select("id").eq("slug", slug).maybeSingle();
+  if (t) await sb.from("profiles").update({ tutor_id: t.id }).eq("user_id", u.user.id).eq("target_language", idioma);
 }

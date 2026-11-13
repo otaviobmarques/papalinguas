@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/server";
-import { createAsaas } from "@/lib/providers/payments/asaas";
+import { asaasDoCofre } from "@/lib/providers/payments/asaasSetup";
 import { processarEventoPagamento } from "@/lib/services/billing";
-import { serverEnv } from "@/lib/env";
 import { erro, exigeBackend } from "@/lib/services/http";
 
 /**
@@ -12,7 +11,8 @@ import { erro, exigeBackend } from "@/lib/services/http";
 export async function POST(req: Request) {
   const demo = exigeBackend();
   if (demo) return demo;
-  const asaas = createAsaas({ apiKey: serverEnv.asaasKey(), env: serverEnv.asaasEnv(), webhookToken: serverEnv.asaasWebhookToken() });
+  const asaas = await asaasDoCofre();
+  if (!asaas) return erro(503, "asaas_nao_configurado");
   const raw = await req.text();
   if (!asaas.validarWebhook(req.headers, raw)) return erro(401, "token_invalido");
 
