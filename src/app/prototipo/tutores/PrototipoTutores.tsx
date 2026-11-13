@@ -6,6 +6,7 @@ import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import type { Visema } from "@/lib/domain/lipsync";
 
 const TUTORES = [
+  { slug: "camille", nome: "Camille", idioma: "Francês · sotaque parisiense", fala: "Bonjour ! Je suis Camille. On discute un peu ? Dis-moi, qu'est-ce que tu aimes faire le week-end ?" },
   { slug: "maya", nome: "Maya", idioma: "Inglês · sotaque americano", fala: "Hi! I'm Maya. Ready to chat? Tell me, what did you do last weekend?" },
   { slug: "oliver", nome: "Oliver", idioma: "Inglês · sotaque britânico", fala: "Hello there, I'm Oliver. Shall we begin? Take your time, there's no rush." },
   { slug: "grace", nome: "Grace", idioma: "Inglês · sotaque americano", fala: "Hey, I'm Grace! So, you've got an interview coming up? Great. Let's practice. Tell me about a project you're really proud of." },

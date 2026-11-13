@@ -214,5 +214,32 @@
       "w": 0.3294,
       "h": 0.4909
     }
+  },
+  "camille": {
+    "base": "/tutores/camille/base.webp",
+    "card": "/tutores/camille/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3268,
+      "y": 0.3698,
+      "w": 0.3398,
+      "h": 0.2904
+    },
+    "olhos": {
+      "x": 0.349,
+      "y": 0.2253,
+      "w": 0.2956,
+      "h": 0.1901
+    },
+    "expressoes": {
+      "feliz": "/tutores/camille/feliz.webp",
+      "surpresa": "/tutores/camille/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3073,
+      "y": 0.2057,
+      "w": 0.3789,
+      "h": 0.474
+    }
   }
 }
