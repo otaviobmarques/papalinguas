@@ -24,7 +24,7 @@ export default async function Chaves() {
   const ver = (provider: string, slot: string) => {
     const r = registros.find((x) => x.provider === provider && x.slot === slot);
     if (!r) return null;
-    const prefixo = provider === "openai" ? "sk-proj-" : provider === "asaas" ? "$aact_" : "sk-ant-";
+    const prefixo = provider === "openai" ? "sk-proj-" : provider === "asaas" ? "$aact_" : provider === "azure_speech" ? "" : "sk-ant-";
     return { mascara: `${prefixo}…${r.last4}`, status: r.status, validadaEm: r.validated_at, atualizadaEm: r.updated_at };
   };
 
@@ -52,6 +52,8 @@ export default async function Chaves() {
             { rotulo: "Ambiente", valor: ambienteAsaas },
             { rotulo: "Webhook", valor: registros.some((x) => x.provider === "asaas" && x.slot === "webhook") ? "configurado" : "pendente (use Testar chave)" },
           ] : undefined} />
+        <ChaveCard provider="azure_speech" titulo="Azure Speech · pronúncia" descricao="Avaliação de pronúncia por palavra e por som (Microsoft Foundry / Azure AI Services)." placeholder="Chave de API do recurso" pedeRegiao atual={ver("azure_speech", "principal")}
+          extras={ver("azure_speech", "principal") ? [{ rotulo: "Região", valor: registros.find((x) => x.provider === "azure_speech" && x.slot === "principal")?.external_ref ?? "—" }] : undefined} />
         <ChaveCard provider="anthropic" titulo="Anthropic · backup" descricao="Plano B para textos: relatório pós-aula, memória do aluno e geração de conteúdo." placeholder="sk-ant-…" atual={ver("anthropic", "backup")} />
       </div>
     </main>

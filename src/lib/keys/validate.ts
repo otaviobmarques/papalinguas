@@ -2,11 +2,13 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import type { Provedor } from "./store";
 import { validarAsaas } from "@/lib/providers/payments/asaasSetup";
+import { validarAzure } from "@/lib/providers/azureSpeech";
 
 export type Validacao = { ok: true } | { ok: false; motivo: string };
 
 /** Confere a chave com uma chamada de leitura barata (lista de modelos), sem gerar custo de uso. */
-export async function validarChave(provider: Provedor, chave: string): Promise<Validacao> {
+export async function validarChave(provider: Provedor, chave: string, regiao?: string | null): Promise<Validacao> {
+  if (provider === "azure_speech") return validarAzure(chave, regiao ?? "");
   if (provider === "asaas") {
     const r = await validarAsaas(chave);
     return r.ok ? { ok: true } : { ok: false, motivo: r.motivo };

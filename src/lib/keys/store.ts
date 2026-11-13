@@ -6,7 +6,7 @@ import { supabaseAdmin } from "@/lib/supabase/server";
 import { cifrar, decifrar } from "@/lib/security/secretBox";
 
 /** Cofre de chaves de integração (painel → Chaves de integração). */
-export type Provedor = "openai" | "anthropic" | "asaas";
+export type Provedor = "openai" | "anthropic" | "asaas" | "azure_speech";
 export type Slot = "principal" | "backup" | "webhook";
 export type StatusChave = "valida" | "invalida" | "nao_validada";
 
@@ -62,8 +62,10 @@ const arquivoStore: Store = {
     if (process.env.VERCEL) {
       throw new Error("Configure SUPABASE_SERVICE_ROLE_KEY na Vercel para salvar chaves (o disco do servidor é somente leitura).");
     }
-    const lista = (await this.listar()).filter((x) => !(x.provider === r.provider && x.slot === r.slot));
-    lista.push({ ...r, updated_at: new Date().toISOString() });
+    const todos = await this.listar();
+    const anterior = todos.find((x) => x.provider === r.provider && x.slot === r.slot);
+    const lista = todos.filter((x) => x !== anterior);
+    lista.push({ ...anterior, ...r, updated_at: new Date().toISOString() });
     await fs.mkdir(path.dirname(ARQ), { recursive: true, mode: 0o700 });
     await fs.writeFile(ARQ, JSON.stringify(lista, null, 2), { mode: 0o600 });
   },
@@ -103,8 +105,18 @@ export async function lerChave(provider: Provedor, slot: Slot = "principal"): Pr
     "openai:principal": process.env.OPENAI_API_KEY,
     "anthropic:backup": process.env.ANTHROPIC_API_KEY,
     "asaas:principal": process.env.ASAAS_API_KEY,
+    "azure_speech:principal": process.env.AZURE_SPEECH_KEY,
     "asaas:webhook": process.env.ASAAS_WEBHOOK_TOKEN,
   };
   const env = ENV[`${provider}:${slot}`];
   return env && env.length > 0 ? env : null;
+}
+
+/** Referência guardada junto da chave (ex.: região da Azure, id do webhook do Asaas). */
+export async function lerReferencia(provider: Provedor, slot: Slot = "principal"): Promise<string | null> {
+  try {
+    return (await cofre().listar()).find((x) => x.provider === provider && x.slot === slot)?.external_ref ?? null;
+  } catch {
+    return null;
+  }
 }
