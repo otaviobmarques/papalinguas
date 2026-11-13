@@ -25,8 +25,11 @@ import numpy as np
 
 LADO = 768  # tamanho do retrato servido (suficiente para telas retina até ~380 px)
 CARD = 400
-# visema do app (src/lib/domain/lipsync.ts) -> letra da boca entregue
-VISEMA_PARA_BOCA = {1: "B", 2: "C", 3: "D", 4: "E", 5: "A", 6: "F"}
+# visema do app (src/lib/domain/lipsync.ts) -> boca usada.
+# As fotos "aberta larga" (B) e "sorriso com dentes" (C) são extremas e, na fala, ficavam exageradas
+# (abrindo demais e esticando para os lados). Usamos posições moderadas: "A" com a arredondada (D)
+# e "E/I", o som mais frequente, com a boca entreaberta da expressão "surpresa".
+VISEMA_PARA_BOCA = {1: "D", 2: "surpresa", 3: "D", 4: "E", 5: "A", 6: "F"}
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -128,8 +131,12 @@ def processar(pasta, slug):
     co = caixa_mudanca(base, olhos, zona_olhos) or (int(LADO * 0.38), int(LADO * 0.32), int(LADO * 0.62), int(LADO * 0.40))
     co = folga(co, int(LADO * 0.035), LADO, LADO)
 
+    surpresa_p = achar(pasta, "expressao_surpresa", "surpresa")
+    if surpresa_p:
+        bocas["surpresa"] = ler(surpresa_p)
     for v, L in VISEMA_PARA_BOCA.items():
-        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, bocas[L], cb), [cv2.IMWRITE_WEBP_QUALITY, 85])
+        fonte = bocas.get(L) if L in bocas else bocas["C"]  # sem a foto "surpresa": volta ao sorriso com dentes
+        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, fonte, cb), [cv2.IMWRITE_WEBP_QUALITY, 85])
     cv2.imwrite(os.path.join(saida, "olhos.webp"), recorte(base, olhos, co), [cv2.IMWRITE_WEBP_QUALITY, 85])
     info.update({"animado": True, "boca": frac(cb, LADO, LADO), "olhos": frac(co, LADO, LADO), "expressoes": {}})
 
