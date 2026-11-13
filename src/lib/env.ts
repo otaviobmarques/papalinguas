@@ -26,5 +26,9 @@ export const serverEnv = {
   cronSecret: () => req("CRON_SECRET"),
 };
 
+/**
+ * Backend completo = URL + chave pública + chave secreta do servidor.
+ * Sem a chave secreta o servidor fica em modo demonstração (sem quebrar o login do painel).
+ */
 export const isSupabaseConfigured = () =>
-  Boolean(opt("NEXT_PUBLIC_SUPABASE_URL") && opt("NEXT_PUBLIC_SUPABASE_ANON_KEY"));
+  Boolean(opt("NEXT_PUBLIC_SUPABASE_URL") && opt("NEXT_PUBLIC_SUPABASE_ANON_KEY") && opt("SUPABASE_SERVICE_ROLE_KEY"));
