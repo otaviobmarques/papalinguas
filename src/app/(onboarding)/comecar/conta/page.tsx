@@ -69,7 +69,7 @@ function Conta() {
   }
 
   return (
-    <OnboardingShell passo={entrar ? undefined : 4} voltar={entrar ? "/" : "/comecar/microfone"}>
+    <OnboardingShell passo={entrar ? undefined : 4} voltar={entrar ? "/comecar" : "/comecar/microfone"}>
       <h1 className="text-2xl font-extrabold">{entrar ? "Entrar" : "Crie sua conta"}</h1>
       <p className="mt-1 text-ink-soft">{entrar ? "Bem-vindo de volta!" : "Seu progresso até aqui fica salvo."}</p>
 

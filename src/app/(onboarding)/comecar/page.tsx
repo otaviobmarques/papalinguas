@@ -6,7 +6,7 @@ import TutorCharacter from "@/components/TutorCharacter";
 import { TUTORES } from "@/lib/demo/data";
 import { useOnboarding } from "@/lib/client/onboarding";
 
-/** O1. Boas-vindas */
+/** O1. Boas-vindas do app (o site institucional fica em "/") */
 export default function BoasVindas() {
   const { estado, atualizar, pronto } = useOnboarding();
   const router = useRouter();
@@ -14,13 +14,13 @@ export default function BoasVindas() {
 
   // Detecta o idioma do aparelho no primeiro acesso
   useEffect(() => {
-    if (!pronto || estado.passo !== "/") return;
+    if (!pronto || estado.passo !== "/comecar") return;
     const nav = navigator.language.toLowerCase();
     atualizar({ uiLocale: nav.startsWith("es") ? "es" : nav.startsWith("en") ? "en" : "pt-BR" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pronto]);
 
-  const retomar = pronto && estado.passo !== "/" && !estado.assinante;
+  const retomar = pronto && estado.passo !== "/comecar" && !estado.assinante;
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-8 pt-4">

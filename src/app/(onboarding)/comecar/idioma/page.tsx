@@ -22,7 +22,7 @@ export default function Idioma() {
   };
 
   return (
-    <OnboardingShell passo={1} voltar="/">
+    <OnboardingShell passo={1} voltar="/comecar">
       <h1 className="text-2xl font-extrabold">O que você quer aprender?</h1>
       <p className="mt-1 text-ink-soft">Você pode adicionar outro idioma depois, no Perfil.</p>
       <div className="mt-6 flex flex-col gap-3">

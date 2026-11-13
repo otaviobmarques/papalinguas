@@ -27,7 +27,7 @@ export interface OnboardingState {
 }
 
 const CHAVE = "papalinguas:onboarding:v1";
-const VAZIO: OnboardingState = { passo: "/", uiLocale: "pt-BR", interesses: [], aceiteTermos: false, maioridade: false, contaCriada: false, assinante: false };
+const VAZIO: OnboardingState = { passo: "/comecar", uiLocale: "pt-BR", interesses: [], aceiteTermos: false, maioridade: false, contaCriada: false, assinante: false };
 
 function ler(): OnboardingState {
   try {
