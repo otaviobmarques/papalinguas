@@ -7,6 +7,7 @@ import type { Visema } from "@/lib/domain/lipsync";
 import type { CenarioDemo, TutorDemo } from "@/lib/demo/data";
 import { roteiroDemo } from "@/lib/demo/roteiro";
 import { idDispositivo } from "@/lib/client/onboarding";
+import { langDoTutor, vozParaTutor } from "@/lib/client/vozNavegador";
 
 /**
  * A3. Aula ao vivo (e O6 em versão simplificada).
@@ -36,7 +37,6 @@ interface Props {
 
 type Fase = "conectando" | "ao_vivo" | "instavel" | "microfone_bloqueado" | "erro";
 
-const LANG_TTS = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
 
 export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", segundosLimite, cotaRestanteSeg, onEncerrar, onRecusa, extraTopo }: Props) {
   const [fase, setFase] = useState<Fase>("conectando");
@@ -110,13 +110,15 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
       }, 1000 / cps);
       try {
         const u = new SpeechSynthesisUtterance(texto);
-        u.lang = LANG_TTS[tutor.idioma];
+        u.lang = langDoTutor(tutor);
+        const voz = vozParaTutor(tutor);
+        if (voz) u.voice = voz;
         u.rate = devagar ? 0.75 : 1;
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(u);
       } catch {}
     },
-    [devagar, tutor.idioma],
+    [devagar, tutor],
   );
 
   const responderDemo = useCallback(() => {

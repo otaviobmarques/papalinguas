@@ -1,16 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import OnboardingShell from "@/components/OnboardingShell";
 import TutorCharacter from "@/components/TutorCharacter";
 import { useOnboarding } from "@/lib/client/onboarding";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { visemaDeLetra } from "@/lib/client/useLipSync";
+import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import { TUTORES, type TutorDemo } from "@/lib/demo/data";
 import { CEFR_DESCRICAO, LANGUAGES, type LangCode } from "@/lib/domain/types";
-import type { Visema } from "@/lib/domain/lipsync";
-
-const TTS = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
 
 /** O7. Resultado e escolha do tutor */
 export default function EscolhaTutor() {
@@ -19,8 +16,18 @@ export default function EscolhaTutor() {
   const [idioma, setIdioma] = useState<LangCode>("en");
   const [genero, setGenero] = useState<"todos" | "feminino" | "masculino">("todos");
   const [escolhido, setEscolhido] = useState<string | null>(null);
-  const [falando, setFalando] = useState<{ slug: string; visema: Visema } | null>(null);
-  const timer = useRef<ReturnType<typeof setInterval>>(undefined);
+  // Amostra da voz real do tutor (a mesma da aula), com a boca sincronizada pelo áudio
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [tocando, setTocando] = useState<string | null>(null);
+  const { visema } = useLipSyncElemento(audio);
+  const falando = tocando ? { slug: tocando, visema } : null;
+
+  useEffect(() => {
+    if (!audio) return;
+    const fim = () => setTocando(null);
+    audio.addEventListener("ended", fim);
+    return () => audio.removeEventListener("ended", fim);
+  }, [audio]);
 
   useEffect(() => {
     if (pronto && estado.idioma) setIdioma(estado.idioma);
@@ -30,21 +37,16 @@ export default function EscolhaTutor() {
   const tutor = TUTORES.find((t) => t.slug === escolhido);
 
   function ouvir(t: TutorDemo) {
-    clearInterval(timer.current);
-    try {
-      const u = new SpeechSynthesisUtterance(t.saudacao);
-      u.lang = TTS[t.idioma];
-      speechSynthesis.cancel();
-      speechSynthesis.speak(u);
-    } catch {}
-    let i = 0;
-    timer.current = setInterval(() => {
-      if (i > t.saudacao.length) {
-        clearInterval(timer.current);
-        return setFalando(null);
-      }
-      setFalando({ slug: t.slug, visema: visemaDeLetra(t.saudacao[i++] ?? " ") });
-    }, 70);
+    if (!audio) return;
+    if (tocando === t.slug) {
+      audio.pause();
+      setTocando(null);
+      return;
+    }
+    audio.src = `/tutores/audio/${t.slug}.mp3`;
+    audio.currentTime = 0;
+    setTocando(t.slug);
+    void audio.play().catch(() => setTocando(null));
   }
 
   const nivel = estado.nivel ?? "A1";
@@ -80,11 +82,12 @@ export default function EscolhaTutor() {
               <p className="text-xs text-ink-soft">Sotaque {t.sotaque}</p>
               <p className="text-xs text-ink-soft">{t.estilo}</p>
             </button>
-            <button className="mt-2 min-h-11 text-sm font-bold text-brand" onClick={() => ouvir(t)}>▶ Ouvir voz</button>
+            <button className="mt-2 min-h-11 text-sm font-bold text-brand" onClick={() => ouvir(t)} aria-pressed={tocando === t.slug}>{tocando === t.slug ? "■ Parar" : "▶ Ouvir voz"}</button>
           </div>
         ))}
       </div>
 
+      <audio ref={setAudio} preload="none" crossOrigin="anonymous" />
       <div className="sticky bottom-0 mt-auto bg-bg pb-2 pt-6">
         <button className="btn-primary w-full" disabled={!tutor} onClick={async () => { await salvarTutorNoPerfil(tutor!.slug, idioma); atualizar({ tutorSlug: tutor!.slug, idioma, passo: "/comecar/planos" }); router.push("/comecar/planos"); }}>
           {tutor ? `Começar com ${tutor.nome}` : "Escolha um tutor"}
