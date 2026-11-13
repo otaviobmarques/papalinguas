@@ -144,7 +144,7 @@ export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaR
           const r = await fetch("/api/aulas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idioma: tutor.idioma, modo, cenarioId: cenario?.id && cenario.id.length > 10 ? cenario.id : undefined }),
+            body: JSON.stringify({ idioma: tutor.idioma, modo, cenarioSlug: cenario?.slug }),
           });
           if (r.ok) {
             const d = await r.json();

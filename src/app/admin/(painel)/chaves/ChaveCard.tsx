@@ -1,9 +1,10 @@
 "use client";
-import { useActionState, useState } from "react";
+import { Fragment, useActionState, useState } from "react";
 import { removerChave, salvarChave, testarChave, type EstadoForm } from "./actions";
 
 interface Props {
-  provider: "openai" | "anthropic";
+  provider: "openai" | "anthropic" | "asaas";
+  extras?: { rotulo: string; valor: string }[];
   titulo: string;
   descricao: string;
   placeholder: string;
@@ -17,7 +18,7 @@ function Aviso({ e }: { e: EstadoForm }) {
     : <p role="status" className="mt-2 text-sm font-semibold text-ok">{e.ok}</p>;
 }
 
-export default function ChaveCard({ provider, titulo, descricao, placeholder, atual }: Props) {
+export default function ChaveCard({ provider, titulo, descricao, placeholder, atual, extras }: Props) {
   const [salvo, acaoSalvar, salvando] = useActionState(salvarChave, null);
   const [teste, acaoTestar, testando] = useActionState(testarChave, null);
   const [remocao, acaoRemover, removendo] = useActionState(removerChave, null);
@@ -40,6 +41,7 @@ export default function ChaveCard({ provider, titulo, descricao, placeholder, at
           <dt className="text-ink-soft">Chave</dt><dd className="font-mono">{atual.mascara}</dd>
           <dt className="text-ink-soft">Validada em</dt><dd>{atual.validadaEm ? new Date(atual.validadaEm).toLocaleString("pt-BR") : "—"}</dd>
           <dt className="text-ink-soft">Atualizada em</dt><dd>{new Date(atual.atualizadaEm).toLocaleString("pt-BR")}</dd>
+          {extras?.map((x) => (<Fragment key={x.rotulo}><dt className="text-ink-soft">{x.rotulo}</dt><dd>{x.valor}</dd></Fragment>))}
         </dl>
       ) : (
         <p className="mt-4 rounded-2xl bg-warn-soft p-3 text-sm font-semibold text-warn">Nenhuma chave cadastrada.</p>
@@ -74,7 +76,7 @@ export default function ChaveCard({ provider, titulo, descricao, placeholder, at
       {removendoAberto && (
         <form action={acaoRemover} className="mt-4 flex flex-col gap-2 rounded-2xl border border-danger p-3">
           <input type="hidden" name="provider" value={provider} />
-          <p className="text-sm font-semibold">Remover esta chave? {provider === "openai" ? "As aulas por voz param de funcionar até cadastrar outra." : "O texto fica sem backup."}</p>
+          <p className="text-sm font-semibold">Remover esta chave? {provider === "openai" ? "As aulas por voz param de funcionar até cadastrar outra." : provider === "asaas" ? "Novas assinaturas param de funcionar até cadastrar outra." : "O texto fica sem backup."}</p>
           <input name="motivo" required placeholder="Motivo" className="min-h-11 rounded-xl border border-line bg-surface px-3 text-sm" />
           <input name="confirmacao" required placeholder="Digite REMOVER" className="min-h-11 rounded-xl border border-line bg-surface px-3 text-sm" />
           <div className="flex gap-2">

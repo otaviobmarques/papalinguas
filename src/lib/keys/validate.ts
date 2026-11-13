@@ -1,11 +1,16 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import type { Provedor } from "./store";
+import { validarAsaas } from "@/lib/providers/payments/asaasSetup";
 
 export type Validacao = { ok: true } | { ok: false; motivo: string };
 
 /** Confere a chave com uma chamada de leitura barata (lista de modelos), sem gerar custo de uso. */
 export async function validarChave(provider: Provedor, chave: string): Promise<Validacao> {
+  if (provider === "asaas") {
+    const r = await validarAsaas(chave);
+    return r.ok ? { ok: true } : { ok: false, motivo: r.motivo };
+  }
   if (provider === "openai") {
     if (!/^sk-/.test(chave)) return { ok: false, motivo: "Chaves da OpenAI começam com sk-." };
     try {

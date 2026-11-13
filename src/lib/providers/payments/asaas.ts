@@ -53,7 +53,7 @@ export function createAsaas(cfg: AsaasConfig): PaymentProvider {
         email: c.email,
         cpfCnpj: c.cpf,
         externalReference: c.referenciaExterna,
-        notificationDisabled: true, // e-mails são nossos (Resend)
+        notificationDisabled: false, // até os e-mails próprios (Resend, sprint 4), o Asaas avisa as próximas cobranças
       });
       return r.id;
     },
