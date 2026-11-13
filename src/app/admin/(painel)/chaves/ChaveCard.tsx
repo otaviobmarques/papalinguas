@@ -3,8 +3,10 @@ import { Fragment, useActionState, useState } from "react";
 import { removerChave, salvarChave, testarChave, type EstadoForm } from "./actions";
 
 interface Props {
-  provider: "openai" | "anthropic" | "asaas";
+  provider: "openai" | "anthropic" | "asaas" | "azure_speech";
   extras?: { rotulo: string; valor: string }[];
+  /** Pede um campo extra de região (Azure). */
+  pedeRegiao?: boolean;
   titulo: string;
   descricao: string;
   placeholder: string;
@@ -18,7 +20,7 @@ function Aviso({ e }: { e: EstadoForm }) {
     : <p role="status" className="mt-2 text-sm font-semibold text-ok">{e.ok}</p>;
 }
 
-export default function ChaveCard({ provider, titulo, descricao, placeholder, atual, extras }: Props) {
+export default function ChaveCard({ provider, titulo, descricao, placeholder, atual, extras, pedeRegiao }: Props) {
   const [salvo, acaoSalvar, salvando] = useActionState(salvarChave, null);
   const [teste, acaoTestar, testando] = useActionState(testarChave, null);
   const [remocao, acaoRemover, removendo] = useActionState(removerChave, null);
@@ -62,6 +64,13 @@ export default function ChaveCard({ provider, titulo, descricao, placeholder, at
           <label htmlFor={`chave-${provider}`} className="text-sm font-semibold">{atual ? "Nova chave" : "Chave"}</label>
           <input id={`chave-${provider}`} name="chave" type="password" required placeholder={placeholder} autoComplete="new-password" spellCheck={false}
             className="min-h-12 rounded-2xl border border-line bg-surface px-4 font-mono text-sm" />
+          {pedeRegiao && (
+            <>
+              <label htmlFor={`regiao-${provider}`} className="text-sm font-semibold">Região do recurso</label>
+              <input id={`regiao-${provider}`} name="regiao" required placeholder="ex.: East US ou Brazil South" className="min-h-12 rounded-2xl border border-line bg-surface px-4 text-sm" />
+              <p className="text-xs text-ink-soft">Está em portal.azure.com → seu recurso → Visão geral → Local.</p>
+            </>
+          )}
           <label htmlFor={`motivo-${provider}`} className="text-sm font-semibold">Motivo (vai para a auditoria)</label>
           <input id={`motivo-${provider}`} name="motivo" required defaultValue={atual ? "" : "Cadastro inicial"} className="min-h-12 rounded-2xl border border-line bg-surface px-4 text-sm" />
           <div className="flex gap-2">
@@ -76,7 +85,7 @@ export default function ChaveCard({ provider, titulo, descricao, placeholder, at
       {removendoAberto && (
         <form action={acaoRemover} className="mt-4 flex flex-col gap-2 rounded-2xl border border-danger p-3">
           <input type="hidden" name="provider" value={provider} />
-          <p className="text-sm font-semibold">Remover esta chave? {provider === "openai" ? "As aulas por voz param de funcionar até cadastrar outra." : provider === "asaas" ? "Novas assinaturas param de funcionar até cadastrar outra." : "O texto fica sem backup."}</p>
+          <p className="text-sm font-semibold">Remover esta chave? {provider === "openai" ? "As aulas por voz param de funcionar até cadastrar outra." : provider === "asaas" ? "Novas assinaturas param de funcionar até cadastrar outra." : provider === "azure_speech" ? "A avaliação de pronúncia para de funcionar até cadastrar outra." : "O texto fica sem backup."}</p>
           <input name="motivo" required placeholder="Motivo" className="min-h-11 rounded-xl border border-line bg-surface px-3 text-sm" />
           <input name="confirmacao" required placeholder="Digite REMOVER" className="min-h-11 rounded-xl border border-line bg-surface px-3 text-sm" />
           <div className="flex gap-2">

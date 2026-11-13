@@ -4,15 +4,16 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { auditar, sessaoAdmin } from "@/lib/admin/auth";
 import { pode } from "@/lib/admin/permissions";
-import { cofre, guardarChave, lerChave, type Provedor, type Slot } from "@/lib/keys/store";
+import { cofre, guardarChave, lerChave, lerReferencia, type Provedor, type Slot } from "@/lib/keys/store";
+import { normalizarRegiao } from "@/lib/providers/azureSpeech";
 import { validarChave } from "@/lib/keys/validate";
 import { registrarWebhookAsaas, validarAsaas } from "@/lib/providers/payments/asaasSetup";
 
 export type EstadoForm = { ok?: string; erro?: string } | null;
 
-const SLOT_DE: Record<Provedor, Slot> = { openai: "principal", anthropic: "backup", asaas: "principal" };
-const NOME: Record<Provedor, string> = { openai: "OpenAI (principal)", anthropic: "Anthropic (backup)", asaas: "Asaas (pagamentos)" };
-const PROVEDORES = ["openai", "anthropic", "asaas"] as const;
+const SLOT_DE: Record<Provedor, Slot> = { openai: "principal", anthropic: "backup", asaas: "principal", azure_speech: "principal" };
+const NOME: Record<Provedor, string> = { openai: "OpenAI (principal)", anthropic: "Anthropic (backup)", asaas: "Asaas (pagamentos)", azure_speech: "Azure Speech (pronúncia)" };
+const PROVEDORES = ["openai", "anthropic", "asaas", "azure_speech"] as const;
 
 /** Endereço público do app, para o Asaas avisar os pagamentos. */
 async function urlWebhook() {
@@ -41,16 +42,18 @@ export async function salvarChave(_: EstadoForm, form: FormData): Promise<Estado
     provider: z.enum(PROVEDORES),
     chave: z.string().trim().min(20, "Chave muito curta").max(400).regex(/^\S+$/, "A chave não pode ter espaços"),
     motivo: z.string().trim().min(3, "Informe o motivo da alteração").max(200),
-  }).safeParse({ provider: form.get("provider"), chave: form.get("chave"), motivo: form.get("motivo") });
+    regiao: z.string().trim().max(40).optional(),
+  }).safeParse({ provider: form.get("provider"), chave: form.get("chave"), motivo: form.get("motivo"), regiao: form.get("regiao") ?? undefined });
   if (!p.success) return { erro: p.error.issues[0].message };
+  const regiao = p.data.provider === "azure_speech" ? normalizarRegiao(p.data.regiao ?? "") : null;
 
-  const v = await validarChave(p.data.provider, p.data.chave);
+  const v = await validarChave(p.data.provider, p.data.chave, regiao);
   if (!v.ok) return { erro: `Chave não salva: ${v.motivo}` };
 
   const slot = SLOT_DE[p.data.provider];
   const anterior = (await cofre().listar()).find((x) => x.provider === p.data.provider && x.slot === slot);
-  await guardarChave({ provider: p.data.provider, slot, valor: p.data.chave, status: "valida", adminId: s.id });
-  let extra = "";
+  await guardarChave({ provider: p.data.provider, slot, valor: p.data.chave, status: "valida", adminId: s.id, ...(regiao ? { externalRef: regiao } : {}) });
+  let extra = regiao ? ` Região: ${regiao}.` : "";
   if (p.data.provider === "asaas") {
     try {
       const id = await configurarWebhook(p.data.chave, s.id);
@@ -75,7 +78,7 @@ export async function testarChave(_: EstadoForm, form: FormData): Promise<Estado
   const slot = SLOT_DE[provider];
   const chave = await lerChave(provider, slot);
   if (!chave) return { erro: "Nenhuma chave cadastrada." };
-  const v = await validarChave(provider, chave);
+  const v = await validarChave(provider, chave, provider === "azure_speech" ? await lerReferencia("azure_speech", "principal") : null);
   await guardarChave({ provider, slot, valor: chave, status: v.ok ? "valida" : "invalida", adminId: s.id });
   await auditar(s, "chave_testada", { tipo: "integration_key", id: `${provider}:${slot}` }, { depois: { resultado: v.ok ? "valida" : "invalida" } });
   if (v.ok && provider === "asaas" && !(await lerChave("asaas", "webhook"))) {

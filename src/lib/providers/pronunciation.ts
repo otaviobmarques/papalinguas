@@ -1,5 +1,6 @@
 import "server-only";
-import { serverEnv } from "@/lib/env";
+import { lerChave, lerReferencia } from "@/lib/keys/store";
+import { emitirTokenAzure, normalizarRegiao } from "./azureSpeech";
 
 /** PronunciationProvider (Manual 5): Azure Speech com token temporário de 10 min. */
 export interface PronunciationToken {
@@ -17,15 +18,14 @@ const LOCALES = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
 
 export const azurePronunciation: PronunciationProvider = {
   async issueToken(language) {
-    const region = serverEnv.azureSpeechRegion();
-    const res = await fetch(`https://${region}.api.cognitive.microsoft.com/sts/v1.0/issueToken`, {
-      method: "POST",
-      headers: { "Ocp-Apim-Subscription-Key": serverEnv.azureSpeechKey(), "Content-Length": "0" },
-    });
-    if (!res.ok) throw new Error(`Azure issueToken falhou: ${res.status}`);
+    // Chave e região do cofre do painel (Chaves de integração); se não houver, variáveis de ambiente
+    const [chave, ref] = await Promise.all([lerChave("azure_speech", "principal"), lerReferencia("azure_speech", "principal")]);
+    const regiaoBruta = ref ?? process.env.AZURE_SPEECH_REGION;
+    if (!chave || !regiaoBruta) throw new Error("Azure Speech não configurado");
+    const region = normalizarRegiao(regiaoBruta);
     return {
       provider: "azure",
-      token: await res.text(),
+      token: await emitirTokenAzure(chave, region),
       region,
       locale: LOCALES[language],
       prosody: language === "en", // prosódia só en-US
