@@ -24,7 +24,7 @@ export function roteiroDemo(tutor: TutorDemo, modo: "aula" | "livre" | "nivelame
   return {
     abertura: cenario
       ? t(`Hi, come in! You wanted to talk to me?`, `¡Hola, pasa! ¿Querías hablar conmigo?`, `Oi, pode entrar! Você queria falar comigo?`)
-      : t(`Hey! I'm ${tutor.nome}. What did you do today?`, `¡Hola! Soy ${tutor.nome}. ¿Qué hiciste hoy?`, `Oi! Eu sou ${tutor.nome}. O que você fez hoje?`),
+      : t(`Hey! I'm ${tutor.nome}. We can talk about anything, and you can ask me how to say anything. What's on your mind?`, `¡Hola! Soy ${tutor.nome}. Podemos hablar de lo que quieras, y puedes preguntarme cómo se dice cualquier cosa. ¿De qué hablamos?`, `Oi! Eu sou ${tutor.nome}. A gente pode falar de qualquer coisa, e você pode me perguntar como se diz o que quiser. Sobre o que vamos conversar?`),
     respostas: [
       t("Sure, I have a few minutes. What's on your mind?", "Claro, tengo unos minutos. ¿Qué pasa?", "Claro, tenho uns minutinhos. O que houve?"),
       t("That's impressive. Can you give me another example?", "Impresionante. ¿Me das otro ejemplo?", "Que bacana. Você me dá outro exemplo?"),

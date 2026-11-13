@@ -38,3 +38,24 @@ describe("srs", () => {
     expect(prox.toISOString()).toBe("2026-11-14T00:00:00.000Z");
   });
 });
+
+import { montarInstrucoes, regraCorrecao } from "@/lib/domain/tutorPrompt";
+
+describe("modo livre", () => {
+  const base = { tutorNome: "Maya", tutorPromptBase: "x", idioma: "en" as const, nivel: "A2" as const, memoria: [], acolher: { ativo: false }, correcoesPorFala: 1 };
+  it("ensina a pedir 'como se diz' e usa os interesses", () => {
+    const s = montarInstrucoes({ ...base, modo: "livre", interesses: ["Séries", "Tecnologia"] });
+    expect(s).toContain("Modo livre (tutor aberto)");
+    expect(s).toContain("como se diz");
+    expect(s).toContain("Séries, Tecnologia");
+    expect(s).toContain("no máximo 1 correção por fala");
+  });
+  it("correção detalhada explica em português até o B1 e na língua-alvo a partir do B2", () => {
+    expect(regraCorrecao({ correcao: "detalhada", correcoesPorFala: 1, nivel: "A2" })).toContain("em português do Brasil");
+    expect(regraCorrecao({ correcao: "detalhada", correcoesPorFala: 1, nivel: "B2" })).toContain("na língua que o aluno está aprendendo");
+  });
+  it("aula com cenário não recebe o bloco do modo livre", () => {
+    const s = montarInstrucoes({ ...base, modo: "aula", cenario: { titulo: "t", situacao: "s", missoes: ["m"], vocabulario: ["v"], roteiro: "r" } });
+    expect(s).not.toContain("Modo livre");
+  });
+});

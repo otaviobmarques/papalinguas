@@ -15,6 +15,7 @@ const Body = z.object({
   cenarioId: z.string().uuid().optional(),
   cenarioSlug: z.string().max(80).optional(),
   modo: z.enum(["aula", "livre"]).default("aula"),
+  correcao: z.enum(["leve", "detalhada"]).default("leve"),
 });
 
 /** POST /api/aulas — Manual 3.2 e 8.1 */
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
   if (!user) return erro(401, "nao_autenticado");
   const parsed = Body.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return erro(400, "requisicao_invalida");
-  const { idioma, cenarioId, cenarioSlug, modo } = parsed.data;
+  const { idioma, cenarioId, cenarioSlug, modo, correcao } = parsed.data;
 
   const sb = supabaseAdmin();
   const settings = await lerSettings(sb);
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
     sb.from("extra_packs").select("seconds_total, seconds_used").eq("user_id", user.id).gt("expires_at", agora.toISOString()),
     sb.from("progress_daily").select("seconds_spoken").eq("user_id", user.id).eq("day", inicioDia.toISOString().slice(0, 10)).maybeSingle(),
     sb.from("lessons").select("id", { count: "exact", head: true }).eq("user_id", user.id).gte("started_at", inicioDia.toISOString()).neq("kind", "nivelamento"),
-    sb.from("profiles").select("level, tutor_id, acolher").eq("user_id", user.id).eq("target_language", idioma).maybeSingle(),
+    sb.from("profiles").select("level, tutor_id, acolher, interests").eq("user_id", user.id).eq("target_language", idioma).maybeSingle(),
   ]);
   if (u.error || !u.data) return erro(404, "usuario_nao_encontrado");
 
@@ -104,6 +105,8 @@ export async function POST(req: Request) {
     acolher: (profile.data?.acolher as { ativo: boolean }) ?? { ativo: false },
     modo,
     correcoesPorFala: num(settings.correcoes_por_fala, 1),
+    correcao,
+    interesses: (profile.data?.interests as string[] | undefined) ?? [],
   });
 
   const killMode = (settings.kill_switch as { modo?: string })?.modo;
