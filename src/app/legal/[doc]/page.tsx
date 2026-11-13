@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import SiteFooter from "@/components/site/SiteFooter";
+import SiteHeader from "@/components/site/SiteHeader";
 import { DOCUMENTOS } from "@/lib/legal/documentos";
 
 export function generateStaticParams() {
@@ -17,8 +19,9 @@ export default async function Legal({ params }: { params: Promise<{ doc: string 
   const d = DOCUMENTOS[doc];
   if (!d) notFound();
   return (
+    <div className="tema-escuro min-h-dvh">
+    <SiteHeader ancoras={false} />
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft hover:text-brand">← Papalinguas</Link>
       <h1 className="mt-4 text-3xl font-extrabold sm:text-4xl">{d.titulo}</h1>
       <p className="mt-2 text-ink-soft">{d.resumo}</p>
       <p role="note" className="mt-6 rounded-2xl bg-warn-soft p-4 text-sm font-semibold text-warn">
@@ -27,17 +30,19 @@ export default async function Legal({ params }: { params: Promise<{ doc: string 
       <nav aria-label="Outros documentos" className="mt-6 flex flex-wrap gap-2">
         {Object.entries(DOCUMENTOS).map(([k, v]) => (
           <Link key={k} href={`/legal/${k}`} aria-current={k === doc ? "page" : undefined}
-            className="chip aria-[current=page]:border-brand aria-[current=page]:bg-brand-soft">{v.titulo}</Link>
+            className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm font-semibold text-ink-soft hover:text-ink aria-[current=page]:border-brand aria-[current=page]:text-ink">{v.titulo}</Link>
         ))}
       </nav>
       <article className="mt-8 space-y-8">
         {d.secoes.map((s) => (
           <section key={s.titulo}>
             <h2 className="text-xl font-extrabold">{s.titulo}</h2>
-            {s.paragrafos.map((p, i) => <p key={i} className="mt-3 leading-relaxed">{p}</p>)}
+            {s.paragrafos.map((p, i) => <p key={i} className="mt-3 leading-relaxed text-ink-soft">{p}</p>)}
           </section>
         ))}
       </article>
     </main>
+    <SiteFooter />
+    </div>
   );
 }

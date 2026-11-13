@@ -13,7 +13,7 @@ export function useLipSync(stream: MediaStream | null): { visema: Visema; volume
     const src = ctx.createMediaStreamSource(stream);
     const an = ctx.createAnalyser();
     an.fftSize = 1024;
-    an.smoothingTimeConstant = 0.5;
+    an.smoothingTimeConstant = 0.7;
     src.connect(an); // não conecta ao destino: o <audio> já toca o som
     const bins = new Uint8Array(an.frequencyBinCount);
     const onda = new Uint8Array(an.fftSize);
@@ -40,6 +40,66 @@ export function useLipSync(stream: MediaStream | null): { visema: Visema; volume
     };
   }, [stream]);
 
+  return saida;
+}
+
+/**
+ * Lip sync de um <audio> comum (amostras do site e do protótipo). O elemento passa pelo
+ * AudioContext uma única vez (exigência do navegador) e continua tocando normalmente.
+ */
+export function useLipSyncElemento(audio: HTMLAudioElement | null): { visema: Visema; tocando: boolean } {
+  const [saida, setSaida] = useState<{ visema: Visema; tocando: boolean }>({ visema: 0, tocando: false });
+  useEffect(() => {
+    if (!audio) return;
+    let ctx: AudioContext | null = null;
+    let an: AnalyserNode | null = null;
+    let raf = 0;
+    let st = estadoInicial();
+    const loop = () => {
+      if (!an || !ctx) return;
+      const bins = new Uint8Array(an.frequencyBinCount);
+      const onda = new Uint8Array(an.fftSize);
+      an.getByteFrequencyData(bins);
+      an.getByteTimeDomainData(onda);
+      let soma = 0;
+      for (let i = 0; i < onda.length; i++) {
+        const v = (onda[i] - 128) / 128;
+        soma += v * v;
+      }
+      st = proximoVisema(st, frameDeFFT(bins, ctx.sampleRate, Math.sqrt(soma / onda.length)));
+      setSaida((s) => (s.visema === st.visema && s.tocando ? s : { visema: st.visema, tocando: true }));
+      raf = requestAnimationFrame(loop);
+    };
+    const tocar = () => {
+      if (!ctx) {
+        ctx = new AudioContext();
+        an = ctx.createAnalyser();
+        an.fftSize = 1024;
+        an.smoothingTimeConstant = 0.7;
+        const src = ctx.createMediaElementSource(audio);
+        src.connect(an);
+        an.connect(ctx.destination);
+      }
+      void ctx.resume();
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(loop);
+    };
+    const parar = () => {
+      cancelAnimationFrame(raf);
+      st = estadoInicial();
+      setSaida({ visema: 0, tocando: false });
+    };
+    audio.addEventListener("play", tocar);
+    audio.addEventListener("pause", parar);
+    audio.addEventListener("ended", parar);
+    return () => {
+      audio.removeEventListener("play", tocar);
+      audio.removeEventListener("pause", parar);
+      audio.removeEventListener("ended", parar);
+      cancelAnimationFrame(raf);
+      void ctx?.close();
+    };
+  }, [audio]);
   return saida;
 }
 

@@ -72,7 +72,7 @@ export default function Planos() {
         <p className="mt-4 rounded-2xl bg-brand-soft p-3 text-center text-sm font-bold">🛡️ Garantia de 7 dias: se não gostar, devolvemos tudo.</p>
       )}
       <p className="mt-3 text-center text-xs text-ink-soft">
-        Renovação automática; cancele quando quiser em 2 toques. Acabou a cota? Pacote extra de {PACOTE_EXTRA.minutos} min por {formatBRL(PACOTE_EXTRA.precoCentavos)}.
+        Renovação automática; cancele quando quiser, sem multa. Acabou a cota? Pacote extra de {PACOTE_EXTRA.minutos} min por {formatBRL(PACOTE_EXTRA.precoCentavos)}.
       </p>
 
       <div className="sticky bottom-0 mt-auto bg-bg pb-2 pt-4">
