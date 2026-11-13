@@ -18,6 +18,7 @@ export const TELAS_ADMIN: { codigo: string; slug: string; nome: string; sprint: 
   { codigo: "P15", slug: "equipe", nome: "Equipe e permissões", sprint: 5, requer: "gerir_equipe" },
   { codigo: "P16", slug: "auditoria", nome: "Auditoria", sprint: 5, requer: "ver_auditoria" },
   { codigo: "P17", slug: "privacidade", nome: "Privacidade (LGPD)", sprint: 7, requer: "excluir_logico" },
+  { codigo: "P18.1", slug: "chaves", nome: "Chaves de integração", sprint: 1, requer: "gerir_chaves" },
   { codigo: "P18", slug: "configuracoes", nome: "Configurações", sprint: 6, requer: "trocar_fornecedor" },
   { codigo: "P19", slug: "relatorios", nome: "Relatórios", sprint: 7, requer: "ver_painel" },
 ];

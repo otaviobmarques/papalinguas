@@ -7,6 +7,10 @@ export async function middleware(req: NextRequest) {
     const permitidos = process.env.ADMIN_ALLOWED_IPS?.split(",").map((s) => s.trim()).filter(Boolean);
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
     if (permitidos?.length && (!ip || !permitidos.includes(ip))) return new NextResponse("Acesso negado", { status: 403 });
+    // Sem cookie de sessão: vai para o login (a assinatura é conferida no layout do painel)
+    if (!req.nextUrl.pathname.startsWith("/admin/login") && !req.cookies.get("pl_admin")) {
+      return NextResponse.redirect(new URL("/admin/login", req.url));
+    }
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

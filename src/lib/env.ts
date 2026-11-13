@@ -16,7 +16,6 @@ export const serverEnv = {
   supabaseUrl: () => req("NEXT_PUBLIC_SUPABASE_URL"),
   supabaseAnonKey: () => req("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
   supabaseServiceRoleKey: () => req("SUPABASE_SERVICE_ROLE_KEY"),
-  openaiKey: () => req("OPENAI_API_KEY"),
   openaiRealtimeModel: () => opt("OPENAI_REALTIME_MODEL") ?? "gpt-realtime-2.1-mini",
   openaiTextModel: () => opt("OPENAI_TEXT_MODEL") ?? "gpt-5-mini",
   azureSpeechKey: () => req("AZURE_SPEECH_KEY"),

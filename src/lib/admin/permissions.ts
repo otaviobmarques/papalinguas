@@ -18,7 +18,8 @@ export type Acao =
   | "kill_switch"
   | "gerir_equipe"
   | "ver_auditoria"
-  | "exportar_dados";
+  | "exportar_dados"
+  | "gerir_chaves";
 
 /** "parcial" = acesso restrito (ex.: Moderação vê ficha sem dados financeiros; Leitura exporta só agregados). */
 export type Nivel = true | false | "parcial";
@@ -43,6 +44,7 @@ const MATRIZ: Record<Acao, [Nivel, Nivel, Nivel, Nivel, Nivel, Nivel, Nivel]> = 
   gerir_equipe:       [T, F, F, F, F, F, F],
   ver_auditoria:      [T, T, P, F, F, F, F], // Financeiro: própria área
   exportar_dados:     [T, T, P, F, F, F, P], // Financeiro: financeiro; Leitura: agregados
+  gerir_chaves:       [T, F, F, F, F, F, F], // chaves de integração: só Super Admin (Manual 11.3, P18)
 };
 const ORDEM: Perfil[] = ["super_admin", "administrador", "financeiro", "suporte", "conteudo", "moderacao", "leitura"];
 
@@ -54,7 +56,7 @@ export const pode = (perfil: Perfil, acao: Acao) => permissao(perfil, acao) !== 
 export const LIMITE_BONUS_SUPORTE_MIN = 30;
 
 /** Ações destrutivas: confirmação dupla, motivo por escrito e código 2FA (Manual 11.4). */
-export const ACOES_DESTRUTIVAS: Acao[] = ["banir", "excluir_logico", "excluir_definitivo", "reembolsar", "trocar_fornecedor", "kill_switch"];
+export const ACOES_DESTRUTIVAS: Acao[] = ["gerir_chaves", "banir", "excluir_logico", "excluir_definitivo", "reembolsar", "trocar_fornecedor", "kill_switch"];
 
 export const PERFIL_NOME: Record<Perfil, string> = {
   super_admin: "Super Admin", administrador: "Administrador", financeiro: "Financeiro", suporte: "Suporte",

@@ -1,5 +1,6 @@
 import "server-only";
 import { serverEnv } from "@/lib/env";
+import { lerChave } from "@/lib/keys/store";
 
 /** VoiceProvider (Manual 5): troca de fornecedor sem nova versão do app. */
 export interface VoiceSessionRequest {
@@ -26,9 +27,12 @@ export interface VoiceProvider {
 export const openAIVoice: VoiceProvider = {
   async createEphemeralSession({ instructions, voice, model, maxSeconds }) {
     const m = model ?? serverEnv.openaiRealtimeModel();
+    // Chave do cofre do painel (Chaves de integração); se não houver, OPENAI_API_KEY
+    const chave = await lerChave("openai", "principal");
+    if (!chave) throw new Error("Chave da OpenAI não configurada");
     const res = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
       method: "POST",
-      headers: { Authorization: `Bearer ${serverEnv.openaiKey()}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${chave}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         // a chave só precisa valer o suficiente para conectar; a sessão é encerrada pelo heartbeat
         expires_after: { anchor: "created_at", seconds: Math.min(600, Math.max(60, maxSeconds)) },
