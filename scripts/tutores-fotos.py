@@ -97,6 +97,20 @@ def recorte(base, img, c):
     return rgba
 
 
+DESVIO_MAX = 0.07  # 7% da largura da região da boca (medido: bocas normais ficam até ~5%)
+
+
+def desvio_horizontal(base, img, c):
+    """Quanto o que muda na boca está deslocado do centro da região (fração da largura; + = para a direita)."""
+    x0, y0, x1, y1 = c
+    d = cv2.absdiff(cv2.GaussianBlur(img[y0:y1, x0:x1], (5, 5), 0), cv2.GaussianBlur(base[y0:y1, x0:x1], (5, 5), 0)).max(axis=2)
+    a = mascara_elipse(x1 - x0, y1 - y0)
+    ys, xs = np.nonzero((d * a) > 30)
+    if len(xs) < 50:
+        return 0.0
+    return (xs.mean() - (x1 - x0) / 2) / (x1 - x0)
+
+
 def salvar_webp(caminho, img, q=82):
     cv2.imwrite(caminho, img, [cv2.IMWRITE_WEBP_QUALITY, q])
 
@@ -135,8 +149,14 @@ def processar(pasta, slug):
     if surpresa_p:
         bocas["surpresa"] = ler(surpresa_p)
     for v, L in VISEMA_PARA_BOCA.items():
-        fonte = bocas.get(L) if L in bocas else bocas["C"]  # sem a foto "surpresa": volta ao sorriso com dentes
-        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, fonte, cb), [cv2.IMWRITE_WEBP_QUALITY, 85])
+        escolha = L if L in bocas else "C"  # sem a foto "surpresa": volta ao sorriso com dentes
+        # boca torta (ex.: mordendo o lábio de um lado) fica estranha na fala: troca por uma centralizada
+        for alternativa in ("surpresa", "A"):
+            if abs(desvio_horizontal(base, bocas[escolha], cb)) <= DESVIO_MAX or alternativa not in bocas:
+                break
+            print(f"  {slug}: boca {L} da posição {v} está deslocada para o lado; usando {alternativa}")
+            escolha = alternativa
+        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, bocas[escolha], cb), [cv2.IMWRITE_WEBP_QUALITY, 85])
     cv2.imwrite(os.path.join(saida, "olhos.webp"), recorte(base, olhos, co), [cv2.IMWRITE_WEBP_QUALITY, 85])
     info.update({"animado": True, "boca": frac(cb, LADO, LADO), "olhos": frac(co, LADO, LADO), "expressoes": {}})
 
