@@ -39,8 +39,8 @@ export default function BoasVindas() {
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center text-center">
-        <div className="relative mb-6 size-60 rounded-full bg-brand-soft">
-          <TutorCharacter visual={tutor.visual} nome={tutor.nome} expressao="sorriso" acenando className="absolute inset-x-0 bottom-0 mx-auto h-64" />
+        <div className="relative mb-6 size-60 overflow-hidden rounded-full bg-brand-soft">
+          <TutorCharacter slug={tutor.slug} visual={tutor.visual} nome={tutor.nome} enquadramento="rosto" expressao="sorriso" acenando className="absolute inset-0 h-full w-full" />
         </div>
         <p className="mb-2 font-bold tracking-wide text-brand">PAPALINGUAS</p>
         <h1 className="text-balance text-3xl font-extrabold leading-tight">

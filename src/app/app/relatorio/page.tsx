@@ -50,7 +50,7 @@ export default function Relatorio() {
   if (gerando) {
     return (
       <main className="flex min-h-[70dvh] flex-col items-center justify-center text-center">
-        <div className="size-40"><TutorCharacter visual={tutor.visual} nome={tutor.nome} estado="pensando" className="h-full w-full" /></div>
+        <div className="size-40"><TutorCharacter slug={tutor.slug} visual={tutor.visual} nome={tutor.nome} estado="pensando" className="h-full w-full" /></div>
         <p className="mt-4 font-bold" aria-live="polite">{tutor.nome} está preparando seu relatório…</p>
       </main>
     );
@@ -60,7 +60,7 @@ export default function Relatorio() {
   return (
     <main>
       <header className="flex items-center gap-3">
-        <div className="size-20"><TutorCharacter visual={tutor.visual} nome={tutor.nome} expressao="comemoracao" className="h-full w-full" /></div>
+        <div className="size-20"><TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="comemoracao" className="h-full w-full" /></div>
         <div><p className="text-sm text-ink-soft">Relatório da aula</p><h1 className="text-2xl font-extrabold">Mandou bem! 👏</h1></div>
       </header>
 

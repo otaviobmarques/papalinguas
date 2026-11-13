@@ -40,8 +40,8 @@ function Aula() {
     return (
       <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-6 pt-4">
         <Link href="/app" className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft">← Início</Link>
-        <div className="mx-auto mt-2 size-40 rounded-full bg-brand-soft">
-          <TutorCharacter visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
+        <div className="mx-auto mt-2 size-40 overflow-hidden rounded-full bg-brand-soft">
+          <TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
         </div>
         <h1 className="mt-4 text-center text-2xl font-extrabold">Modo livre com {tutor.nome}</h1>
         <p className="mt-2 text-center text-ink-soft">

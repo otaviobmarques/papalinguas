@@ -51,7 +51,7 @@ export default function TesteNivel() {
   if (fase === "avaliando") {
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-4 text-center">
-        <div className="size-40"><TutorCharacter visual={tutor.visual} nome={tutor.nome} estado="pensando" className="h-full w-full" /></div>
+        <div className="size-40"><TutorCharacter slug={tutor.slug} visual={tutor.visual} nome={tutor.nome} estado="pensando" className="h-full w-full" /></div>
         <p className="mt-4 font-bold" aria-live="polite">{tutor.nome} está avaliando sua conversa…</p>
       </main>
     );

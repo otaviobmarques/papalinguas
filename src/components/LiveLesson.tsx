@@ -356,7 +356,7 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
 
       {/* tutor */}
       <div className="relative mx-auto mt-2 w-full max-w-xs flex-1">
-        <TutorCharacter visual={tutor.visual} nome={tutor.nome} estado={estado} visema={visema} expressao={expressao} className="h-full max-h-[32vh] w-full" />
+        <TutorCharacter slug={tutor.slug} visual={tutor.visual} nome={tutor.nome} estado={estado} visema={visema} expressao={expressao} className="h-full max-h-[32vh] w-full" />
         {fase === "conectando" && (
           <div className="absolute inset-0 grid place-items-center">
             <span className="rounded-full bg-surface px-4 py-2 text-sm font-bold shadow">Conectando com {tutor.nome}…</span>

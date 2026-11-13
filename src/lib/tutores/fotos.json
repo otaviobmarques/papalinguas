@@ -2,12 +2,56 @@
   "bia": {
     "base": "/tutores/bia/base.webp",
     "card": "/tutores/bia/card.webp",
-    "animado": false
+    "animado": true,
+    "boca": {
+      "x": 0.3581,
+      "y": 0.4089,
+      "w": 0.2982,
+      "h": 0.2904
+    },
+    "olhos": {
+      "x": 0.3477,
+      "y": 0.2708,
+      "w": 0.3177,
+      "h": 0.1289
+    },
+    "expressoes": {
+      "feliz": "/tutores/bia/feliz.webp",
+      "surpresa": "/tutores/bia/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3281,
+      "y": 0.2513,
+      "w": 0.3568,
+      "h": 0.4674
+    }
   },
   "caio": {
     "base": "/tutores/caio/base.webp",
     "card": "/tutores/caio/card.webp",
-    "animado": false
+    "animado": true,
+    "boca": {
+      "x": 0.3711,
+      "y": 0.3698,
+      "w": 0.2812,
+      "h": 0.3529
+    },
+    "olhos": {
+      "x": 0.349,
+      "y": 0.2721,
+      "w": 0.3151,
+      "h": 0.125
+    },
+    "expressoes": {
+      "feliz": "/tutores/caio/feliz.webp",
+      "surpresa": "/tutores/caio/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3294,
+      "y": 0.2526,
+      "w": 0.3542,
+      "h": 0.4896
+    }
   },
   "grace": {
     "base": "/tutores/grace/base.webp",
@@ -66,21 +110,109 @@
   "lucia": {
     "base": "/tutores/lucia/base.webp",
     "card": "/tutores/lucia/card.webp",
-    "animado": false
+    "animado": true,
+    "boca": {
+      "x": 0.3529,
+      "y": 0.4609,
+      "w": 0.2786,
+      "h": 0.2878
+    },
+    "olhos": {
+      "x": 0.3477,
+      "y": 0.3164,
+      "w": 0.3073,
+      "h": 0.125
+    },
+    "expressoes": {
+      "feliz": "/tutores/lucia/feliz.webp",
+      "surpresa": "/tutores/lucia/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3281,
+      "y": 0.2969,
+      "w": 0.3464,
+      "h": 0.4714
+    }
   },
   "mateo": {
     "base": "/tutores/mateo/base.webp",
     "card": "/tutores/mateo/card.webp",
-    "animado": false
+    "animado": true,
+    "boca": {
+      "x": 0.3424,
+      "y": 0.3958,
+      "w": 0.362,
+      "h": 0.3516
+    },
+    "olhos": {
+      "x": 0.3529,
+      "y": 0.2799,
+      "w": 0.3008,
+      "h": 0.1224
+    },
+    "expressoes": {
+      "feliz": "/tutores/mateo/feliz.webp",
+      "surpresa": "/tutores/mateo/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3229,
+      "y": 0.2604,
+      "w": 0.401,
+      "h": 0.5065
+    }
   },
   "maya": {
     "base": "/tutores/maya/base.webp",
     "card": "/tutores/maya/card.webp",
-    "animado": false
+    "animado": true,
+    "boca": {
+      "x": 0.3594,
+      "y": 0.4258,
+      "w": 0.2721,
+      "h": 0.3177
+    },
+    "olhos": {
+      "x": 0.3451,
+      "y": 0.276,
+      "w": 0.3164,
+      "h": 0.125
+    },
+    "expressoes": {
+      "feliz": "/tutores/maya/feliz.webp",
+      "surpresa": "/tutores/maya/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3255,
+      "y": 0.2565,
+      "w": 0.3555,
+      "h": 0.5065
+    }
   },
   "oliver": {
     "base": "/tutores/oliver/base.webp",
     "card": "/tutores/oliver/card.webp",
-    "animado": false
+    "animado": true,
+    "boca": {
+      "x": 0.3568,
+      "y": 0.4388,
+      "w": 0.2799,
+      "h": 0.3008
+    },
+    "olhos": {
+      "x": 0.3633,
+      "y": 0.2878,
+      "w": 0.2839,
+      "h": 0.1159
+    },
+    "expressoes": {
+      "feliz": "/tutores/oliver/feliz.webp",
+      "surpresa": "/tutores/oliver/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3372,
+      "y": 0.2682,
+      "w": 0.3294,
+      "h": 0.4909
+    }
   }
 }

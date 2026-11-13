@@ -56,7 +56,7 @@ export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, 
 
   return (
     <div className={`relative flex items-center justify-center ${className}`} role="img" aria-label={`${nome}, personagem de IA${falando ? ", falando" : ""}`}>
-      <div className={enquadramento === "preencher" ? "absolute left-1/2 top-0 aspect-square h-full -translate-x-1/2" : "relative aspect-square h-full max-h-full max-w-full overflow-hidden"}>
+      <div className={enquadramento === "preencher" ? "absolute left-1/2 top-0 aspect-square h-full -translate-x-1/2" : `relative aspect-square h-full max-h-full max-w-full overflow-hidden ${enquadramento === "busto" ? "rounded-3xl" : ""}`}>
         <div className={`absolute inset-0 ${zoom}`}>
         <div className={`absolute inset-0 ${falando ? "anim-fala" : estado === "ouvindo" ? "anim-ouvir" : "anim-respirar"}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
