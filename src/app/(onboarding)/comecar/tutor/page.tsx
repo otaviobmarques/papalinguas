@@ -53,7 +53,7 @@ export default function EscolhaTutor() {
       <section className="card bg-brand-soft">
         <p className="text-sm font-bold text-brand">Seu nível estimado</p>
         <p className="text-3xl font-extrabold">{nivel}</p>
-        <p className="mt-1 text-sm">{CEFR_DESCRICAO[nivel]}</p>
+        <p className="mt-1 text-sm">{estado.nivelResumo || CEFR_DESCRICAO[nivel]}</p>
         {(estado.nivelConfianca ?? 1) < 0.6 && <p className="mt-2 text-sm text-ink-soft">Vamos ajustar seu nível nas primeiras aulas.</p>}
       </section>
 

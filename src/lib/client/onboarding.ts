@@ -20,6 +20,7 @@ export interface OnboardingState {
   contaCriada: boolean;
   nivel?: Cefr;
   nivelConfianca?: number;
+  nivelResumo?: string;
   tutorSlug?: string;
   plano?: { code: "essencial" | "fluente"; periodo: "mensal" | "anual" };
   assinante: boolean;
@@ -80,4 +81,19 @@ export async function vincularOnboarding(e: OnboardingState): Promise<boolean> {
     }),
   }).catch(() => null);
   return Boolean(r?.ok);
+}
+
+/** Identificador aleatório do aparelho (antiabuso do teste de nível). Não identifica a pessoa. */
+export function idDispositivo(): string {
+  const CH = "papalinguas:dispositivo";
+  try {
+    let id = localStorage.getItem(CH);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(CH, id);
+    }
+    return id;
+  } catch {
+    return "sem-armazenamento-" + crypto.randomUUID();
+  }
 }
