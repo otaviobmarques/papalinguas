@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { sessaoAdmin } from "@/lib/admin/auth";
 import { pode } from "@/lib/admin/permissions";
 import { cofre } from "@/lib/keys/store";
+import { isSupabaseConfigured } from "@/lib/env";
 import ChaveCard from "./ChaveCard";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,11 @@ export default async function Chaves() {
     <main className="max-w-3xl">
       <h1 className="text-2xl font-extrabold">Chaves de integração</h1>
       <p className="mt-1 text-ink-soft">A chave principal da OpenAI move a conversa por voz e os relatórios. Se a OpenAI falhar, os textos (relatórios, memória) passam a usar a chave backup da Anthropic.</p>
+      {!isSupabaseConfigured() && process.env.VERCEL && (
+        <p role="alert" className="mt-4 rounded-2xl bg-warn-soft p-3 text-sm font-semibold text-warn">
+          Falta a chave secreta do Supabase (SUPABASE_SERVICE_ROLE_KEY) nas variáveis da Vercel. Sem ela não é possível salvar chaves aqui.
+        </p>
+      )}
       {sem && <p role="alert" className="mt-4 rounded-2xl bg-accent-soft p-3 text-sm font-semibold text-danger">KEYS_ENCRYPTION_KEY não está configurada no servidor: não é possível salvar chaves.</p>}
       {erroCofre && <p role="alert" className="mt-4 rounded-2xl bg-accent-soft p-3 text-sm font-semibold text-danger">{erroCofre}</p>}
       <div className="mt-6 flex flex-col gap-4">

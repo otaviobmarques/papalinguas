@@ -58,6 +58,9 @@ const arquivoStore: Store = {
     }
   },
   async salvar(r) {
+    if (process.env.VERCEL) {
+      throw new Error("Configure SUPABASE_SERVICE_ROLE_KEY na Vercel para salvar chaves (o disco do servidor é somente leitura).");
+    }
     const lista = (await this.listar()).filter((x) => !(x.provider === r.provider && x.slot === r.slot));
     lista.push({ ...r, updated_at: new Date().toISOString() });
     await fs.mkdir(path.dirname(ARQ), { recursive: true, mode: 0o700 });
