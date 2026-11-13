@@ -1,19 +1,25 @@
 "use client";
 import Link from "next/link";
 import { use } from "react";
-import { CENARIOS, USO_DEMO } from "@/lib/demo/data";
+import { useOnboarding } from "@/lib/client/onboarding";
+import { resumoTela, useAluno, useCenarios } from "@/lib/client/aluno";
 
 const TTS = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
 
 /** A2.1. Detalhe do cenário */
 export default function DetalheCenario({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const c = CENARIOS.find((x) => x.slug === slug);
-  const planoFluente = false; // TODO: vem da assinatura
+  const { estado } = useOnboarding();
+  const { aluno } = useAluno();
+  const r = resumoTela(aluno, estado);
+  const lista = useCenarios();
+  if (!lista) return <p className="mt-10 text-center text-ink-soft">Carregando…</p>;
+  const c = lista.find((x) => x.slug === slug);
+  const planoFluente = aluno ? aluno.assinatura?.plano?.codigo === "fluente" : false;
   if (!c) return <p>Cenário não encontrado. <Link href="/app/aulas" className="underline">Voltar</Link></p>;
-  const restante = USO_DEMO.cotaMin - USO_DEMO.usadosMin;
+  const restante = r.restanteMin;
   const bloqueado = c.fluenteOnly && !planoFluente;
-  const limiteDiario = USO_DEMO.hojeMin >= USO_DEMO.limiteDiarioMin;
+  const limiteDiario = r.limiteDiario > 0 && r.hojeMin >= r.limiteDiario;
 
   const ouvir = (t: string) => {
     try {
