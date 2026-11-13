@@ -74,7 +74,7 @@ export default function EscolhaTutor() {
           <div key={t.slug} className={`card flex flex-col items-center p-3 text-center ${escolhido === t.slug ? "border-brand ring-2 ring-brand" : ""}`}>
             <button onClick={() => setEscolhido(t.slug)} className="w-full" aria-pressed={escolhido === t.slug} aria-label={`Escolher ${t.nome}`}>
               <div className="mx-auto h-32 w-28 overflow-hidden rounded-2xl bg-surface-2">
-                <TutorCharacter visual={t.visual} nome={t.nome} estado={falando?.slug === t.slug ? "falando" : "repouso"} visema={falando?.slug === t.slug ? falando.visema : 0} className="h-full w-full" />
+                <TutorCharacter slug={t.slug} enquadramento="preencher" visual={t.visual} nome={t.nome} estado={falando?.slug === t.slug ? "falando" : "repouso"} visema={falando?.slug === t.slug ? falando.visema : 0} className="h-full w-full" />
               </div>
               <p className="mt-2 font-extrabold">{t.nome}</p>
               <p className="text-xs text-ink-soft">Sotaque {t.sotaque}</p>

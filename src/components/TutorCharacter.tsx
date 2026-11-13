@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import type { Visema } from "@/lib/domain/lipsync";
 import type { TutorVisual } from "@/lib/demo/data";
+import TutorFoto from "@/components/TutorFoto";
+import { temFotoAnimada } from "@/lib/tutores/fotos";
 
 /**
  * Personagem do tutor (Manual 3.3 / M23).
@@ -13,6 +15,10 @@ export type EstadoVoz = "repouso" | "ouvindo" | "pensando" | "falando";
 export type Expressao = "neutra" | "sorriso" | "duvida" | "comemoracao";
 
 interface Props {
+  /** Com slug de um tutor que tem fotos completas, mostra a foto animada (TutorFoto) */
+  slug?: string;
+  /** Avatar pequeno e redondo: aproxima no rosto (só nas fotos) */
+  enquadramento?: "busto" | "rosto" | "preencher";
   visual: TutorVisual;
   nome: string;
   estado?: EstadoVoz;
@@ -73,7 +79,16 @@ function Cabelo({ v }: { v: TutorVisual }) {
   }
 }
 
-export default function TutorCharacter({ visual, nome, estado = "repouso", visema = 0, expressao = "neutra", acenando, className }: Props) {
+export default function TutorCharacter(props: Props) {
+  const { slug, nome, estado, visema, expressao, acenando, className, enquadramento } = props;
+  if (temFotoAnimada(slug)) {
+    return <TutorFoto slug={slug!} nome={nome} estado={estado} visema={visema} expressao={acenando ? "sorriso" : expressao} className={className} enquadramento={enquadramento} />;
+  }
+  return <TutorDesenho {...props} />;
+}
+
+/** Personagem em SVG: reserva para tutores sem fotos completas. */
+function TutorDesenho({ visual, nome, estado = "repouso", visema = 0, expressao = "neutra", acenando, className }: Props) {
   const [piscando, setPiscando] = useState(false);
 
   // Piscar automático em intervalos irregulares

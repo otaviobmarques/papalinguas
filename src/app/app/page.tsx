@@ -31,7 +31,7 @@ export default function Inicio() {
     <main>
       <header className="flex items-center gap-3">
         <div className="size-16 overflow-hidden rounded-full bg-brand-soft">
-          <TutorCharacter visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
+          <TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
         </div>
         <div className="flex-1">
           <p className="text-sm text-ink-soft">{tutor.nome} está esperando você</p>
