@@ -25,8 +25,11 @@ import numpy as np
 
 LADO = 768  # tamanho do retrato servido (suficiente para telas retina até ~380 px)
 CARD = 400
-# visema do app (src/lib/domain/lipsync.ts) -> letra da boca entregue
-VISEMA_PARA_BOCA = {1: "B", 2: "C", 3: "D", 4: "E", 5: "A", 6: "F"}
+# visema do app (src/lib/domain/lipsync.ts) -> boca usada.
+# As fotos "aberta larga" (B) e "sorriso com dentes" (C) são extremas e, na fala, ficavam exageradas
+# (abrindo demais e esticando para os lados). Usamos posições moderadas: "A" com a arredondada (D)
+# e "E/I", o som mais frequente, com a boca entreaberta da expressão "surpresa".
+VISEMA_PARA_BOCA = {1: "D", 2: "surpresa", 3: "D", 4: "E", 5: "A", 6: "F"}
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -94,6 +97,20 @@ def recorte(base, img, c):
     return rgba
 
 
+DESVIO_MAX = 0.07  # 7% da largura da região da boca (medido: bocas normais ficam até ~5%)
+
+
+def desvio_horizontal(base, img, c):
+    """Quanto o que muda na boca está deslocado do centro da região (fração da largura; + = para a direita)."""
+    x0, y0, x1, y1 = c
+    d = cv2.absdiff(cv2.GaussianBlur(img[y0:y1, x0:x1], (5, 5), 0), cv2.GaussianBlur(base[y0:y1, x0:x1], (5, 5), 0)).max(axis=2)
+    a = mascara_elipse(x1 - x0, y1 - y0)
+    ys, xs = np.nonzero((d * a) > 30)
+    if len(xs) < 50:
+        return 0.0
+    return (xs.mean() - (x1 - x0) / 2) / (x1 - x0)
+
+
 def salvar_webp(caminho, img, q=82):
     cv2.imwrite(caminho, img, [cv2.IMWRITE_WEBP_QUALITY, q])
 
@@ -128,8 +145,18 @@ def processar(pasta, slug):
     co = caixa_mudanca(base, olhos, zona_olhos) or (int(LADO * 0.38), int(LADO * 0.32), int(LADO * 0.62), int(LADO * 0.40))
     co = folga(co, int(LADO * 0.035), LADO, LADO)
 
+    surpresa_p = achar(pasta, "expressao_surpresa", "surpresa")
+    if surpresa_p:
+        bocas["surpresa"] = ler(surpresa_p)
     for v, L in VISEMA_PARA_BOCA.items():
-        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, bocas[L], cb), [cv2.IMWRITE_WEBP_QUALITY, 85])
+        escolha = L if L in bocas else "C"  # sem a foto "surpresa": volta ao sorriso com dentes
+        # boca torta (ex.: mordendo o lábio de um lado) fica estranha na fala: troca por uma centralizada
+        for alternativa in ("surpresa", "A"):
+            if abs(desvio_horizontal(base, bocas[escolha], cb)) <= DESVIO_MAX or alternativa not in bocas:
+                break
+            print(f"  {slug}: boca {L} da posição {v} está deslocada para o lado; usando {alternativa}")
+            escolha = alternativa
+        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, bocas[escolha], cb), [cv2.IMWRITE_WEBP_QUALITY, 85])
     cv2.imwrite(os.path.join(saida, "olhos.webp"), recorte(base, olhos, co), [cv2.IMWRITE_WEBP_QUALITY, 85])
     info.update({"animado": True, "boca": frac(cb, LADO, LADO), "olhos": frac(co, LADO, LADO), "expressoes": {}})
 

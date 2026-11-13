@@ -6,8 +6,14 @@ import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import type { Visema } from "@/lib/domain/lipsync";
 
 const TUTORES = [
-  { slug: "helena", nome: "Helena", idioma: "Português · sotaque mineiro", fala: "Olá! Eu sou a Helena. Vamos com calma, tá? Me conta um pouquinho de você: o que você gosta de fazer quando tem um tempo livre?" },
+  { slug: "maya", nome: "Maya", idioma: "Inglês · sotaque americano", fala: "Hi! I'm Maya. Ready to chat? Tell me, what did you do last weekend?" },
+  { slug: "oliver", nome: "Oliver", idioma: "Inglês · sotaque britânico", fala: "Hello there, I'm Oliver. Shall we begin? Take your time, there's no rush." },
   { slug: "grace", nome: "Grace", idioma: "Inglês · sotaque americano", fala: "Hey, I'm Grace! So, you've got an interview coming up? Great. Let's practice. Tell me about a project you're really proud of." },
+  { slug: "lucia", nome: "Lucía", idioma: "Espanhol · sotaque mexicano", fala: "¡Hola! Soy Lucía. ¿Platicamos un ratito? Cuéntame qué te gusta comer." },
+  { slug: "mateo", nome: "Mateo", idioma: "Espanhol · sotaque espanhol", fala: "¡Hola! Soy Mateo. ¡Vamos a hablar! Dime, ¿por qué quieres aprender español?" },
+  { slug: "bia", nome: "Bia", idioma: "Português · sotaque paulista", fala: "Oi! Eu sou a Bia. Vamos conversar? Me conta o que você fez hoje." },
+  { slug: "caio", nome: "Caio", idioma: "Português · sotaque carioca", fala: "E aí! Sou o Caio. Bora praticar? Me fala de um lugar que você curte." },
+  { slug: "helena", nome: "Helena", idioma: "Português · sotaque mineiro", fala: "Olá! Eu sou a Helena. Vamos com calma, tá? Me conta um pouquinho de você: o que você gosta de fazer quando tem um tempo livre?" },
 ];
 
 function Cartao({ t }: { t: (typeof TUTORES)[number] }) {
@@ -67,7 +73,7 @@ export default function PrototipoTutores() {
     <main className="min-h-dvh bg-[#0B1220] px-4 py-10 text-[#F8FAFC]">
       <div className="mx-auto max-w-5xl">
         <p className="text-sm font-bold uppercase tracking-[0.25em] text-[#18A957]">Protótipo</p>
-        <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">Tutores em foto, falando de verdade</h1>
+        <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">Os 8 tutores, falando de verdade</h1>
         <p className="mt-3 max-w-3xl text-white/70">
           Toque em “Ouvir”: a boca acompanha a voz gerada pela OpenAI, analisada no navegador do mesmo jeito que na aula ao vivo.
           Só a boca e os olhos trocam; o resto do retrato fica parado. Segure os botões de “Bocas” para ver cada posição.
