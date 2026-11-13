@@ -1,15 +1,25 @@
 "use client";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import LiveLesson, { type ResumoAula } from "@/components/LiveLesson";
+import TutorCharacter from "@/components/TutorCharacter";
 import { useOnboarding } from "@/lib/client/onboarding";
 import { CENARIOS, USO_DEMO, tutorPorSlug } from "@/lib/demo/data";
 
-/** A3. Aula ao vivo */
+const EXEMPLOS: Record<string, string[]> = {
+  en: ["Como se diz \"estou atrasado\"?", "Me ajuda a pedir um café", "Vamos falar sobre séries", "Como eu me apresento numa reunião?"],
+  es: ["Como se diz \"estou atrasado\"?", "Me ajuda a pedir um táxi", "Vamos falar sobre música", "Como eu reclamo de um pedido errado?"],
+  pt: ["How do I say \"I'm running late\"?", "Help me order at a bakery", "Let's talk about football", "How do I make small talk?"],
+};
+
+/** A3. Aula ao vivo — com cenário, ou no Modo Livre (tutor aberto, sem roteiro). */
 function Aula() {
   const { estado, pronto } = useOnboarding();
   const router = useRouter();
   const slug = useSearchParams().get("cenario");
+  const [correcao, setCorrecao] = useState<"leve" | "detalhada">("leve");
+  const [iniciado, setIniciado] = useState(false);
   if (!pronto) return null;
   const tutor = tutorPorSlug(estado.tutorSlug);
   const cenario = CENARIOS.find((c) => c.slug === slug) ?? null;
@@ -21,11 +31,52 @@ function Aula() {
     router.replace("/app/relatorio");
   }
 
+  if (!cenario && !iniciado) {
+    return (
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-6 pt-4">
+        <Link href="/app" className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft">← Início</Link>
+        <div className="mx-auto mt-2 size-40 rounded-full bg-brand-soft">
+          <TutorCharacter visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
+        </div>
+        <h1 className="mt-4 text-center text-2xl font-extrabold">Modo livre com {tutor.nome}</h1>
+        <p className="mt-2 text-center text-ink-soft">
+          Sem roteiro: converse sobre o que quiser e peça ajuda a qualquer momento. {tutor.nome} ensina, corrige e ajuda você a falar.
+        </p>
+
+        <section className="card mt-5">
+          <h2 className="font-extrabold">Você pode dizer, por exemplo:</h2>
+          <ul className="mt-2 space-y-2 text-sm">
+            {(EXEMPLOS[tutor.idioma] ?? EXEMPLOS.en).map((e) => <li key={e} className="rounded-xl bg-surface-2 px-3 py-2">💬 {e}</li>)}
+          </ul>
+        </section>
+
+        <fieldset className="mt-5">
+          <legend className="font-extrabold">Como você quer ser corrigido?</legend>
+          <div className="mt-2 grid gap-2">
+            {([
+              ["leve", "Leve", "Só o essencial, sem quebrar o ritmo da conversa."],
+              ["detalhada", "Detalhada", "Corrige tudo e explica rapidinho o porquê."],
+            ] as const).map(([v, t, d]) => (
+              <label key={v} className={`card flex cursor-pointer items-start gap-3 p-4 ${correcao === v ? "border-brand ring-2 ring-brand" : ""}`}>
+                <input type="radio" name="correcao" value={v} checked={correcao === v} onChange={() => setCorrecao(v)} className="mt-1 size-5 accent-[var(--brand)]" />
+                <span><b>{t}</b><span className="block text-sm text-ink-soft">{d}</span></span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <p className="mt-4 text-center text-xs text-ink-soft">Usa os minutos do seu plano, como qualquer aula. Até 20 min por conversa.</p>
+        <button className="btn-primary mt-auto w-full" onClick={() => setIniciado(true)}>Começar a conversar</button>
+      </main>
+    );
+  }
+
   return (
     <LiveLesson
       tutor={tutor}
       modo={cenario ? "aula" : "livre"}
       cenario={cenario}
+      correcao={correcao}
       segundosLimite={20 * 60}
       cotaRestanteSeg={(USO_DEMO.cotaMin - USO_DEMO.usadosMin) * 60}
       onEncerrar={fim}

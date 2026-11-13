@@ -24,6 +24,8 @@ interface Props {
   tutor: TutorDemo;
   modo: "aula" | "livre" | "nivelamento";
   cenario?: CenarioDemo | null;
+  /** Modo livre: intensidade da correção escolhida pelo aluno */
+  correcao?: "leve" | "detalhada";
   segundosLimite: number;
   cotaRestanteSeg?: number;
   onEncerrar: (r: ResumoAula) => void;
@@ -36,7 +38,7 @@ type Fase = "conectando" | "ao_vivo" | "instavel" | "microfone_bloqueado" | "err
 
 const LANG_TTS = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
 
-export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaRestanteSeg, onEncerrar, onRecusa, extraTopo }: Props) {
+export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", segundosLimite, cotaRestanteSeg, onEncerrar, onRecusa, extraTopo }: Props) {
   const [fase, setFase] = useState<Fase>("conectando");
   const [estado, setEstado] = useState<EstadoVoz>("repouso");
   const [expressao, setExpressao] = useState<Expressao>("neutra");
@@ -154,7 +156,7 @@ export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaR
             : await fetch("/api/aulas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idioma: tutor.idioma, modo, cenarioSlug: cenario?.slug }),
+                body: JSON.stringify({ idioma: tutor.idioma, modo, cenarioSlug: cenario?.slug, correcao }),
               });
           if (r.ok) {
             const d = await r.json();

@@ -60,7 +60,7 @@ export default function Inicio() {
       )}
 
       <section className="mt-4 grid grid-cols-3 gap-2 text-center text-sm font-bold">
-        <Link href="/app/aula" className="card p-3">💬<br />Conversa livre</Link>
+        <Link href="/app/aula" className="card p-3">💬<br />Modo livre</Link>
         <Link href="/app/revisao" className="card p-3">🃏<br />Revisar {u.cartoesHoje} cartões</Link>
         <Link href={`/app/aulas/${CENARIOS[1].slug}`} className="card p-3">⏯️<br />Continuar aula</Link>
       </section>
