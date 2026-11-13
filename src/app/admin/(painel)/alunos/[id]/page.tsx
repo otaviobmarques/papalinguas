@@ -24,16 +24,24 @@ export default async function FichaAluno({ params }: { params: Promise<{ id: str
   const { id } = await params;
   if (!isSupabaseConfigured() || !/^[0-9a-f-]{36}$/.test(id)) notFound();
   const sb = supabaseAdmin();
-  const { data: u } = await sb.from("users")
-    .select("id, email, name, status, created_at, subscriptions(id, status, gateway, current_period_end, plans!subscriptions_plan_id_fkey(name)), profiles(target_language, cefr_level)")
+  const { data: u, error: erroConsulta } = await sb.from("users")
+    .select("id, email, name, status, created_at, subscriptions(id, status, gateway, current_period_end, plans!subscriptions_plan_id_fkey(name)), profiles(target_language, level)")
     .eq("id", id).maybeSingle();
+  if (erroConsulta) {
+    return (
+      <main className="max-w-3xl">
+        <Link href="/admin/alunos" className="text-sm font-semibold text-ink-soft hover:text-ink">← Alunos</Link>
+        <p role="alert" className="card mt-4 border-danger/40 text-danger">Não foi possível carregar a ficha: {erroConsulta.message}</p>
+      </main>
+    );
+  }
   if (!u) notFound();
   const { data: auth } = await sb.auth.admin.getUserById(id);
   const { count: aulas } = await sb.from("lessons").select("id", { count: "exact", head: true }).eq("user_id", id);
 
   type Sub = { id: string; status: string; gateway: string; current_period_end: string | null; plans: { name: string } | null };
   const subs = ((u.subscriptions ?? []) as unknown as Sub[]).sort((a, b) => (b.current_period_end ?? "").localeCompare(a.current_period_end ?? ""));
-  const perfis = (u.profiles ?? []) as unknown as { target_language: string; cefr_level: string | null }[];
+  const perfis = (u.profiles ?? []) as unknown as { target_language: string; level: string | null }[];
   const [rotulo, cor] = SITUACAO[u.status] ?? [u.status, "border-line text-ink-soft"];
 
   return (
@@ -48,7 +56,7 @@ export default async function FichaAluno({ params }: { params: Promise<{ id: str
       <section className="card mt-5 grid gap-3 text-sm sm:grid-cols-2">
         <p><span className="text-ink-soft">Cadastro:</span> {data(u.created_at)}</p>
         <p><span className="text-ink-soft">Último acesso:</span> {data(auth?.user?.last_sign_in_at)}</p>
-        <p><span className="text-ink-soft">Idiomas:</span> {perfis.map((p) => `${p.target_language.toUpperCase()}${p.cefr_level ? ` (${p.cefr_level})` : ""}`).join(", ") || "—"}</p>
+        <p><span className="text-ink-soft">Idiomas:</span> {perfis.map((p) => `${p.target_language.toUpperCase()}${p.level ? ` (${p.level})` : ""}`).join(", ") || "—"}</p>
         <p><span className="text-ink-soft">Aulas feitas:</span> {aulas ?? 0}</p>
         <div className="sm:col-span-2">
           <p className="text-ink-soft">Assinaturas</p>
