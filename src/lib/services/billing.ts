@@ -14,7 +14,7 @@ export async function processarEventoPagamento(sb: SupabaseClient, gateway: Gate
   const { data: sub } = e.assinaturaExternalId
     ? await sb
         .from("subscriptions")
-        .select("id, user_id, plan_id, status, is_first_subscription, started_at, plans(minutes_per_cycle, period)")
+        .select("id, user_id, plan_id, status, is_first_subscription, started_at, plans!subscriptions_plan_id_fkey(minutes_per_cycle, period)")
         .eq("gateway", gateway)
         .eq("external_id", e.assinaturaExternalId)
         .maybeSingle()

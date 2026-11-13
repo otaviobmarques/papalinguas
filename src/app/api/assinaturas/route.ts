@@ -91,7 +91,7 @@ export async function GET() {
   const user = await requireUser();
   if (!user) return erro(401, "nao_autenticado");
   const { data } = await supabaseAdmin().from("subscriptions")
-    .select("id, status, gateway, current_period_end, cancel_at_period_end, plans(code, period, minutes_per_cycle)")
+    .select("id, status, gateway, current_period_end, cancel_at_period_end, plans!subscriptions_plan_id_fkey(code, period, minutes_per_cycle)")
     .eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
   if (data && !assinaturaVigente(data)) return NextResponse.json({ assinatura: { ...data, status: "expirada" } });
   return NextResponse.json({ assinatura: data ?? null });

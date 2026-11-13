@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
   const [u, sub, counter, packs, hoje, aulasHoje, profile] = await Promise.all([
     sb.from("users").select("status, suspended_until").eq("id", user.id).single(),
-    sb.from("subscriptions").select("id, status, past_due_since, cancel_at_period_end, current_period_end, plans(code, daily_limit_minutes)")
+    sb.from("subscriptions").select("id, status, past_due_since, cancel_at_period_end, current_period_end, plans!subscriptions_plan_id_fkey(code, daily_limit_minutes)")
       .eq("user_id", user.id).in("status", ["ativa", "em_garantia", "inadimplente"])
       .order("created_at", { ascending: false }).limit(1).maybeSingle(),
     sb.from("usage_counters").select("cycle_seconds_quota, cycle_seconds_used, bonus_seconds")
