@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OnboardingShell from "@/components/OnboardingShell";
 import { useOnboarding } from "@/lib/client/onboarding";
 import { PLANOS, PACOTE_EXTRA, economiaAnual, formatBRL, precoMensalEquivalente } from "@/lib/domain/plans";
@@ -13,6 +13,21 @@ export default function Planos() {
   const [periodo, setPeriodo] = useState<BillingPeriod>("anual");
   const [plano, setPlano] = useState<PlanCode>("essencial");
   const jaUsouGarantia = false; // TODO(sprint 4): vem de GET /api/planos (antiabuso)
+  const [verificando, setVerificando] = useState(true);
+
+  // Quem já tem assinatura ativa (ex.: cortesia dada pelo admin) pula o paywall
+  useEffect(() => {
+    fetch("/api/assinaturas")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { assinatura: { status: string } | null } | null) => {
+        if (d?.assinatura && ["ativa", "em_garantia"].includes(d.assinatura.status)) {
+          atualizar({ assinante: true, passo: "/app" });
+          router.replace("/app");
+        } else setVerificando(false);
+      })
+      .catch(() => setVerificando(false));
+  }, [atualizar, router]);
+  if (verificando) return null;
 
   return (
     <OnboardingShell passo={6} voltar="/comecar/tutor">
