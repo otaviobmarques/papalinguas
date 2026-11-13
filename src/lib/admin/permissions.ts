@@ -20,7 +20,8 @@ export type Acao =
   | "ver_auditoria"
   | "exportar_dados"
   | "gerir_chaves"
-  | "conceder_cortesia";
+  | "conceder_cortesia"
+  | "editar_aluno";
 
 /** "parcial" = acesso restrito (ex.: Moderação vê ficha sem dados financeiros; Leitura exporta só agregados). */
 export type Nivel = true | false | "parcial";
@@ -47,6 +48,7 @@ const MATRIZ: Record<Acao, [Nivel, Nivel, Nivel, Nivel, Nivel, Nivel, Nivel]> = 
   exportar_dados:     [T, T, P, F, F, F, P], // Financeiro: financeiro; Leitura: agregados
   gerir_chaves:       [T, F, F, F, F, F, F], // chaves de integração: só Super Admin (Manual 11.3, P18)
   conceder_cortesia:  [T, T, F, F, F, F, F], // aluno sem cobrança: Super Admin e Administrador
+  editar_aluno:       [T, T, F, F, F, F, F], // nome, e-mail e senha do aluno
 };
 const ORDEM: Perfil[] = ["super_admin", "administrador", "financeiro", "suporte", "conteudo", "moderacao", "leitura"];
 
