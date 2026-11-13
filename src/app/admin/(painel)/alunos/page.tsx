@@ -23,9 +23,11 @@ export default async function Alunos({ searchParams }: { searchParams: Promise<{
   let alunos: Linha[] = [];
   if (isSupabaseConfigured()) {
     let consulta = supabaseAdmin().from("users")
-      .select("id, email, name, status, created_at, subscriptions(id, status, gateway, current_period_end, created_at, plans(name))")
+      .select("id, email, name, status, created_at, subscriptions(id, status, gateway, current_period_end, created_at, plans!subscriptions_plan_id_fkey(name))")
       .order("created_at", { ascending: false }).limit(50);
-    if (q) consulta = consulta.or(`email.ilike.%${q.replace(/[%,()]/g, "")}%,name.ilike.%${q.replace(/[%,()]/g, "")}%`);
+    // valores entre aspas: e-mails têm pontos, que o filtro "or" usaria como separador
+    const termo = (q ?? "").replace(/[%,()"\\]/g, "").trim();
+    if (termo) consulta = consulta.or(`email.ilike."%${termo}%",name.ilike."%${termo}%"`);
     const { data } = await consulta;
     alunos = (data ?? []) as unknown as Linha[];
   }
