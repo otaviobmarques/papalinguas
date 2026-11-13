@@ -6,8 +6,10 @@ import { pode } from "@/lib/admin/permissions";
 import { isSupabaseConfigured } from "@/lib/env";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { blocosCortesia } from "@/lib/domain/cortesia";
+import { gerarSenha, linkDeAcesso, mensagemDeConvite } from "@/lib/domain/acesso";
 
-export type EstadoCortesia = { ok?: string; erro?: string } | null;
+export interface Convite { link: string; email: string; senha?: string; mensagem: string }
+export type EstadoCortesia = { ok?: string; erro?: string; convite?: Convite } | null;
 
 const Form = z.object({
   nome: z.string().trim().min(2, "Informe o nome").max(120),
@@ -16,6 +18,8 @@ const Form = z.object({
   plano: z.enum(["essencial", "fluente"]),
   dias: z.coerce.number().refine((d) => [30, 90, 180, 365].includes(d), "Duração inválida"),
   motivo: z.string().trim().min(3, "Informe o motivo (vai para a auditoria)").max(200),
+  senha: z.string().max(72).optional().transform((v) => (v ? v : undefined))
+    .refine((v) => !v || v.length >= 8, "A senha precisa ter pelo menos 8 caracteres"),
 });
 
 /**
@@ -30,7 +34,7 @@ export async function concederCortesia(_: EstadoCortesia, form: FormData): Promi
   if (!isSupabaseConfigured()) return { erro: "Banco não configurado." };
   const p = Form.safeParse(Object.fromEntries(form));
   if (!p.success) return { erro: p.error.issues[0].message };
-  const { nome, email, idioma, plano, dias, motivo } = p.data;
+  const { nome, email, idioma, plano, dias, motivo, senha } = p.data;
   const sb = supabaseAdmin();
 
   // 1. Conta de login (reaproveita se o e-mail já existir)
@@ -38,7 +42,7 @@ export async function concederCortesia(_: EstadoCortesia, form: FormData): Promi
   const { data: existente } = await sb.from("users").select("id").ilike("email", email).maybeSingle();
   if (existente) userId = existente.id;
   else {
-    const { data: criado, error } = await sb.auth.admin.createUser({ email, email_confirm: true, user_metadata: { name: nome } });
+    const { data: criado, error } = await sb.auth.admin.createUser({ email, email_confirm: true, password: senha, user_metadata: { name: nome } });
     if (criado?.user) userId = criado.user.id;
     else if (error && /already|registered|exists/i.test(error.message)) {
       for (let page = 1; page <= 20 && !userId; page++) {
@@ -49,6 +53,11 @@ export async function concederCortesia(_: EstadoCortesia, form: FormData): Promi
     } else if (error) return { erro: `Não foi possível criar o login: ${error.message}` };
   }
   if (!userId) return { erro: "Não foi possível localizar a conta desse e-mail." };
+  // conta que já existia: define a senha escolhida pelo admin
+  if (senha) {
+    const { error } = await sb.auth.admin.updateUserById(userId, { password: senha });
+    if (error) return { erro: `Não foi possível definir a senha: ${error.message}` };
+  }
 
   // 2. Cadastro e perfil
   const { error: eU } = await sb.from("users").upsert({ id: userId, email, name: nome }, { onConflict: "id", ignoreDuplicates: false });
@@ -78,9 +87,35 @@ export async function concederCortesia(_: EstadoCortesia, form: FormData): Promi
   })));
   if (eC) return { erro: eC.message };
 
-  await auditar(s, "cortesia_concedida", { tipo: "user", id: userId }, { depois: { plano, dias, ate: fim.toISOString() }, motivo });
+  // a senha nunca vai para a auditoria nem para o banco do app (fica só no Supabase Auth, criptografada)
+  await auditar(s, "cortesia_concedida", { tipo: "user", id: userId }, { depois: { plano, dias, ate: fim.toISOString(), senhaDefinida: !!senha }, motivo });
   revalidatePath("/admin/alunos");
-  return { ok: `Cortesia criada: ${plano === "fluente" ? "Fluente" : "Essencial"} até ${fim.toLocaleDateString("pt-BR")}. Peça ao aluno para abrir o app, tocar em "Começar agora" e entrar com ${email}.` };
+  const nomePlano = plano === "fluente" ? "Fluente" : "Essencial";
+  const ate = fim.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
+  const link = linkDeAcesso(email, !!senha);
+  const mensagem = mensagemDeConvite({ nome, plano: nomePlano, ate, email, link, senha });
+  return { ok: `Cortesia criada: ${nomePlano} até ${ate}.`, convite: { link, email, senha, mensagem } };
+}
+
+/** Gera uma senha nova para um aluno cortesia e devolve o link e a mensagem para reenviar. */
+export async function novoAcesso(_: EstadoCortesia, form: FormData): Promise<EstadoCortesia> {
+  const s = await sessaoAdmin();
+  if (!s || !pode(s.perfil, "conceder_cortesia")) return { erro: "Sem permissão." };
+  const id = z.string().uuid().safeParse(form.get("userId"));
+  if (!id.success) return { erro: "Aluno inválido." };
+  const sb = supabaseAdmin();
+  const { data: u } = await sb.from("users").select("email, name").eq("id", id.data).maybeSingle();
+  const { data: sub } = await sb.from("subscriptions").select("current_period_end, plans!subscriptions_plan_id_fkey(code)")
+    .eq("user_id", id.data).eq("gateway", "cortesia").eq("status", "ativa").order("current_period_end", { ascending: false }).limit(1).maybeSingle();
+  if (!u?.email || !sub) return { erro: "Este aluno não tem cortesia ativa." };
+  const senha = gerarSenha();
+  const { error } = await sb.auth.admin.updateUserById(id.data, { password: senha });
+  if (error) return { erro: `Não foi possível definir a senha: ${error.message}` };
+  await auditar(s, "cortesia_novo_acesso", { tipo: "user", id: id.data }, { motivo: "nova senha gerada pelo painel" });
+  const plano = (sub.plans as unknown as { code?: string } | null)?.code === "fluente" ? "Fluente" : "Essencial";
+  const ate = new Date(sub.current_period_end).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
+  const link = linkDeAcesso(u.email, true);
+  return { ok: "Nova senha gerada. A anterior deixou de funcionar.", convite: { link, email: u.email, senha, mensagem: mensagemDeConvite({ nome: u.name ?? "", plano, ate, email: u.email, link, senha }) } };
 }
 
 /** Encerra a cortesia antes do fim (sem cobrança envolvida). */

@@ -4,7 +4,7 @@ import { pode } from "@/lib/admin/permissions";
 import { isSupabaseConfigured } from "@/lib/env";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { mascararEmail } from "@/lib/domain/cortesia";
-import { CortesiaForm, EncerrarCortesia } from "./CortesiaForm";
+import { CortesiaForm, EncerrarCortesia, NovoAcesso } from "./CortesiaForm";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +57,9 @@ export default async function Alunos({ searchParams }: { searchParams: Promise<{
                   <td className="p-3">{sub?.plans?.name ?? "—"}{sub?.gateway === "cortesia" && <span className="ml-2 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-bold text-brand">cortesia</span>}</td>
                   <td className="p-3">{sub ? STATUS[sub.status] ?? sub.status : "sem assinatura"}</td>
                   <td className="p-3">{sub?.current_period_end ? new Date(sub.current_period_end).toLocaleDateString("pt-BR") : "—"}</td>
-                  <td className="p-3">{sub?.gateway === "cortesia" && sub.status === "ativa" && pode(s.perfil, "conceder_cortesia") && <EncerrarCortesia assinaturaId={sub.id} />}</td>
+                  <td className="p-3">{sub?.gateway === "cortesia" && sub.status === "ativa" && pode(s.perfil, "conceder_cortesia") && (
+                    <div className="flex min-w-48 flex-col items-start gap-2"><NovoAcesso userId={a.id} /><EncerrarCortesia assinaturaId={sub.id} /></div>
+                  )}</td>
                 </tr>
               );
             })}
