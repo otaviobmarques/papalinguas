@@ -3,7 +3,7 @@ import { useActionState, useState } from "react";
 import { gerarSenha } from "@/lib/domain/acesso";
 import { concederCortesia, encerrarCortesia, novoAcesso, type Convite, type EstadoCortesia } from "./actions";
 
-function Aviso({ e }: { e: EstadoCortesia }) {
+export function Aviso({ e }: { e: EstadoCortesia }) {
   if (!e) return null;
   return e.erro
     ? <p role="alert" className="text-sm font-semibold text-danger">{e.erro}</p>

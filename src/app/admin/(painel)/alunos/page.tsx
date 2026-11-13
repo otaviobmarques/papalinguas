@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { sessaoAdmin } from "@/lib/admin/auth";
 import { pode } from "@/lib/admin/permissions";
@@ -53,13 +54,19 @@ export default async function Alunos({ searchParams }: { searchParams: Promise<{
               const sub = [...(a.subscriptions ?? [])].sort((x, y) => (y.current_period_end ?? "").localeCompare(x.current_period_end ?? ""))[0];
               return (
                 <tr key={a.id} className="border-b border-line last:border-0">
-                  <td className="p-3"><p className="font-semibold">{a.name ?? "—"}</p><p className="text-xs text-ink-soft">{mascararEmail(a.email)}</p></td>
+                  <td className="p-3">
+                    <Link href={`/admin/alunos/${a.id}`} className="font-semibold text-ink underline-offset-4 hover:underline">{a.name ?? "—"}</Link>
+                    {a.status !== "ativo" && <span className="ml-2 rounded-full border border-danger/40 px-2 py-0.5 text-[11px] font-bold text-danger">{a.status === "suspenso" ? "bloqueado" : a.status.replace("_", " ")}</span>}
+                    <p className="text-xs text-ink-soft">{mascararEmail(a.email)}</p>
+                  </td>
                   <td className="p-3">{sub?.plans?.name ?? "—"}{sub?.gateway === "cortesia" && <span className="ml-2 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-bold text-brand">cortesia</span>}</td>
                   <td className="p-3">{sub ? STATUS[sub.status] ?? sub.status : "sem assinatura"}</td>
                   <td className="p-3">{sub?.current_period_end ? new Date(sub.current_period_end).toLocaleDateString("pt-BR") : "—"}</td>
                   <td className="p-3">{sub?.gateway === "cortesia" && sub.status === "ativa" && pode(s.perfil, "conceder_cortesia") && (
                     <div className="flex min-w-48 flex-col items-start gap-2"><NovoAcesso userId={a.id} /><EncerrarCortesia assinaturaId={sub.id} /></div>
-                  )}</td>
+                  )}
+                    <Link href={`/admin/alunos/${a.id}`} className="mt-2 inline-block text-xs font-semibold text-ink-soft underline">Abrir ficha</Link>
+                  </td>
                 </tr>
               );
             })}
