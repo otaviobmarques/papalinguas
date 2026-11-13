@@ -17,12 +17,22 @@ interface Props {
   piscando?: boolean;
 }
 
+/**
+ * Troca de boca sem "fantasma": a nova entra por cima (50 ms) enquanto a anterior continua opaca
+ * por baixo por mais 60 ms, então o retrato nunca aparece no meio da troca.
+ * Só na volta ao repouso a boca some aos poucos (o destino é o próprio retrato).
+ */
+function estiloBoca(v: number, ativo: number): React.CSSProperties {
+  if (v === ativo) return { opacity: 1, zIndex: 2, transition: "opacity 50ms ease-out" };
+  return { opacity: 0, zIndex: 1, transition: ativo === 0 ? "opacity 80ms ease-out" : "opacity 0s linear 60ms" };
+}
+
 const pos = (r: Regiao) => ({ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.w * 100}%`, height: `${r.h * 100}%` });
 
 /**
  * Tutor em foto (Manual 3.3, mesma interface do personagem Rive/SVG).
  * Só a região da boca e dos olhos troca, sobre um retrato fixo: cabeça, cabelo e luz não tremem.
- * As bocas trocam com transição de ~110 ms; o piscar é aleatório (2,5 a 6 s), como o de uma pessoa.
+ * As bocas trocam sem mostrar o retrato no meio da troca (ver estiloBoca); o piscar é aleatório (2,5 a 6 s), como o de uma pessoa.
  */
 export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, expressao = "neutra", className = "", enquadramento = "busto", piscando: piscarExterno }: Props) {
   const f = fotoDoTutor(slug);
@@ -70,8 +80,8 @@ export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, 
               ))}
               {([1, 2, 3, 4, 5, 6] as const).map((v) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={v} src={`/tutores/${slug}/boca-${v}.webp`} alt="" draggable={false} className="absolute select-none transition-opacity duration-[110ms] ease-out"
-                  style={{ ...pos(f.boca!), opacity: falando && visema === v ? 1 : 0 }} />
+                <img key={v} src={`/tutores/${slug}/boca-${v}.webp`} alt="" draggable={false} className="absolute select-none"
+                  style={{ ...pos(f.boca!), ...estiloBoca(v, falando ? visema : 0) }} />
               ))}
               {f.olhos && (
                 // eslint-disable-next-line @next/next/no-img-element

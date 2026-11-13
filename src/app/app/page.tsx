@@ -34,9 +34,9 @@ export default function Inicio() {
     <main>
       <header className="flex items-center gap-3">
         <div className="relative size-14 shrink-0">
-          <div className="size-14 overflow-hidden rounded-full ring-2 ring-brand/70 ring-offset-2 ring-offset-bg">
+          <Link href="/comecar/tutor?voltar=/app" aria-label={`Trocar tutor (atual: ${tutor.nome})`} className="block size-14 overflow-hidden rounded-full ring-2 ring-brand/70 ring-offset-2 ring-offset-bg">
             <TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
-          </div>
+          </Link>
           <span className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-bg bg-brand" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">

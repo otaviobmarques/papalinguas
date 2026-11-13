@@ -83,7 +83,7 @@ export default function Perfil() {
       <ul className="card mt-4 divide-y divide-line p-0">
         <li><Item>Idioma estudado <b>{LANGUAGES[(r.idioma as LangCode) ?? "en"].nome}</b></Item></li>
         <li><Item>Nível <b>{r.nivel}</b></Item></li>
-        <li><Item href="/comecar/tutor">Tutor <b>{tutor.nome}</b></Item></li>
+        <li><Item href="/comecar/tutor?voltar=/app/perfil">Tutor <b>{tutor.nome}</b></Item></li>
         <li className="flex min-h-14 items-center justify-between gap-2 px-4">
           <label htmlFor="meta">Meta diária</label>
           <select id="meta" value={metaAtual} onChange={(e) => salvarMeta(Number(e.target.value))} className="min-h-11 rounded-xl border border-line bg-surface px-2 font-bold">
