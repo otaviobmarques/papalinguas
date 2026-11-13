@@ -25,6 +25,16 @@ npm run build
 `test:db` precisa de `psql`, `createdb` e `dropdb` apontando para um Postgres 15+ (variáveis `PG*`).
 A CI (`.github/workflows/ci.yml`) roda tudo isso em cada pull request.
 
+## Banco de dados (Supabase)
+
+Projeto `papalinguas` (ref `ofkestznpuxzozbqfzuf`, região São Paulo), com as 4 migrações de `supabase/migrations/` e o `seed.sql` aplicados em 13/11/2026.
+
+- `NEXT_PUBLIC_SUPABASE_URL=https://ofkestznpuxzozbqfzuf.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: chave publicável (Project Settings → API Keys)
+- `SUPABASE_SERVICE_ROLE_KEY`: chave secreta, só no servidor (Project Settings → API Keys); nunca no navegador nem no repositório
+
+Novas mudanças de banco entram como novo arquivo em `supabase/migrations/`, testado com `npm run test:db` antes de aplicar.
+
 ## Estrutura
 
 | Caminho | O que é |
