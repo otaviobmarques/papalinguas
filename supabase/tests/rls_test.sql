@@ -21,7 +21,7 @@ do $$ begin
   assert (select count(*) from public.lessons) = 1, 'lessons: deveria ver só a própria aula';
   assert (select count(*) from public.settings) = 0, 'settings: aluno não deve ler';
   assert (select count(*) from public.webhook_events) = 0, 'webhook_events: aluno não deve ler';
-  assert (select count(*) from public.tutors) = 16, 'tutors: catálogo visível (8 + 8 dos novos idiomas)';
+  assert (select count(*) from public.tutors) = 18, 'tutors: catálogo visível (8 + 8 dos novos idiomas + 2 de mandarim)';
 end $$;
 -- Aluno não pode mudar o próprio status nem ler o prompt do tutor
 do $$ begin

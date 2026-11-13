@@ -14,7 +14,7 @@ export interface ResultadoNivel {
   fonte: "ia" | "regra" | "pulado";
 }
 
-const IDIOMA: Record<LangCode, string> = { en: "inglês", es: "espanhol", pt: "português", fr: "francês", it: "italiano", de: "alemão", ja: "japonês" };
+const IDIOMA: Record<LangCode, string> = { en: "inglês", es: "espanhol", pt: "português", fr: "francês", it: "italiano", de: "alemão", ja: "japonês", zh: "mandarim" };
 
 export const SISTEMA_AVALIADOR = [
   "Você é um avaliador de proficiência oral pelo Quadro Europeu (CEFR).",

@@ -39,6 +39,8 @@ export const TUTORES: TutorDemo[] = [
   { id: "t-lukas", slug: "lukas", nome: "Lukas", idioma: "de", sotaque: "muniquense", genero: "masculino", estilo: "paciente e detalhista", bio: "Fã de montanhas; explica a gramática passo a passo.", saudacao: "Servus, ich bin Lukas. Wir machen das Schritt für Schritt.", visual: { pele: "#efc8a8", cabelo: "#8a6a3a", estiloCabelo: "curto", roupa: "#3a6b8a", oculos: true } },
   { id: "t-yuki", slug: "yuki", nome: "Yuki", idioma: "ja", sotaque: "de Tóquio", genero: "feminino", estilo: "gentil e animada", bio: "Adora anime, viagens e comida de rua.", saudacao: "こんにちは！ユキです。いっしょに話しましょう！", visual: { pele: "#f2d2b6", cabelo: "#15100c", estiloCabelo: "longo", roupa: "#d6336c" } },
   { id: "t-kenji", slug: "kenji", nome: "Kenji", idioma: "ja", sotaque: "de Tóquio", genero: "masculino", estilo: "calmo e didático", bio: "Ensina a falar com educação no trabalho e na viagem.", saudacao: "こんにちは、ケンジです。ゆっくり練習しましょう。", visual: { pele: "#e8c4a2", cabelo: "#0f0b08", estiloCabelo: "curto", roupa: "#24384f" } },
+  { id: "t-mei", slug: "mei", nome: "Mei", idioma: "zh", sotaque: "de Pequim", genero: "feminino", estilo: "gentil e didática", bio: "Ensina os tons com calma e muita prática.", saudacao: "你好！我是美。我们慢慢来，好吗？", visual: { pele: "#f0d3b8", cabelo: "#120d0a", estiloCabelo: "longo", roupa: "#1f8a8a" } },
+  { id: "t-hao", slug: "hao", nome: "Hao", idioma: "zh", sotaque: "de Xangai", genero: "masculino", estilo: "descontraído, focado em negócios", bio: "Ajuda quem negocia e viaja para a China.", saudacao: "你好，我是浩。我们开始练习吧！", visual: { pele: "#e6c3a0", cabelo: "#0e0a08", estiloCabelo: "curto", roupa: "#7a1f2b" } },
 ];
 
 export interface CenarioDemo {

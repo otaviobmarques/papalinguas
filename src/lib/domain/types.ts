@@ -1,5 +1,5 @@
 /** Idiomas oferecidos. Para incluir um novo: migração no enum lang_code, tutores e dados abaixo. */
-export const LANG_CODES = ["en", "es", "pt", "fr", "it", "de", "ja"] as const;
+export const LANG_CODES = ["en", "es", "pt", "fr", "it", "de", "ja", "zh"] as const;
 export type LangCode = (typeof LANG_CODES)[number];
 export type Cefr = "A1" | "A2" | "B1" | "B2" | "C1";
 export type UserStatus = "ativo" | "suspenso" | "banido" | "em_exclusao" | "excluido";
@@ -23,6 +23,7 @@ export const LANGUAGES: Record<LangCode, { nome: string; bandeira: string; ingle
   it: { nome: "Italiano", bandeira: "🇮🇹", ingles: "Italian", locale: "it-IT" },
   de: { nome: "Alemão", bandeira: "🇩🇪", ingles: "German", locale: "de-DE" },
   ja: { nome: "Japonês", bandeira: "🇯🇵", ingles: "Japanese", locale: "ja-JP" },
+  zh: { nome: "Mandarim", bandeira: "🇨🇳", ingles: "Mandarin Chinese (Standard / Putonghua)", locale: "zh-CN" },
 };
 
 export const CEFR_DESCRICAO: Record<Cefr, string> = {

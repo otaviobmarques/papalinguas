@@ -48,6 +48,9 @@ export function regraApoio(p: Pick<PromptInput, "nivel" | "idioma" | "modo">): s
   if (p.idioma === "ja") {
     sempre.push("- Japonês: use o registro polido (です/ます) por padrão. Ao ensinar uma frase, fale devagar, repita e explique o sentido; quando ajudar, soletre a pronúncia em português (ex.: \"o-ha-yô\"). Não exija leitura de kanji.");
   }
+  if (p.idioma === "zh") {
+    sempre.push("- Mandarim: use o mandarim padrão (putonghua). Para iniciantes, fale devagar, destaque os 4 tons, repita a sílaba com o tom certo e diga a pronúncia em pinyin com o número ou nome do tom (ex.: \"nǐ hǎo: terceiro tom + terceiro tom\"). Não exija leitura de caracteres.");
+  }
   if (p.modo === "nivelamento") return sempre;
   if (!iniciante) return sempre;
   return [
