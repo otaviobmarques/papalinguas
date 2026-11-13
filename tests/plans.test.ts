@@ -39,7 +39,7 @@ describe("srs", () => {
   });
 });
 
-import { montarInstrucoes, regraCorrecao } from "@/lib/domain/tutorPrompt";
+import { linguaDeApoio, montarInstrucoes, regraApoio, regraCorrecao } from "@/lib/domain/tutorPrompt";
 
 describe("modo livre", () => {
   const base = { tutorNome: "Maya", tutorPromptBase: "x", idioma: "en" as const, nivel: "A2" as const, memoria: [], acolher: { ativo: false }, correcoesPorFala: 1 };
@@ -57,5 +57,28 @@ describe("modo livre", () => {
   it("aula com cenário não recebe o bloco do modo livre", () => {
     const s = montarInstrucoes({ ...base, modo: "aula", cenario: { titulo: "t", situacao: "s", missoes: ["m"], vocabulario: ["v"], roteiro: "r" } });
     expect(s).not.toContain("Modo livre");
+  });
+});
+
+describe("apoio na língua materna", () => {
+  const base = { tutorNome: "Maya", tutorPromptBase: "x", idioma: "en" as const, memoria: [], acolher: { ativo: false }, correcoesPorFala: 1 };
+  it("iniciante (A1/A2 ou sem nível) aprende em português", () => {
+    for (const nivel of ["A1", "A2", null] as const) {
+      const s = montarInstrucoes({ ...base, nivel, modo: "livre" });
+      expect(s).toContain("Aluno iniciante: aprenda em português do Brasil");
+      expect(s).toContain("peça para o aluno repetir");
+    }
+  });
+  it("nível intermediário não vira aula em português, mas explica quando o aluno se perde", () => {
+    const s = montarInstrucoes({ ...base, nivel: "B2", modo: "aula", cenario: { titulo: "t", situacao: "s", missoes: ["m"], vocabulario: ["v"], roteiro: "r" } });
+    expect(s).not.toContain("Aluno iniciante");
+    expect(s).toContain("Se o aluno disser que não entendeu");
+  });
+  it("quem aprende português recebe apoio em inglês", () => {
+    expect(linguaDeApoio("pt")).toBe("inglês");
+    expect(regraApoio({ nivel: "A1", idioma: "pt", modo: "livre" }).join(" ")).toContain("aprenda em inglês");
+  });
+  it("teste de nível acolhe quem não sabe nada", () => {
+    expect(montarInstrucoes({ ...base, nivel: null, modo: "nivelamento" })).toContain("tudo bem começar do zero");
   });
 });
