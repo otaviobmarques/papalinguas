@@ -96,3 +96,13 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .anim-breathe, .anim-wave, .anim-ring { animation: none; }
 }
+
+/* Site: entrada ao rolar */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+.reveal-on { opacity: 1; transform: none; }
+@keyframes flutuar { 0%,100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-10px) rotate(var(--r, 0deg)); } }
+.flutuar { animation: flutuar 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .flutuar { animation: none; }
+}

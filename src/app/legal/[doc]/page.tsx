@@ -1,19 +1,43 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DOCUMENTOS } from "@/lib/legal/documentos";
 
-const DOCS: Record<string, string> = { termos: "Termos de Uso", privacidade: "Política de Privacidade", reembolso: "Política de Reembolso e Cancelamento", cookies: "Política de Cookies" };
+export function generateStaticParams() {
+  return Object.keys(DOCUMENTOS).map((doc) => ({ doc }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ doc: string }> }): Promise<Metadata> {
+  const d = DOCUMENTOS[(await params).doc];
+  return d ? { title: d.titulo, description: d.resumo, alternates: { canonical: `/legal/${(await params).doc}` } } : {};
+}
 
 export default async function Legal({ params }: { params: Promise<{ doc: string }> }) {
   const { doc } = await params;
-  const titulo = DOCS[doc];
-  if (!titulo) notFound();
+  const d = DOCUMENTOS[doc];
+  if (!d) notFound();
   return (
-    <main className="mx-auto max-w-2xl px-4 py-8">
-      <Link href="/" className="text-sm text-ink-soft underline">← Voltar</Link>
-      <h1 className="mt-4 text-3xl font-extrabold">{titulo}</h1>
-      <p className="mt-4 rounded-2xl bg-warn-soft p-4 text-sm text-warn">
-        Texto em preparação. Será publicado após a revisão jurídica (Manual Técnico, seção 14) e antes do lançamento.
+    <main className="mx-auto max-w-3xl px-4 py-10">
+      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft hover:text-brand">← Papalinguas</Link>
+      <h1 className="mt-4 text-3xl font-extrabold sm:text-4xl">{d.titulo}</h1>
+      <p className="mt-2 text-ink-soft">{d.resumo}</p>
+      <p role="note" className="mt-6 rounded-2xl bg-warn-soft p-4 text-sm font-semibold text-warn">
+        {d.versao}. Documento em revisão jurídica: o texto pode mudar antes da versão final.
       </p>
+      <nav aria-label="Outros documentos" className="mt-6 flex flex-wrap gap-2">
+        {Object.entries(DOCUMENTOS).map(([k, v]) => (
+          <Link key={k} href={`/legal/${k}`} aria-current={k === doc ? "page" : undefined}
+            className="chip aria-[current=page]:border-brand aria-[current=page]:bg-brand-soft">{v.titulo}</Link>
+        ))}
+      </nav>
+      <article className="mt-8 space-y-8">
+        {d.secoes.map((s) => (
+          <section key={s.titulo}>
+            <h2 className="text-xl font-extrabold">{s.titulo}</h2>
+            {s.paragrafos.map((p, i) => <p key={i} className="mt-3 leading-relaxed">{p}</p>)}
+          </section>
+        ))}
+      </article>
     </main>
   );
 }
