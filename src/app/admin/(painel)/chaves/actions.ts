@@ -45,15 +45,16 @@ export async function salvarChave(_: EstadoForm, form: FormData): Promise<Estado
     regiao: z.string().trim().max(40).optional(),
   }).safeParse({ provider: form.get("provider"), chave: form.get("chave"), motivo: form.get("motivo"), regiao: form.get("regiao") ?? undefined });
   if (!p.success) return { erro: p.error.issues[0].message };
-  const regiao = p.data.provider === "azure_speech" ? normalizarRegiao(p.data.regiao ?? "") : null;
+  const regiaoInformada = p.data.provider === "azure_speech" ? normalizarRegiao(p.data.regiao ?? "") : null;
 
-  const v = await validarChave(p.data.provider, p.data.chave, regiao);
+  const v = await validarChave(p.data.provider, p.data.chave, regiaoInformada);
   if (!v.ok) return { erro: `Chave não salva: ${v.motivo}` };
+  const regiao = p.data.provider === "azure_speech" ? (v.regiao ?? regiaoInformada) : null;
 
   const slot = SLOT_DE[p.data.provider];
   const anterior = (await cofre().listar()).find((x) => x.provider === p.data.provider && x.slot === slot);
   await guardarChave({ provider: p.data.provider, slot, valor: p.data.chave, status: "valida", adminId: s.id, ...(regiao ? { externalRef: regiao } : {}) });
-  let extra = regiao ? ` Região: ${regiao}.` : "";
+  let extra = regiao ? ` Região: ${regiao}${v.regiao ? " (detectada automaticamente)" : ""}.` : "";
   if (p.data.provider === "asaas") {
     try {
       const id = await configurarWebhook(p.data.chave, s.id);

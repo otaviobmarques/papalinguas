@@ -4,7 +4,7 @@ import type { Provedor } from "./store";
 import { validarAsaas } from "@/lib/providers/payments/asaasSetup";
 import { validarAzure } from "@/lib/providers/azureSpeech";
 
-export type Validacao = { ok: true } | { ok: false; motivo: string };
+export type Validacao = { ok: true; regiao?: string } | { ok: false; motivo: string };
 
 /** Confere a chave com uma chamada de leitura barata (lista de modelos), sem gerar custo de uso. */
 export async function validarChave(provider: Provedor, chave: string, regiao?: string | null): Promise<Validacao> {

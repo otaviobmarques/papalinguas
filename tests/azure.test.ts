@@ -13,6 +13,21 @@ describe("Azure Speech", () => {
     const nao = vi.fn(async () => new Response("", { status: 401 }));
     const r = await validarAzure("k".repeat(32), "eastus", nao as unknown as typeof fetch);
     expect(r.ok).toBe(false);
-    expect(await validarAzure("k".repeat(32), "", ok as unknown as typeof fetch)).toMatchObject({ ok: false });
+    expect(await validarAzure("k".repeat(32), "a!", ok as unknown as typeof fetch)).toMatchObject({ ok: false });
+  });
+});
+
+import { descobrirRegiao } from "@/lib/providers/azureSpeech";
+
+describe("Azure Speech: região automática", () => {
+  it("acha a única região que aceita a chave", async () => {
+    const f = vi.fn(async (url: string | URL | Request) => new Response("", { status: String(url).includes("://brazilsouth.") ? 200 : 401 }));
+    expect(await descobrirRegiao("k", f as unknown as typeof fetch)).toBe("brazilsouth");
+    const r = await validarAzure("k", "", f as unknown as typeof fetch);
+    expect(r).toEqual({ ok: true, regiao: "brazilsouth" });
+  });
+  it("sem nenhuma região válida, explica", async () => {
+    const f = vi.fn(async () => new Response("", { status: 401 }));
+    expect(await validarAzure("k", "", f as unknown as typeof fetch)).toMatchObject({ ok: false });
   });
 });
