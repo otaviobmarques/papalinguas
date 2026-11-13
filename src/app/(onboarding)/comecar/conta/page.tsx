@@ -6,13 +6,20 @@ import OnboardingShell from "@/components/OnboardingShell";
 import { useOnboarding, vincularOnboarding } from "@/lib/client/onboarding";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
-/** O5. Criar conta / Entrar — sem senha: Google, Apple ou código por e-mail */
+/** Logins sociais ligados no Supabase (ex.: "google,apple"); sem a variável, os botões ficam ocultos. */
+const SOCIAL = (process.env.NEXT_PUBLIC_LOGIN_SOCIAL ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+
+/** O5. Criar conta / Entrar: Google, Apple, código por e-mail ou e-mail e senha (aluno cortesia recebe senha do admin) */
 function Conta() {
   const { estado, atualizar } = useOnboarding();
   const router = useRouter();
-  const entrar = useSearchParams().get("entrar") === "1";
+  const params = useSearchParams();
+  const entrar = params.get("entrar") === "1";
   const sb = supabaseBrowser();
-  const [email, setEmail] = useState(estado.email ?? "");
+  const [email, setEmail] = useState(params.get("email") ?? estado.email ?? "");
+  const [modoSenha, setModoSenha] = useState(params.get("senha") === "1");
+  const [senha, setSenha] = useState("");
+  const [verSenha, setVerSenha] = useState(false);
   const [codigo, setCodigo] = useState("");
   const [enviado, setEnviado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -49,6 +56,23 @@ function Conta() {
     }
   }
 
+  async function entrarComSenha(e: React.FormEvent) {
+    e.preventDefault();
+    setErro(null);
+    setCarregando(true);
+    try {
+      if (sb) {
+        const { error } = await sb.auth.signInWithPassword({ email: email.trim().toLowerCase(), password: senha });
+        if (error) throw error;
+      }
+      await concluir();
+    } catch {
+      setErro("E-mail ou senha incorretos. Confira e tente de novo, ou entre com um código por e-mail.");
+    } finally {
+      setCarregando(false);
+    }
+  }
+
   async function verificar(e: React.FormEvent) {
     e.preventDefault();
     setErro(null);
@@ -73,19 +97,40 @@ function Conta() {
       <h1 className="text-2xl font-extrabold">{entrar ? "Entrar" : "Crie sua conta"}</h1>
       <p className="mt-1 text-ink-soft">{entrar ? "Bem-vindo de volta!" : "Seu progresso até aqui fica salvo."}</p>
 
-      <div className="mt-6 flex flex-col gap-3">
-        <button className="btn-ghost" onClick={() => social("google")}><span aria-hidden className="font-black">G</span> Continuar com Google</button>
-        <button className="btn-ghost" onClick={() => social("apple")}><span aria-hidden></span> Continuar com Apple</button>
-      </div>
+      {SOCIAL.length > 0 && (
+        <>
+          <div className="mt-6 flex flex-col gap-3">
+            {SOCIAL.includes("google") && <button className="btn-ghost" onClick={() => social("google")}><span aria-hidden className="font-black">G</span> Continuar com Google</button>}
+            {SOCIAL.includes("apple") && <button className="btn-ghost" onClick={() => social("apple")}><span aria-hidden></span> Continuar com Apple</button>}
+          </div>
+          <div className="my-6 flex items-center gap-3 text-sm text-ink-soft"><hr className="flex-1 border-line" />ou com e-mail<hr className="flex-1 border-line" /></div>
+        </>
+      )}
+      {SOCIAL.length === 0 && <div className="mt-6" />}
 
-      <div className="my-6 flex items-center gap-3 text-sm text-ink-soft"><hr className="flex-1 border-line" />ou com e-mail<hr className="flex-1 border-line" /></div>
-
-      {!enviado ? (
+      {modoSenha ? (
+        <form onSubmit={entrarComSenha} className="flex flex-col gap-3">
+          <label htmlFor="email-s" className="font-semibold">E-mail</label>
+          <input id="email-s" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
+            className="min-h-12 rounded-2xl border border-line bg-surface px-4" placeholder="voce@exemplo.com" />
+          <label htmlFor="senha" className="font-semibold">Senha</label>
+          <div className="relative">
+            <input id="senha" type={verSenha ? "text" : "password"} required autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)}
+              className="min-h-12 w-full rounded-2xl border border-line bg-surface px-4 pr-24 font-mono" />
+            <button type="button" className="absolute inset-y-0 right-2 my-auto h-9 rounded-xl px-3 text-sm font-semibold text-ink-soft hover:text-ink" onClick={() => setVerSenha(!verSenha)} aria-pressed={verSenha}>
+              {verSenha ? "Ocultar" : "Mostrar"}
+            </button>
+          </div>
+          <button className="btn-primary" disabled={carregando || !senha}>{carregando ? "Entrando…" : "Entrar"}</button>
+          <button type="button" className="text-sm font-semibold text-brand underline" onClick={() => { setModoSenha(false); setErro(null); }}>Esqueci a senha / entrar com código por e-mail</button>
+        </form>
+      ) : !enviado ? (
         <form onSubmit={enviarCodigo} className="flex flex-col gap-3">
           <label htmlFor="email" className="font-semibold">E-mail</label>
           <input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
             className="min-h-12 rounded-2xl border border-line bg-surface px-4" placeholder="voce@exemplo.com" />
           <button className="btn-primary" disabled={carregando}>{carregando ? "Enviando…" : "Receber código"}</button>
+          {entrar && <button type="button" className="text-sm font-semibold text-brand underline" onClick={() => { setModoSenha(true); setErro(null); }}>Tenho senha: entrar com e-mail e senha</button>}
         </form>
       ) : (
         <form onSubmit={verificar} className="flex flex-col gap-3">

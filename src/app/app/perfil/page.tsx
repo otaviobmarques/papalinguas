@@ -18,6 +18,18 @@ export default function Perfil() {
   const { aluno } = useAluno();
   const r = resumoTela(aluno, estado);
   const [meta, setMeta] = useState<number | null>(null);
+  const [novaSenha, setNovaSenha] = useState("");
+  const [trocando, setTrocando] = useState(false);
+
+  async function trocarSenha(e: React.FormEvent) {
+    e.preventDefault();
+    if (novaSenha.length < 8) return setAviso("A senha precisa ter pelo menos 8 caracteres.");
+    setTrocando(true);
+    const { error } = (await supabaseBrowser()?.auth.updateUser({ password: novaSenha })) ?? { error: new Error("sem conexão") };
+    setTrocando(false);
+    setNovaSenha("");
+    setAviso(error ? "Não foi possível trocar a senha agora. Tente de novo." : "Senha alterada. Use a nova senha no próximo acesso.");
+  }
   const tutor = tutorPorSlug(r.tutorSlug);
   const metaAtual = meta ?? r.metaDiaria;
 
@@ -80,6 +92,17 @@ export default function Perfil() {
         </li>
         <li><Item href="/app/assinatura">Minha assinatura</Item></li>
       </ul>
+      {aluno && (
+        <>
+          <h2 className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-ink-soft">Senha</h2>
+          <form onSubmit={trocarSenha} className="card mt-2 flex gap-2 p-3">
+            <label htmlFor="nova-senha" className="sr-only">Nova senha</label>
+            <input id="nova-senha" type="password" autoComplete="new-password" minLength={8} value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)}
+              placeholder="Nova senha (mín. 8 caracteres)" className="min-h-11 min-w-0 flex-1 rounded-xl border border-line bg-white/[0.03] px-3" />
+            <button className="btn-ghost min-h-11 shrink-0 px-4 py-2 text-sm" disabled={trocando || novaSenha.length < 8}>{trocando ? "Salvando…" : "Trocar"}</button>
+          </form>
+        </>
+      )}
       <h2 className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-ink-soft">Privacidade</h2>
       <ul className="card mt-2 divide-y divide-line p-0">
         <li><Item>Baixar meus dados <span className="text-xs text-ink-soft">em breve</span></Item></li>
