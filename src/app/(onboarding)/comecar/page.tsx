@@ -3,6 +3,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import TutorCharacter from "@/components/TutorCharacter";
+import Logo from "@/components/marca/Logo";
+import Mascote from "@/components/marca/Mascote";
 import { TUTORES } from "@/lib/demo/data";
 import { useOnboarding } from "@/lib/client/onboarding";
 
@@ -39,12 +41,16 @@ export default function BoasVindas() {
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center text-center">
-        <div className="relative mb-6 size-60 overflow-hidden rounded-full bg-brand-soft">
-          <TutorCharacter slug={tutor.slug} visual={tutor.visual} nome={tutor.nome} enquadramento="rosto" expressao="sorriso" acenando className="absolute inset-0 h-full w-full" />
+        <div className="relative mb-8">
+          <div className="absolute -inset-6 rounded-full bg-[radial-gradient(circle,rgba(24,169,87,.35),transparent_65%)]" aria-hidden />
+          <div className="relative size-56 overflow-hidden rounded-full ring-1 ring-white/15">
+            <TutorCharacter slug={tutor.slug} visual={tutor.visual} nome={tutor.nome} enquadramento="rosto" expressao="sorriso" acenando className="absolute inset-0 h-full w-full" />
+          </div>
+          <div className="absolute -bottom-3 -right-6 w-20"><Mascote pose="acenando" className="w-full drop-shadow-xl" /></div>
         </div>
-        <p className="mb-2 font-bold tracking-wide text-brand">PAPALINGUAS</p>
-        <h1 className="text-balance text-3xl font-extrabold leading-tight">
-          Fale um novo idioma conversando com seu tutor de IA
+        <Logo className="mb-4" />
+        <h1 className="text-balance text-3xl font-extrabold leading-tight tracking-tight">
+          Fale um novo idioma conversando com seu <span className="texto-gradiente">tutor de IA</span>
         </h1>
         <p className="mt-3 text-ink-soft">Conversas por voz, correções gentis e revisão do que você errou.</p>
       </div>

@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -56,19 +57,22 @@ export default function Perfil() {
     limpar();
   }
   const Item = ({ href, children }: { href?: string; children: React.ReactNode }) =>
-    href ? <Link href={href} className="flex min-h-12 items-center justify-between px-4">{children}<span aria-hidden>›</span></Link>
-         : <div className="flex min-h-12 items-center justify-between px-4">{children}</div>;
+    href ? <Link href={href} className="flex min-h-14 items-center justify-between gap-2 px-4 transition hover:bg-white/[0.03]">{children}<Icone nome="chevron" className="size-4 text-ink-soft" /></Link>
+         : <div className="flex min-h-14 items-center justify-between px-4">{children}</div>;
 
   return (
     <main>
-      <h1 className="text-2xl font-extrabold">Perfil</h1>
-      <p className="text-ink-soft">{aluno ? `${aluno.nome} · ${aluno.email}` : (estado.email ?? "conta de demonstração")}</p>
+      <div className="flex items-center gap-4">
+        <span className="grid size-16 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-[#2f80ed] text-2xl font-extrabold text-[#04170b]" aria-hidden>{(aluno?.nome ?? estado.email)?.trim()[0]?.toUpperCase() ?? <Icone nome="perfil" className="size-7" />}</span>
+        <div className="min-w-0"><h1 className="text-2xl font-extrabold tracking-tight">Perfil</h1>
+        <p className="truncate text-ink-soft">{aluno ? `${aluno.nome} · ${aluno.email}` : (estado.email ?? "conta de demonstração")}</p></div>
+      </div>
       {aviso && <p role="status" className="mt-3 rounded-2xl bg-brand-soft p-3 text-sm font-semibold">{aviso}</p>}
       <ul className="card mt-4 divide-y divide-line p-0">
         <li><Item>Idioma estudado <b>{LANGUAGES[(r.idioma as LangCode) ?? "en"].nome}</b></Item></li>
         <li><Item>Nível <b>{r.nivel}</b></Item></li>
         <li><Item href="/comecar/tutor">Tutor <b>{tutor.nome}</b></Item></li>
-        <li className="flex min-h-12 items-center justify-between gap-2 px-4">
+        <li className="flex min-h-14 items-center justify-between gap-2 px-4">
           <label htmlFor="meta">Meta diária</label>
           <select id="meta" value={metaAtual} onChange={(e) => salvarMeta(Number(e.target.value))} className="min-h-11 rounded-xl border border-line bg-surface px-2 font-bold">
             {[5, 10, 15, 20].map((m) => <option key={m} value={m}>{m} min</option>)}
@@ -76,14 +80,14 @@ export default function Perfil() {
         </li>
         <li><Item href="/app/assinatura">Minha assinatura</Item></li>
       </ul>
-      <h2 className="mt-6 font-bold">Privacidade</h2>
+      <h2 className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-ink-soft">Privacidade</h2>
       <ul className="card mt-2 divide-y divide-line p-0">
         <li><Item>Baixar meus dados <span className="text-xs text-ink-soft">em breve</span></Item></li>
         <li><Item>Apagar áudios <span className="text-xs text-ink-soft">automático em 30 dias</span></Item></li>
-        <li><button className="flex min-h-12 w-full items-center px-4 font-semibold text-danger" onClick={() => setExcluir(1)}>Excluir conta</button></li>
+        <li><button className="flex min-h-14 w-full items-center px-4 font-semibold text-danger" onClick={() => setExcluir(1)}>Excluir conta</button></li>
       </ul>
       {excluir > 0 && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-30 grid place-items-end bg-black/40 p-4 sm:place-items-center">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-30 grid place-items-end bg-black/60 p-4 backdrop-blur-sm sm:place-items-center">
           <div className="card w-full max-w-md">
             {excluir === 1 ? (
               <>
@@ -95,13 +99,13 @@ export default function Perfil() {
               <>
                 <h2 className="text-xl font-extrabold">Confirmação final</h2>
                 <p className="mt-2 text-sm">Tem certeza? Você sai do app e não consegue mais fazer aulas com esta conta.</p>
-                <div className="mt-4 grid grid-cols-2 gap-2"><button className="btn-ghost" onClick={() => setExcluir(0)}>Cancelar</button><button className="btn bg-danger text-white" onClick={confirmarExclusao}>Excluir conta</button></div>
+                <div className="mt-4 grid grid-cols-2 gap-2"><button className="btn-ghost" onClick={() => setExcluir(0)}>Cancelar</button><button className="btn bg-danger text-[#2a0606]" onClick={confirmarExclusao}>Excluir conta</button></div>
               </>
             )}
           </div>
         </div>
       )}
-      {aluno && <button className="btn-ghost mt-6 w-full" onClick={sair}>Sair</button>}
+      {aluno && <button className="btn-ghost mt-6 w-full" onClick={sair}><Icone nome="sair" className="size-5" /> Sair</button>}
       <Link href="/admin" className="mt-8 block text-center text-xs text-ink-soft underline">Painel do administrador</Link>
     </main>
   );

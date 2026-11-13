@@ -1,14 +1,15 @@
 "use client";
+import Icone from "@/components/Icone";
 import { useRouter } from "next/navigation";
 import OnboardingShell from "@/components/OnboardingShell";
 import { useOnboarding, type OnboardingState } from "@/lib/client/onboarding";
 
 const OBJETIVOS: { id: NonNullable<OnboardingState["objetivo"]>; label: string; emoji: string }[] = [
-  { id: "carreira", label: "Carreira e entrevistas", emoji: "💼" },
-  { id: "viagem", label: "Viagem", emoji: "✈️" },
-  { id: "prova", label: "Prova de proficiência", emoji: "📝" },
-  { id: "morar_fora", label: "Morar fora", emoji: "🏡" },
-  { id: "conversar", label: "Conversar melhor", emoji: "💬" },
+  { id: "carreira", label: "Carreira e entrevistas", emoji: "carreira" },
+  { id: "viagem", label: "Viagem", emoji: "viagem" },
+  { id: "prova", label: "Prova de proficiência", emoji: "prova" },
+  { id: "morar_fora", label: "Morar fora", emoji: "casa" },
+  { id: "conversar", label: "Conversar melhor", emoji: "conversa" },
 ];
 const INTERESSES = ["Tecnologia", "Esportes", "Música", "Negócios", "Séries", "Culinária", "Viagem", "Ciência", "Games", "Moda"];
 const METAS = [5, 10, 15, 20] as const;
@@ -29,7 +30,7 @@ export default function Objetivo() {
         {OBJETIVOS.map((o) => (
           <button key={o.id} aria-pressed={estado.objetivo === o.id} onClick={() => atualizar({ objetivo: o.id })}
             className="flex min-h-12 items-center gap-3 rounded-2xl border border-line bg-surface px-4 text-left font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft">
-            <span aria-hidden>{o.emoji}</span>{o.label}
+            <Icone nome={o.emoji} className="size-5 shrink-0 text-[#5ee29b]" />{o.label}
           </button>
         ))}
       </div>

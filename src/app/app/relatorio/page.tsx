@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import TutorCharacter from "@/components/TutorCharacter";
@@ -60,19 +61,19 @@ export default function Relatorio() {
   return (
     <main>
       <header className="flex items-center gap-3">
-        <div className="size-20"><TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="comemoracao" className="h-full w-full" /></div>
-        <div><p className="text-sm text-ink-soft">Relatório da aula</p><h1 className="text-2xl font-extrabold">Mandou bem! 👏</h1></div>
+        <div className="size-16 overflow-hidden rounded-full ring-2 ring-brand/70 ring-offset-2 ring-offset-bg"><TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="comemoracao" className="h-full w-full" /></div>
+        <div><p className="text-sm text-ink-soft">Relatório da aula</p><h1 className="text-2xl font-extrabold tracking-tight">Mandou bem!</h1></div>
       </header>
 
       <section className="mt-4 grid grid-cols-4 gap-2 text-center">
         {[["Duração", `${min} min`], ["Missões", `${resumo?.missoesFeitas ?? 3}/3`], ["Palavras", "142"], ["Pronúncia", `${EXEMPLO.nota}`]].map(([k, v]) => (
-          <div key={k} className="card p-3"><p className="text-xl font-extrabold">{v}</p><p className="text-xs text-ink-soft">{k}</p></div>
+          <div key={k} className="card p-3"><p className={`text-xl font-extrabold ${k === "Pronúncia" ? "text-[#5ee29b]" : ""}`}>{v}</p><p className="text-[11px] text-ink-soft">{k}</p></div>
         ))}
       </section>
 
-      <div className="mt-4 flex gap-1 overflow-x-auto rounded-2xl bg-surface-2 p-1" role="tablist">
+      <div className="mt-4 flex gap-1 overflow-x-auto rounded-full border border-line bg-surface p-1" role="tablist">
         {(["gramatica", "vocabulario", "pronuncia", "transcricao"] as Aba[]).map((a) => (
-          <button key={a} role="tab" aria-selected={aba === a} onClick={() => setAba(a)} className={`min-h-11 flex-1 rounded-xl px-3 text-sm font-bold capitalize ${aba === a ? "bg-surface shadow" : "text-ink-soft"}`}>
+          <button key={a} role="tab" aria-selected={aba === a} onClick={() => setAba(a)} className={`min-h-10 flex-1 rounded-full px-3 text-sm font-bold capitalize transition ${aba === a ? "bg-ink text-bg" : "text-ink-soft hover:text-ink"}`}>
             {a === "gramatica" ? "Gramática" : a === "vocabulario" ? "Vocabulário" : a === "pronuncia" ? "Pronúncia" : "Transcrição"}
           </button>
         ))}
@@ -82,7 +83,7 @@ export default function Relatorio() {
         {aba === "gramatica" && EXEMPLO.gramatica.map((g) => (
           <div key={g.disse} className="card">
             <p className="text-sm text-ink-soft">Você disse</p><p className="line-through decoration-accent/60">{g.disse}</p>
-            <p className="mt-2 text-sm font-bold text-brand">Diga assim</p><p className="font-semibold">{g.certo}</p>
+            <p className="mt-2 text-sm font-bold text-[#5ee29b]">Diga assim</p><p className="font-semibold">{g.certo}</p>
             <p className="mt-2 text-sm text-ink-soft">{g.porque}</p>
             <label className="mt-3 flex min-h-11 items-center gap-2 text-sm">
               <input type="checkbox" className="size-5 accent-[var(--brand)]" checked={revisao[g.certo] ?? true} onChange={(e) => setRevisao({ ...revisao, [g.certo]: e.target.checked })} />
@@ -91,12 +92,12 @@ export default function Relatorio() {
           </div>
         ))}
         {aba === "vocabulario" && EXEMPLO.vocabulario.map((v) => (
-          <div key={v.termo} className="card flex items-center justify-between p-4"><b>{v.termo}</b><span className="text-sm text-ink-soft">{v.usou ? "✓ você usou" : "sugerida"}</span></div>
+          <div key={v.termo} className="card flex items-center justify-between p-4"><b>{v.termo}</b><span className={`inline-flex items-center gap-1 text-sm ${v.usou ? "text-[#5ee29b]" : "text-ink-soft"}`}>{v.usou ? <><Icone nome="check" className="size-4" /> você usou</> : "sugerida"}</span></div>
         ))}
         {aba === "pronuncia" && EXEMPLO.pronuncia.map((p) => (
           <Link key={p.palavra} href={`/app/revisao?treino=${p.palavra}`} className="card flex items-center justify-between p-4">
             <span><b>{p.palavra}</b> <span className="text-sm text-ink-soft">· som {p.som}</span></span>
-            <span className={`rounded-full px-3 py-1 text-sm font-bold ${p.nota < 60 ? "bg-accent-soft text-accent" : "bg-warn-soft text-warn"}`}>{p.nota}</span>
+            <span className={`rounded-full px-3 py-1 text-sm font-bold ${p.nota < 60 ? "border border-accent/30 bg-accent/10 text-accent" : "border border-sun/30 bg-sun/10 text-sun"}`}>{p.nota}</span>
           </Link>
         ))}
         {aba === "transcricao" && (

@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import OnboardingShell from "@/components/OnboardingShell";
@@ -60,7 +61,7 @@ export default function Planos() {
                 </p>
               )}
               <ul className="mt-3 space-y-1 text-sm">
-                {p.recursos.map((r) => <li key={r}>✓ {r}</li>)}
+                {p.recursos.map((r) => <li key={r} className="flex gap-2"><Icone nome="check" className="mt-0.5 size-4 shrink-0 text-[#5ee29b]" />{r}</li>)}
                 <li className="text-ink-soft">Até {p.limiteDiario} min por dia</li>
               </ul>
             </button>
@@ -69,7 +70,7 @@ export default function Planos() {
       </div>
 
       {!jaUsouGarantia && (
-        <p className="mt-4 rounded-2xl bg-brand-soft p-3 text-center text-sm font-bold">🛡️ Garantia de 7 dias: se não gostar, devolvemos tudo.</p>
+        <p className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-sun/30 bg-sun/10 p-3 text-center text-sm font-bold text-sun"><Icone nome="escudo" className="size-5" /> Garantia de 7 dias: se não gostar, devolvemos tudo.</p>
       )}
       <p className="mt-3 text-center text-xs text-ink-soft">
         Renovação automática; cancele quando quiser, sem multa. Acabou a cota? Pacote extra de {PACOTE_EXTRA.minutos} min por {formatBRL(PACOTE_EXTRA.precoCentavos)}.

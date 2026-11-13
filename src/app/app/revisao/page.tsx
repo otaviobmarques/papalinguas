@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import Link from "next/link";
 import { useState } from "react";
 import { novaMeiaVida, proximaRevisao, type Resposta } from "@/lib/domain/srs";
@@ -27,7 +28,7 @@ export default function Revisao() {
   if (!atual) {
     return (
       <main className="mt-10 text-center">
-        <p className="text-5xl" aria-hidden>✅</p>
+        <span className="mx-auto grid size-20 place-items-center rounded-full bg-brand/15 text-[#5ee29b] shadow-[0_0_40px_rgba(24,169,87,.35)]"><Icone nome="check" className="size-10" /></span>
         <h1 className="mt-3 text-2xl font-extrabold">Revisão de hoje concluída!</h1>
         <p className="mt-2 text-ink-soft">Próximos cartões: {feitos.length ? feitos.map((f) => f.proxima).sort((a, b) => +a - +b)[0].toLocaleDateString("pt-BR") : "amanhã"}.</p>
         <Link href="/app/aula" className="btn-primary mt-6 w-full">Fazer uma aula</Link>
@@ -37,15 +38,15 @@ export default function Revisao() {
 
   return (
     <main>
-      <div className="flex items-baseline justify-between"><h1 className="text-2xl font-extrabold">Revisão</h1><span className="text-sm text-ink-soft">{fila.length} cartões</span></div>
-      <button onClick={() => setVirado(!virado)} className="card mt-4 flex min-h-64 w-full flex-col items-center justify-center text-center" aria-live="polite">
-        <p className="text-sm text-ink-soft">{virado ? "Resposta" : "Como se diz?"}</p>
-        <p className="mt-2 text-2xl font-extrabold">{virado ? atual.verso : atual.frente}</p>
+      <div className="flex items-baseline justify-between"><h1 className="text-2xl font-extrabold tracking-tight">Revisão</h1><span className="rounded-full border border-line px-3 py-1 text-sm text-ink-soft">{fila.length} cartões</span></div>
+      <button onClick={() => setVirado(!virado)} className={`card mt-4 flex min-h-72 w-full flex-col items-center justify-center text-center transition duration-300 ${virado ? "border-brand/50 bg-[radial-gradient(ellipse_at_top,rgba(24,169,87,.22),transparent_65%)]" : "bg-[radial-gradient(ellipse_at_top,rgba(47,128,237,.18),transparent_65%)]"}`} aria-live="polite">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-ink-soft">{virado ? "Resposta" : "Como se diz?"}</p>
+        <p className="mt-3 text-2xl font-extrabold leading-snug">{virado ? atual.verso : atual.frente}</p>
         {!virado && <p className="mt-4 text-sm text-ink-soft">Diga em voz alta e toque para ver</p>}
       </button>
       {virado ? (
         <div className="mt-4 grid grid-cols-3 gap-2">
-          <button className="btn-ghost text-danger" onClick={() => responder("errei")}>Errei</button>
+          <button className="btn-ghost text-danger hover:border-danger/40" onClick={() => responder("errei")}>Errei</button>
           <button className="btn-ghost" onClick={() => responder("dificil")}>Difícil</button>
           <button className="btn-primary" onClick={() => responder("facil")}>Fácil</button>
         </div>
