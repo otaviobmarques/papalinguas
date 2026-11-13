@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import Icone from "@/components/Icone";
 import TutorCharacter, { type EstadoVoz, type Expressao } from "@/components/TutorCharacter";
 import { conectarRealtime, pedidoTexto, type ConexaoRealtime, type EventoRealtime } from "@/lib/client/realtime";
@@ -51,7 +52,8 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
   const [restante, setRestante] = useState(cotaRestanteSeg ?? segundosLimite);
   const [aviso, setAviso] = useState<string | null>(null);
   const [auxiliar, setAuxiliar] = useState<string | null>(null);
-  const [maosLivres, setMaosLivres] = useState(true);
+  // Mãos livres: o microfone fica aberto e a IA percebe sozinha quando o aluno termina de falar (VAD semântico)
+  const [mudo, setMudo] = useState(false);
   const [visemaDemo, setVisemaDemo] = useState<Visema>(0);
   const [remoto, setRemoto] = useState<MediaStream | null>(null);
   const [mic, setMic] = useState<MediaStream | null>(null);
@@ -313,8 +315,10 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
       responderDemo();
       return;
     }
-    if (estado === "falando") conexao.current?.enviar({ type: "response.cancel" });
-    if (!maosLivres) conexao.current?.enviar({ type: "input_audio_buffer.commit" });
+    // aula real: o botão só silencia ou reabre o microfone
+    const novo = !mudo;
+    conexao.current?.silenciarMicrofone(novo);
+    setMudo(novo);
   }
 
   function maisDevagar() {
@@ -356,7 +360,13 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
 
       {aviso && <div role="status" className="mt-2 rounded-2xl border border-warn/30 bg-warn-soft px-4 py-2 text-sm font-semibold text-warn">{aviso}</div>}
       {fase === "instavel" && <div role="status" className="mt-2 rounded-2xl border border-warn/30 bg-warn-soft px-4 py-2 text-sm font-semibold text-warn">Conexão instável. Reconectando…</div>}
-      {demo && <div className="mt-2 rounded-2xl border border-line bg-surface px-4 py-2 text-xs text-ink-soft">Modo demonstração: o tutor segue um roteiro local. Toque no microfone depois de falar.</div>}
+      {demo && (
+        <div className="mt-2 rounded-2xl border border-sun/30 bg-sun/10 p-3 text-sm">
+          <p className="font-bold text-sun">Modo demonstração</p>
+          <p className="mt-1 text-ink-soft">Aqui o tutor segue um roteiro fixo, sem inteligência artificial: ele não entende o que você fala. Para conversar de verdade, com explicações em português e microfone sempre aberto, entre na sua conta.</p>
+          <Link href="/comecar/conta?entrar=1" className="btn-primary mt-3 min-h-11 w-full py-2 text-sm">Entrar e conversar com a IA</Link>
+        </div>
+      )}
 
       {/* missões */}
       {cenario && (
@@ -421,13 +431,14 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
           <button
             onClick={tocarMicrofone}
             disabled={fase !== "ao_vivo"}
-            aria-label={estado === "falando" ? "Interromper o tutor" : "Microfone"}
-            className="relative grid size-[4.5rem] shrink-0 place-items-center rounded-full bg-brand text-brand-ink shadow-[0_12px_40px_-8px_rgba(24,169,87,.9)] transition active:scale-95 disabled:opacity-45"
+            aria-label={demo ? (estado === "falando" ? "Interromper o tutor" : "Enviar minha fala") : mudo ? "Abrir o microfone" : "Silenciar o microfone"}
+            aria-pressed={demo ? undefined : !mudo}
+            className={`relative grid size-[4.5rem] shrink-0 place-items-center rounded-full transition active:scale-95 disabled:opacity-45 ${!demo && mudo ? "border border-white/15 bg-white/10 text-ink" : "bg-brand text-brand-ink shadow-[0_12px_40px_-8px_rgba(24,169,87,.9)]"}`}
           >
-            {estado === "ouvindo" && (
+            {!mudo && estado === "ouvindo" && (
               <span className="anim-ring absolute inset-0 rounded-full bg-brand" style={{ transform: `scale(${1 + Math.min(volumeMic * 4, 0.4)})` }} />
             )}
-            <Icone nome={estado === "falando" ? "parar" : "mic"} className="relative size-8" />
+            <Icone nome={demo ? (estado === "falando" ? "parar" : "mic") : mudo ? "micDesligado" : "mic"} className="relative size-8" />
           </button>
           {modo !== "nivelamento" ? (
             <>
@@ -437,9 +448,9 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
           ) : <span className="w-24" />}
         </div>
         <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/5 pt-3">
-          <button className="min-h-11 px-2 text-xs font-semibold text-ink-soft underline-offset-4 hover:underline" onClick={() => setMaosLivres((m) => !m)} aria-pressed={maosLivres}>
-            {maosLivres ? "Mãos livres ligado" : "Toque para enviar sua fala"}
-          </button>
+          <p className="min-h-11 px-2 py-3 text-xs font-semibold text-ink-soft" aria-live="polite">
+            {demo ? "Toque no microfone depois de falar" : mudo ? "Microfone silenciado" : fase === "ao_vivo" ? "Pode falar, estou ouvindo" : ""}
+          </p>
           <button className="inline-flex min-h-11 items-center gap-2 rounded-full bg-danger/15 px-4 text-sm font-bold text-danger hover:bg-danger/25" onClick={() => { if (confirm("Encerrar a aula agora?")) encerrar(); }}>
             Encerrar
           </button>

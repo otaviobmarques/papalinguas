@@ -27,6 +27,7 @@ const P: Record<string, React.ReactNode> = {
   fogo: <path d="M12 3c1 4 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.6 2.3-4.6.3 1.6 1 2.6 2.2 3C11 8.7 11 5.6 12 3Z" />,
   mic: <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></>,
   parar: <rect x="6" y="6" width="12" height="12" rx="2" />,
+  micDesligado: <><path d="M15 9.3V6a3 3 0 0 0-5.7-1.3M9 9v3a3 3 0 0 0 4.9 2.3" /><path d="M19 11a7 7 0 0 1-1.2 3.9M5 11a7 7 0 0 0 10.6 6M12 18v3M3 3l18 18" /></>,
   tartaruga: <><path d="M5 14a7 5 0 0 1 14 0H5Z" /><path d="M19 13h2a1 1 0 0 0 0-2h-1M7 14l-1 3M17 14l1 3M9 9l1.5 5M15 9l-1.5 5" /></>,
   lampada: <><path d="M9 18h6M10 21h4" /><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z" /></>,
   legenda: <><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M10 10.5a2 2 0 1 0 0 3M16 10.5a2 2 0 1 0 0 3" /></>,
