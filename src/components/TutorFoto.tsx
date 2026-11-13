@@ -20,7 +20,7 @@ const pos = (r: Regiao) => ({ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width
 /**
  * Tutor em foto (Manual 3.3, mesma interface do personagem Rive/SVG).
  * Só a região da boca e dos olhos troca, sobre um retrato fixo: cabeça, cabelo e luz não tremem.
- * As bocas trocam com transição de ~60 ms; o piscar é aleatório (2,5 a 6 s), como o de uma pessoa.
+ * As bocas trocam com transição de ~110 ms; o piscar é aleatório (2,5 a 6 s), como o de uma pessoa.
  */
 export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, expressao = "neutra", className = "", enquadramento = "busto" }: Props) {
   const f = fotoDoTutor(slug);
@@ -66,7 +66,7 @@ export default function TutorFoto({ slug, nome, estado = "repouso", visema = 0, 
               ))}
               {([1, 2, 3, 4, 5, 6] as const).map((v) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={v} src={`/tutores/${slug}/boca-${v}.webp`} alt="" draggable={false} className="absolute select-none transition-opacity duration-[60ms]"
+                <img key={v} src={`/tutores/${slug}/boca-${v}.webp`} alt="" draggable={false} className="absolute select-none transition-opacity duration-[110ms] ease-out"
                   style={{ ...pos(f.boca!), opacity: falando && visema === v ? 1 : 0 }} />
               ))}
               {f.olhos && (

@@ -13,7 +13,7 @@ export function useLipSync(stream: MediaStream | null): { visema: Visema; volume
     const src = ctx.createMediaStreamSource(stream);
     const an = ctx.createAnalyser();
     an.fftSize = 1024;
-    an.smoothingTimeConstant = 0.5;
+    an.smoothingTimeConstant = 0.7;
     src.connect(an); // não conecta ao destino: o <audio> já toca o som
     const bins = new Uint8Array(an.frequencyBinCount);
     const onda = new Uint8Array(an.fftSize);
@@ -75,7 +75,7 @@ export function useLipSyncElemento(audio: HTMLAudioElement | null): { visema: Vi
         ctx = new AudioContext();
         an = ctx.createAnalyser();
         an.fftSize = 1024;
-        an.smoothingTimeConstant = 0.5;
+        an.smoothingTimeConstant = 0.7;
         const src = ctx.createMediaElementSource(audio);
         src.connect(an);
         an.connect(ctx.destination);

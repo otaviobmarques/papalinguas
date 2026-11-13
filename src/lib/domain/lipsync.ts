@@ -16,12 +16,15 @@ export interface LipSyncState {
   visema: Visema;
   frames: number; // quantos quadros o visema atual já ficou
   rmsAnterior: number;
+  quietos: number; // quadros seguidos de silêncio
 }
 
-export const estadoInicial = (): LipSyncState => ({ visema: 0, frames: 0, rmsAnterior: 0 });
+export const estadoInicial = (): LipSyncState => ({ visema: 0, frames: 0, rmsAnterior: 0, quietos: 0 });
 
 const SILENCIO = 0.012;
-const SEGURAR = 3; // quadros mínimos (≈50 ms) para a boca não tremer
+// Ritmo de boca de uma pessoa (~5 trocas por segundo, medido nas vozes da OpenAI):
+const SEGURAR = 7; // cada posição fica no mínimo ~115 ms
+const QUIETO = 6; // só fecha a boca depois de ~100 ms de silêncio (pausas entre sílabas não contam)
 
 /**
  * Limites calibrados com a voz real da OpenAI medida pelo AnalyserNode do navegador
@@ -43,10 +46,13 @@ export function classificar(f: AudioFrame, rmsAnterior: number): Visema {
 
 export function proximoVisema(s: LipSyncState, f: AudioFrame): LipSyncState {
   const v = classificar(f, s.rmsAnterior);
-  if (v === s.visema) return { visema: v, frames: s.frames + 1, rmsAnterior: f.rms };
-  // sair do repouso, silêncio e lábios fechados entram na hora; demais mudanças respeitam o tempo mínimo
-  if (s.visema !== 0 && s.frames < SEGURAR && v !== 0 && v !== 5) return { ...s, frames: s.frames + 1, rmsAnterior: f.rms };
-  return { visema: v, frames: 1, rmsAnterior: f.rms };
+  const quietos = v === 0 ? s.quietos + 1 : 0;
+  const manter = { ...s, frames: s.frames + 1, rmsAnterior: f.rms, quietos };
+  if (v === s.visema) return manter;
+  if (v === 0) return s.visema !== 0 && quietos < QUIETO ? manter : { visema: 0, frames: 1, rmsAnterior: f.rms, quietos };
+  // sair do repouso é na hora; entre posições, respeita o tempo mínimo
+  if (s.visema !== 0 && s.frames < SEGURAR) return manter;
+  return { visema: v, frames: 1, rmsAnterior: f.rms, quietos };
 }
 
 /** Extrai as faixas de um FFT (Uint8Array do AnalyserNode). */
