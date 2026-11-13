@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import OnboardingShell from "@/components/OnboardingShell";
@@ -95,7 +96,7 @@ export default function Pagamento() {
     return (
       <OnboardingShell>
         <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <p className="text-6xl" aria-hidden>🎉</p>
+          <span className="grid size-20 place-items-center rounded-full bg-brand/15 text-[#5ee29b] shadow-[0_0_50px_rgba(24,169,87,.45)]"><Icone nome="check" className="size-10" /></span>
           <h1 className="mt-4 text-3xl font-extrabold">Bem-vindo ao {p.nome}!</h1>
           <p className="mt-2 text-ink-soft">Pagamento confirmado. Você tem {p.minutosCiclo} minutos de conversa por mês, e sua garantia de 7 dias começa hoje.</p>
           <button className="btn-primary mt-8 w-full" onClick={() => { atualizar({ assinante: true, passo: "/app" }); router.push("/app"); }}>Ir para minha primeira aula</button>
@@ -125,7 +126,7 @@ export default function Pagamento() {
               )}
               <p className="mt-3 text-sm">Abra o app do seu banco, escolha <b>Pix → Ler QR Code</b> ou use o código abaixo.</p>
               <button className="btn-ghost mt-3 w-full" onClick={async () => { await navigator.clipboard?.writeText(pix.copiaECola).catch(() => {}); setCopiado(true); }}>
-                {copiado ? "Código copiado ✓" : "Copiar código Pix (copia e cola)"}
+                {copiado ? "Código copiado" : "Copiar código Pix (copia e cola)"}
               </button>
               {pix.expiraEm && <p className="mt-2 text-xs text-ink-soft">Válido até {new Date(pix.expiraEm).toLocaleString("pt-BR")}</p>}
             </>
@@ -162,7 +163,7 @@ export default function Pagamento() {
           {aba === "pix" ? (
             <p className="mt-4 text-sm text-ink-soft">Você recebe o QR Code na hora. A cada renovação, um novo Pix é enviado antes do vencimento.</p>
           ) : (
-            <p className="mt-4 rounded-2xl bg-surface-2 p-3 text-sm">🔒 O pagamento com cartão abre na página segura do Asaas. Os dados do cartão não passam pelos nossos servidores.</p>
+            <p className="mt-4 flex gap-2 rounded-2xl border border-line bg-surface p-3 text-sm"><Icone nome="cadeado" className="mt-0.5 size-4 shrink-0 text-[#5ee29b]" /><span>O pagamento com cartão abre na página segura do Asaas. Os dados do cartão não passam pelos nossos servidores.</span></p>
           )}
 
           {erro && <p role="alert" className="mt-3 text-sm font-semibold text-danger">{erro}</p>}

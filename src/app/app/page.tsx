@@ -1,7 +1,10 @@
 "use client";
 import Link from "next/link";
 import TutorCharacter from "@/components/TutorCharacter";
+import AnelMeta from "@/components/AnelMeta";
+import Icone from "@/components/Icone";
 import QuotaBar from "@/components/QuotaBar";
+import { iconeDoCenario } from "@/lib/client/iconeCenario";
 import { useOnboarding } from "@/lib/client/onboarding";
 import { resumoTela, useAluno, useCenarios } from "@/lib/client/aluno";
 import { tutorPorSlug } from "@/lib/demo/data";
@@ -30,67 +33,90 @@ export default function Inicio() {
   return (
     <main>
       <header className="flex items-center gap-3">
-        <div className="size-16 overflow-hidden rounded-full bg-brand-soft">
-          <TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
+        <div className="relative size-14 shrink-0">
+          <div className="size-14 overflow-hidden rounded-full ring-2 ring-brand/70 ring-offset-2 ring-offset-bg">
+            <TutorCharacter slug={tutor.slug} enquadramento="rosto" visual={tutor.visual} nome={tutor.nome} expressao="sorriso" className="h-full w-full" />
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-bg bg-brand" aria-hidden />
         </div>
-        <div className="flex-1">
-          <p className="text-sm text-ink-soft">{tutor.nome} está esperando você</p>
-          <h1 className="text-2xl font-extrabold">Olá{r.nome ? `, ${r.nome.split(" ")[0]}` : ""}!</h1>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm text-ink-soft">{tutor.nome} está esperando você</p>
+          <h1 className="text-2xl font-extrabold tracking-tight">Olá{r.nome ? `, ${r.nome.split(" ")[0]}` : ""}!</h1>
         </div>
-        <div className="text-center" aria-label={`Sequência de ${r.sequencia} dias`}>
-          <p className="text-2xl" aria-hidden>🔥</p>
-          <p className="text-sm font-extrabold">{r.sequencia}</p>
+        <div className="flex items-center gap-1 rounded-full border border-sun/30 bg-sun/10 px-3 py-1.5 text-sun" aria-label={`Sequência de ${r.sequencia} dias`}>
+          <Icone nome="fogo" className="size-5" />
+          <span className="text-sm font-extrabold">{r.sequencia}</span>
         </div>
       </header>
 
-      <section className="card mt-4">
-        <div className="flex justify-between text-sm"><span className="font-semibold">Meta de hoje</span><span className="text-ink-soft">{r.hojeMin} de {r.metaDiaria} min</span></div>
-        <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-surface-2"><div className="h-full rounded-full bg-accent" style={{ width: `${Math.min(100, (r.hojeMin / r.metaDiaria) * 100)}%` }} /></div>
-        {r.hojeMin >= r.metaDiaria && <p className="mt-2 font-bold text-ok">🎉 Meta do dia cumprida!</p>}
+      <section className="card mt-5 flex items-center gap-4 p-4">
+        <AnelMeta valor={r.hojeMin} total={r.metaDiaria}>
+          <span className="text-lg font-extrabold">{r.hojeMin}</span>
+          <span className="block text-[10px] text-ink-soft">de {r.metaDiaria}</span>
+        </AnelMeta>
+        <div className="flex-1">
+          <p className="font-bold">Meta de hoje</p>
+          <p className="text-sm text-ink-soft">
+            {r.hojeMin >= r.metaDiaria ? "Meta cumprida. Mandou bem!" : `Faltam ${r.metaDiaria - r.hojeMin} min de conversa`}
+          </p>
+        </div>
+        {r.hojeMin >= r.metaDiaria && <Icone nome="trofeu" className="size-7 text-sun" />}
       </section>
 
       {semAssinatura ? (
-        <section className="card mt-4 border-brand">
+        <section className="card mt-4 border-brand/50">
           <p className="font-extrabold">{aluno?.assinatura?.status === "expirada" ? "Sua assinatura terminou" : "Escolha um plano para conversar"}</p>
           <p className="mt-1 text-sm text-ink-soft">As aulas por voz fazem parte dos planos. A revisão do que você já aprendeu continua liberada.</p>
-          <Link href="/comecar/planos" className="btn-primary mt-3 w-full">Ver planos</Link>
+          <Link href="/comecar/planos" className="btn-primary mt-4 w-full">Ver planos</Link>
         </section>
       ) : r.restanteMin <= 0 ? (
-        <section className="card mt-4 border-danger">
+        <section className="card mt-4 border-danger/50">
           <p className="font-extrabold">Seus minutos do mês acabaram</p>
           <p className="text-sm text-ink-soft">A revisão continua liberada. Para conversar agora:</p>
           <div className="mt-3 grid grid-cols-2 gap-2"><Link href="/app/assinatura" className="btn-primary">Fazer upgrade</Link><Link href="/app/assinatura#pacote" className="btn-ghost">Pacote extra</Link></div>
         </section>
-      ) : recomendado ? (
-        <section className="mt-4 overflow-hidden rounded-3xl bg-brand p-5 text-brand-ink">
-          <p className="text-sm font-bold opacity-90">Aula de hoje · {recomendado.nivel}</p>
-          <h2 className="mt-1 text-2xl font-extrabold">{recomendado.emoji} {recomendado.titulo}</h2>
-          <p className="mt-1 opacity-90">{recomendado.situacao}</p>
-          <p className="mt-2 text-sm opacity-90">Cerca de {recomendado.minutos} min</p>
-          <Link href={`/app/aula?cenario=${recomendado.slug}`} className="btn mt-4 w-full bg-surface text-ink">Começar</Link>
-        </section>
       ) : (
-        <section className="mt-4 overflow-hidden rounded-3xl bg-brand p-5 text-brand-ink">
-          <p className="text-sm font-bold opacity-90">Aula de hoje</p>
-          <h2 className="mt-1 text-2xl font-extrabold">💬 Conversa livre com {tutor.nome}</h2>
-          <p className="mt-1 opacity-90">Ainda não há cenários publicados neste idioma. Converse sobre o que quiser.</p>
-          <Link href="/app/aula" className="btn mt-4 w-full bg-surface text-ink">Começar</Link>
+        <section className="relative mt-4 overflow-hidden rounded-[2rem] border border-brand/40 bg-[radial-gradient(ellipse_at_top_right,rgba(24,169,87,.45),transparent_60%),linear-gradient(160deg,#123a28,#0d1628_70%)] p-5 shadow-[0_30px_60px_-30px_rgba(24,169,87,.7)]">
+          <div className="pointer-events-none absolute -right-8 -top-8 size-40 rounded-full border border-white/10" aria-hidden />
+          <div className="pointer-events-none absolute -right-2 -top-2 size-24 rounded-full border border-white/10" aria-hidden />
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#5ee29b]">Aula de hoje{recomendado ? ` · ${recomendado.nivel}` : ""}</p>
+          <div className="mt-3 flex items-start gap-3">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-white/10 text-[#5ee29b]"><Icone nome={recomendado ? iconeDoCenario(recomendado) : "conversa"} /></span>
+            <div>
+              <h2 className="text-xl font-extrabold leading-tight">{recomendado ? recomendado.titulo : `Conversa livre com ${tutor.nome}`}</h2>
+              <p className="mt-1 text-sm text-ink-soft">{recomendado ? recomendado.situacao : "Ainda não há cenários publicados neste idioma. Converse sobre o que quiser."}</p>
+            </div>
+          </div>
+          <div className="mt-5 flex items-center gap-3">
+            <Link href={recomendado ? `/app/aula?cenario=${recomendado.slug}` : "/app/aula"} className="btn-primary group flex-1">
+              <Icone nome="mic" className="size-5" /> Começar
+            </Link>
+            {recomendado && <span className="inline-flex items-center gap-1 text-sm text-ink-soft"><Icone nome="relogio" className="size-4" />{recomendado.minutos} min</span>}
+          </div>
         </section>
       )}
 
       {!semAssinatura && r.restanteMin > 0 && r.restanteMin < 15 && (
-        <p role="status" className="mt-3 rounded-2xl bg-warn-soft p-3 text-sm font-semibold text-warn">
+        <p role="status" className="mt-3 rounded-2xl border border-warn/30 bg-warn-soft p-3 text-sm font-semibold text-warn">
           Faltam só {r.restanteMin} min no mês. <Link href="/app/assinatura" className="underline">Ver opções</Link>
         </p>
       )}
 
       <section className="mt-4 grid grid-cols-3 gap-2 text-center text-sm font-bold">
-        <Link href="/app/aula" className="card p-3">💬<br />Modo livre</Link>
-        <Link href="/app/revisao" className="card p-3">🃏<br />{r.cartoes ? `Revisar ${r.cartoes} cartões` : "Revisão"}</Link>
+        <Link href="/app/aula" className="card flex flex-col items-center gap-2 p-3 transition hover:border-white/20">
+          <span className="grid size-10 place-items-center rounded-xl bg-brand/15 text-[#5ee29b]"><Icone nome="conversa" className="size-5" /></span>Modo livre
+        </Link>
+        <Link href="/app/revisao" className="card flex flex-col items-center gap-2 p-3 transition hover:border-white/20">
+          <span className="grid size-10 place-items-center rounded-xl bg-sky/15 text-sky"><Icone nome="cartoes" className="size-5" /></span>{r.cartoes ? `Revisar ${r.cartoes}` : "Revisão"}
+        </Link>
         {ultima?.cenarioSlug ? (
-          <Link href={`/app/aulas/${ultima.cenarioSlug}`} className="card p-3">⏯️<br />Repetir {ultima.titulo}</Link>
+          <Link href={`/app/aulas/${ultima.cenarioSlug}`} className="card flex flex-col items-center gap-2 p-3 transition hover:border-white/20">
+            <span className="grid size-10 place-items-center rounded-xl bg-sun/15 text-sun"><Icone nome="repetir" className="size-5" /></span><span className="line-clamp-1">Repetir</span>
+          </Link>
         ) : (
-          <Link href="/app/aulas" className="card p-3">📚<br />Ver aulas</Link>
+          <Link href="/app/aulas" className="card flex flex-col items-center gap-2 p-3 transition hover:border-white/20">
+            <span className="grid size-10 place-items-center rounded-xl bg-sun/15 text-sun"><Icone nome="aulas" className="size-5" /></span>Ver aulas
+          </Link>
         )}
       </section>
 

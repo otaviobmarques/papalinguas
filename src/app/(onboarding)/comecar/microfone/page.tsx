@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -37,16 +38,16 @@ export default function Microfone() {
 
   return (
     <OnboardingShell passo={3} voltar="/comecar/objetivo">
-      <div className="mx-auto mb-4 grid size-20 place-items-center rounded-full bg-brand-soft text-4xl" aria-hidden>🎙️</div>
+      <div className="mx-auto mb-4 grid size-20 place-items-center rounded-full bg-brand/15 text-[#5ee29b] shadow-[0_0_50px_rgba(24,169,87,.4)]" aria-hidden><Icone nome="mic" className="size-9" /></div>
       <h1 className="text-center text-2xl font-extrabold">Vamos conversar por voz</h1>
       <p className="mt-2 text-center text-ink-soft">
         O app usa o microfone para você conversar com o tutor e para avaliar sua pronúncia.
       </p>
 
       <ul className="card mt-6 space-y-3 text-sm">
-        <li className="flex gap-3"><span aria-hidden>📝</span><span><b>Guardamos a transcrição</b> das aulas para seus relatórios e revisão.</span></li>
-        <li className="flex gap-3"><span aria-hidden>🗑️</span><span><b>O áudio bruto é apagado em 30 dias.</b> Você pode apagar o histórico quando quiser.</span></li>
-        <li className="flex gap-3"><span aria-hidden>🤖</span><span>Seu tutor é uma inteligência artificial, não uma pessoa.</span></li>
+        <li className="flex gap-3"><Icone nome="relatorio" className="size-5 shrink-0 text-[#5ee29b]" /><span><b>Guardamos a transcrição</b> das aulas para seus relatórios e revisão.</span></li>
+        <li className="flex gap-3"><Icone nome="relogio" className="size-5 shrink-0 text-[#5ee29b]" /><span><b>O áudio bruto é apagado em 30 dias.</b> Você pode apagar o histórico quando quiser.</span></li>
+        <li className="flex gap-3"><Icone nome="escudo" className="size-5 shrink-0 text-[#5ee29b]" /><span>Seu tutor é uma inteligência artificial, não uma pessoa.</span></li>
       </ul>
 
       <div className="mt-6 space-y-3">

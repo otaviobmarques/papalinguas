@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import Link from "next/link";
 import { useState } from "react";
 import QuotaBar from "@/components/QuotaBar";
@@ -56,13 +57,13 @@ export default function Assinatura() {
 
   return (
     <main>
-      <h1 className="text-2xl font-extrabold">Minha assinatura</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight">Minha assinatura</h1>
       {feito && <p role="status" className="mt-3 rounded-2xl bg-brand-soft p-3 text-sm font-semibold">{feito}</p>}
       {a?.status === "inadimplente" && (
         <p role="alert" className="mt-3 rounded-2xl bg-warn-soft p-3 text-sm font-semibold text-warn">Não conseguimos renovar sua assinatura. Você tem alguns dias de tolerância para atualizar o pagamento.</p>
       )}
 
-      <section className="card mt-4">
+      <section className="card mt-4 bg-[radial-gradient(ellipse_at_top_right,rgba(24,169,87,.22),transparent_60%)]">
         <div className="flex items-start justify-between gap-2">
           <p className="text-xl font-extrabold">{nome}</p>
           {a && <span className="rounded-full bg-brand-soft px-2 py-1 text-xs font-bold text-brand">{cortesia ? "cortesia" : STATUS[a.status] ?? a.status}</span>}
@@ -83,7 +84,7 @@ export default function Assinatura() {
       {!cortesia && (
         <>
           <section id="pacote" className="card mt-4 flex items-center justify-between gap-3">
-            <div><p className="font-bold">Pacote extra</p><p className="text-sm text-ink-soft">{PACOTE_EXTRA.minutos} min, válidos por {PACOTE_EXTRA.validadeDias} dias</p></div>
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sun/15 text-sun"><Icone nome="pacote" className="size-5" /></span><div className="flex-1"><p className="font-bold">Pacote extra</p><p className="text-sm text-ink-soft">{PACOTE_EXTRA.minutos} min, válidos por {PACOTE_EXTRA.validadeDias} dias</p></div>
             <button className="btn-primary" onClick={() => setFeito(aluno ? "A compra do pacote extra pelo app chega em breve." : "Pacote extra adicionado (demonstração).")}>{formatBRL(PACOTE_EXTRA.precoCentavos)}</button>
           </section>
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -96,7 +97,7 @@ export default function Assinatura() {
       {cortesia && <p className="mt-4 text-sm text-ink-soft">Sua cortesia não renova e não gera cobrança. Quando terminar, você pode escolher um plano.</p>}
 
       {confirmar && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-30 grid place-items-end bg-black/40 p-4 sm:place-items-center">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-30 grid place-items-end bg-black/60 p-4 backdrop-blur-sm sm:place-items-center">
           <div className="card w-full max-w-md">
             <h2 className="text-xl font-extrabold">{confirmar === "cancelar" ? "Cancelar a renovação?" : "Pedir reembolso integral?"}</h2>
             <p className="mt-2 text-sm">{confirmar === "cancelar" ? "Você continua com acesso até o fim do período pago." : "Devolvemos o valor total e a assinatura é encerrada."}</p>

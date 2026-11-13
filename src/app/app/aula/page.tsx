@@ -1,4 +1,5 @@
 "use client";
+import Icone from "@/components/Icone";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -51,7 +52,7 @@ function Aula() {
         <section className="card mt-5">
           <h2 className="font-extrabold">Você pode dizer, por exemplo:</h2>
           <ul className="mt-2 space-y-2 text-sm">
-            {(EXEMPLOS[tutor.idioma] ?? EXEMPLOS.en).map((e) => <li key={e} className="rounded-xl bg-surface-2 px-3 py-2">💬 {e}</li>)}
+            {(EXEMPLOS[tutor.idioma] ?? EXEMPLOS.en).map((e) => <li key={e} className="flex items-center gap-2 rounded-xl border border-line bg-white/[0.03] px-3 py-2"><Icone nome="conversa" className="size-4 shrink-0 text-[#5ee29b]" />{e}</li>)}
           </ul>
         </section>
 

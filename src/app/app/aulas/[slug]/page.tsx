@@ -1,4 +1,6 @@
 "use client";
+import Icone from "@/components/Icone";
+import { iconeDoCenario } from "@/lib/client/iconeCenario";
 import Link from "next/link";
 import { use } from "react";
 import { useOnboarding } from "@/lib/client/onboarding";
@@ -33,7 +35,7 @@ export default function DetalheCenario({ params }: { params: Promise<{ slug: str
   return (
     <main>
       <Link href="/app/aulas" className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft">← Aulas</Link>
-      <p className="text-5xl" aria-hidden>{c.emoji}</p>
+      <span className="grid size-16 place-items-center rounded-2xl bg-brand/15 text-[#5ee29b] shadow-[0_0_40px_rgba(24,169,87,.3)]" aria-hidden><Icone nome={iconeDoCenario(c)} className="size-8" /></span>
       <h1 className="mt-2 text-2xl font-extrabold">{c.titulo}</h1>
       <p className="mt-1 text-lg">{c.situacao}</p>
 
@@ -48,7 +50,7 @@ export default function DetalheCenario({ params }: { params: Promise<{ slug: str
           {c.vocabulario.map((v) => (
             <li key={v.termo} className="flex items-center justify-between py-2">
               <span><b>{v.termo}</b> <span className="text-ink-soft">· {v.traducao}</span></span>
-              <button onClick={() => ouvir(v.termo)} className="grid size-11 place-items-center rounded-full hover:bg-surface-2" aria-label={`Ouvir ${v.termo}`}>🔊</button>
+              <button onClick={() => ouvir(v.termo)} className="grid size-11 place-items-center rounded-full text-ink-soft hover:bg-white/10 hover:text-ink" aria-label={`Ouvir ${v.termo}`}><Icone nome="som" className="size-5" /></button>
             </li>
           ))}
         </ul>
@@ -59,7 +61,7 @@ export default function DetalheCenario({ params }: { params: Promise<{ slug: str
       {limiteDiario && <p role="status" className="mt-3 rounded-2xl bg-warn-soft p-3 text-sm font-semibold text-warn">Você atingiu o limite de hoje. Libera amanhã à 0h.</p>}
 
       {bloqueado ? (
-        <Link href="/app/assinatura" className="btn-accent mt-4 w-full">🔒 Disponível no Fluente · Fazer upgrade</Link>
+        <Link href="/app/assinatura" className="btn-accent mt-4 w-full"><Icone nome="cadeadoFechado" className="size-5" /> Disponível no Fluente · Fazer upgrade</Link>
       ) : (
         <Link href={`/app/aula?cenario=${c.slug}`} aria-disabled={limiteDiario} className={`btn-primary mt-4 w-full ${limiteDiario ? "pointer-events-none opacity-50" : ""}`}>Começar</Link>
       )}

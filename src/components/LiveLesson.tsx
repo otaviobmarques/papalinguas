@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Icone from "@/components/Icone";
 import TutorCharacter, { type EstadoVoz, type Expressao } from "@/components/TutorCharacter";
 import { conectarRealtime, pedidoTexto, type ConexaoRealtime, type EventoRealtime } from "@/lib/client/realtime";
 import { useLipSync, useNivelMicrofone, visemaDeLetra } from "@/lib/client/useLipSync";
@@ -332,91 +333,118 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
   const min = (s: number) => `${Math.floor(Math.max(0, s) / 60)}:${String(Math.max(0, s) % 60).padStart(2, "0")}`;
   const ESTADO_LABEL: Record<EstadoVoz, string> = { repouso: "Pronto", ouvindo: "Ouvindo você", pensando: "Pensando…", falando: `${tutor.nome} está falando` };
 
+  const Controle = ({ icone, rotulo, onClick, ativo, desabilitado }: { icone: string; rotulo: string; onClick: () => void; ativo?: boolean; desabilitado?: boolean }) => (
+    <button type="button" onClick={onClick} disabled={desabilitado} aria-pressed={ativo}
+      className="flex flex-col items-center gap-1 text-[11px] font-semibold text-ink-soft disabled:opacity-40">
+      <span className={`grid size-12 place-items-center rounded-full border transition ${ativo ? "border-brand/60 bg-brand/20 text-[#5ee29b]" : "border-white/10 bg-white/[0.06] text-ink hover:bg-white/10"}`}>
+        <Icone nome={icone} className="size-5" />
+      </span>
+      {rotulo}
+    </button>
+  );
+
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-bg px-4 pb-6 pt-3">
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
       {/* topo */}
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-semibold text-ink-soft" aria-label="Tempo de aula">⏱ {min(segundos)}</span>
+      <div className="flex items-center justify-between gap-2 text-sm">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 font-semibold tabular-nums" aria-label="Tempo de aula">
+          <span className={`size-2 rounded-full ${fase === "ao_vivo" ? "bg-danger shadow-[0_0_8px_#ff7a6e]" : "bg-ink-soft"}`} aria-hidden />{min(segundos)}
+        </span>
         {extraTopo}
-        <span className="font-semibold text-ink-soft" aria-label="Minutos restantes da cota">{Math.max(0, Math.floor(restante / 60))} min restantes</span>
+        <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 font-semibold text-ink-soft" aria-label="Minutos restantes da cota">{Math.max(0, Math.floor(restante / 60))} min restantes</span>
       </div>
 
-      {aviso && <div role="status" className="mt-2 rounded-2xl bg-warn-soft px-4 py-2 text-sm font-semibold text-warn">{aviso}</div>}
-      {fase === "instavel" && <div role="status" className="mt-2 rounded-2xl bg-warn-soft px-4 py-2 text-sm font-semibold text-warn">Conexão instável. Reconectando…</div>}
-      {demo && <div className="mt-2 rounded-2xl bg-surface-2 px-4 py-2 text-xs text-ink-soft">Modo demonstração: o tutor segue um roteiro local. Toque no microfone depois de falar.</div>}
+      {aviso && <div role="status" className="mt-2 rounded-2xl border border-warn/30 bg-warn-soft px-4 py-2 text-sm font-semibold text-warn">{aviso}</div>}
+      {fase === "instavel" && <div role="status" className="mt-2 rounded-2xl border border-warn/30 bg-warn-soft px-4 py-2 text-sm font-semibold text-warn">Conexão instável. Reconectando…</div>}
+      {demo && <div className="mt-2 rounded-2xl border border-line bg-surface px-4 py-2 text-xs text-ink-soft">Modo demonstração: o tutor segue um roteiro local. Toque no microfone depois de falar.</div>}
 
       {/* missões */}
       {cenario && (
-        <ol className="mt-3 flex flex-wrap gap-2" aria-label="Missões da conversa">
+        <ol className="mt-3 flex flex-wrap gap-1.5" aria-label="Missões da conversa">
           {cenario.missoes.map((m, i) => (
-            <li key={m} className={`rounded-full px-3 py-1 text-xs font-semibold ${missoes[i] ? "bg-brand text-brand-ink" : "bg-surface-2 text-ink-soft"}`}>
-              {missoes[i] ? "✓ " : `${i + 1}. `}{m}
+            <li key={m} className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold transition ${missoes[i] ? "border-brand/60 bg-brand/20 text-[#5ee29b]" : "border-white/10 text-ink-soft"}`}>
+              {missoes[i] ? <Icone nome="check" className="size-3.5" /> : <span className="tabular-nums">{i + 1}.</span>}{m}
             </li>
           ))}
         </ol>
       )}
 
-      {/* tutor */}
-      <div className="relative mx-auto mt-2 w-full max-w-xs flex-1">
-        <TutorCharacter slug={tutor.slug} visual={tutor.visual} nome={tutor.nome} estado={estado} visema={visema} expressao={expressao} className="h-full max-h-[32vh] w-full" />
+      {/* tutor em "chamada de vídeo" */}
+      <div className={`relative mt-3 min-h-[38vh] flex-1 overflow-hidden rounded-[2rem] border bg-[#efe3d3] transition-shadow duration-300 ${estado === "falando" ? "border-brand/60 shadow-[0_0_0_4px_rgba(24,169,87,.15),0_30px_60px_-30px_rgba(24,169,87,.6)]" : "border-white/10"}`}>
+        <div className="absolute inset-0">
+          <TutorCharacter slug={tutor.slug} enquadramento="preencher" visual={tutor.visual} nome={tutor.nome} estado={estado} visema={visema} expressao={expressao} className="h-full w-full" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(11,18,32,.35)_0%,transparent_22%,transparent_50%,rgba(11,18,32,.92)_100%)]" />
+        <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-[#0b1220]/70 px-3 py-1.5 text-xs font-bold backdrop-blur" aria-live="polite">
+          <span className={`size-2 rounded-full ${estado === "falando" ? "bg-brand shadow-[0_0_8px_#18a957]" : estado === "ouvindo" ? "bg-sky" : "bg-ink-soft"}`} aria-hidden />
+          {fase === "ao_vivo" ? ESTADO_LABEL[estado] : tutor.nome}
+        </div>
         {fase === "conectando" && (
-          <div className="absolute inset-0 grid place-items-center">
-            <span className="rounded-full bg-surface px-4 py-2 text-sm font-bold shadow">Conectando com {tutor.nome}…</span>
+          <div className="absolute inset-0 grid place-items-center bg-[#0b1220]/40 backdrop-blur-[2px]">
+            <span className="rounded-full bg-[#0b1220]/85 px-4 py-2 text-sm font-bold">Conectando com {tutor.nome}…</span>
           </div>
         )}
+        {/* legendas sobre a imagem */}
+        <div className="absolute inset-x-3 bottom-3 space-y-2">
+          {legendas && legendaTutor && <p className="rounded-2xl bg-[#0b1220]/80 px-4 py-3 text-base font-semibold leading-snug backdrop-blur">{legendaTutor}</p>}
+          {falaAluno && <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-brand px-3 py-2 text-sm font-semibold text-brand-ink">{falaAluno}</p>}
+        </div>
       </div>
 
-      <p className="text-center text-sm font-bold text-brand" aria-live="polite">{fase === "ao_vivo" ? ESTADO_LABEL[estado] : ""}</p>
-
-      {/* legendas */}
-      <div className="mt-2 min-h-20 text-center">
-        {legendas && legendaTutor && <p className="text-lg font-semibold leading-snug">{legendaTutor}</p>}
-        {falaAluno && <p className="mt-1 text-sm text-ink-soft">Você: {falaAluno}</p>}
-        {auxiliar && (
-          <p className="mx-auto mt-2 max-w-sm rounded-2xl bg-brand-soft px-3 py-2 text-sm">
-            {auxiliar} <button className="ml-1 underline" onClick={() => setAuxiliar(null)}>fechar</button>
-          </p>
-        )}
-      </div>
+      {auxiliar && (
+        <p className="mt-2 flex items-start gap-2 rounded-2xl border border-sun/30 bg-sun/10 px-3 py-2 text-sm">
+          <Icone nome="lampada" className="mt-0.5 size-4 shrink-0 text-sun" /><span className="flex-1">{auxiliar}</span>
+          <button className="text-ink-soft underline" onClick={() => setAuxiliar(null)}>fechar</button>
+        </p>
+      )}
 
       {fase === "microfone_bloqueado" && (
-        <div role="alert" className="mt-2 rounded-2xl bg-warn-soft p-3 text-sm">
+        <div role="alert" className="mt-2 rounded-2xl border border-warn/30 bg-warn-soft p-3 text-sm">
           <b className="text-warn">Microfone bloqueado.</b> Toque no cadeado ao lado do endereço do site e permita o microfone. Depois, recarregue a página.
         </div>
       )}
       {fase === "erro" && (
-        <div role="alert" className="mt-2 rounded-2xl bg-accent-soft p-3 text-sm">
+        <div role="alert" className="mt-2 rounded-2xl border border-accent/30 bg-accent-soft p-3 text-sm">
           {aviso ?? "Algo deu errado na conexão."} <button className="font-bold underline" onClick={() => location.reload()}>Tentar de novo</button>
         </div>
       )}
 
       {/* controles */}
-      <div className="mt-3 flex items-center justify-center">
-        <button
-          onClick={tocarMicrofone}
-          disabled={fase !== "ao_vivo"}
-          aria-label={estado === "falando" ? "Interromper o tutor" : "Microfone"}
-          className="relative grid size-20 place-items-center rounded-full bg-brand text-3xl text-brand-ink shadow-lg disabled:opacity-50"
-        >
-          {estado === "ouvindo" && (
-            <span className="anim-ring absolute inset-0 rounded-full bg-brand" style={{ transform: `scale(${1 + Math.min(volumeMic * 4, 0.4)})` }} />
-          )}
-          <span className="relative" aria-hidden>🎙️</span>
-        </button>
-      </div>
-      <button className="mx-auto mt-1 min-h-11 text-xs font-semibold text-ink-soft underline" onClick={() => setMaosLivres((m) => !m)}>
-        {maosLivres ? "Mãos livres ligado" : "Toque para enviar sua fala"}
-      </button>
-
-      {modo !== "nivelamento" && (
-        <div className="mt-2 grid grid-cols-4 gap-2 text-xs font-semibold">
-          <button className="btn-ghost px-2" aria-pressed={devagar} onClick={maisDevagar}>🐢<br />Devagar</button>
-          <button className="btn-ghost px-2" onClick={traduzir} disabled={!legendaTutor}>🇧🇷<br />Traduzir</button>
-          <button className="btn-ghost px-2" onClick={dica}>💡<br />Dica</button>
-          <button className="btn-ghost px-2" onClick={() => setLegendas((l) => !l)} aria-pressed={legendas}>CC<br />Legenda</button>
+      <div className="mt-4 rounded-[2rem] border border-white/10 bg-surface/80 p-3 backdrop-blur">
+        <div className="flex items-center justify-between gap-1">
+          {modo !== "nivelamento" ? (
+            <>
+              <Controle icone="tartaruga" rotulo="Devagar" onClick={maisDevagar} ativo={devagar} />
+              <Controle icone="traduzir" rotulo="Traduzir" onClick={traduzir} desabilitado={!legendaTutor} />
+            </>
+          ) : <span className="w-24" />}
+          <button
+            onClick={tocarMicrofone}
+            disabled={fase !== "ao_vivo"}
+            aria-label={estado === "falando" ? "Interromper o tutor" : "Microfone"}
+            className="relative grid size-[4.5rem] shrink-0 place-items-center rounded-full bg-brand text-brand-ink shadow-[0_12px_40px_-8px_rgba(24,169,87,.9)] transition active:scale-95 disabled:opacity-45"
+          >
+            {estado === "ouvindo" && (
+              <span className="anim-ring absolute inset-0 rounded-full bg-brand" style={{ transform: `scale(${1 + Math.min(volumeMic * 4, 0.4)})` }} />
+            )}
+            <Icone nome={estado === "falando" ? "parar" : "mic"} className="relative size-8" />
+          </button>
+          {modo !== "nivelamento" ? (
+            <>
+              <Controle icone="lampada" rotulo="Dica" onClick={dica} />
+              <Controle icone="legenda" rotulo="Legenda" onClick={() => setLegendas((l) => !l)} ativo={legendas} />
+            </>
+          ) : <span className="w-24" />}
         </div>
-      )}
-      <button className="btn-ghost mt-3 w-full text-danger" onClick={() => { if (confirm("Encerrar a aula agora?")) encerrar(); }}>Encerrar</button>
+        <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/5 pt-3">
+          <button className="min-h-11 px-2 text-xs font-semibold text-ink-soft underline-offset-4 hover:underline" onClick={() => setMaosLivres((m) => !m)} aria-pressed={maosLivres}>
+            {maosLivres ? "Mãos livres ligado" : "Toque para enviar sua fala"}
+          </button>
+          <button className="inline-flex min-h-11 items-center gap-2 rounded-full bg-danger/15 px-4 text-sm font-bold text-danger hover:bg-danger/25" onClick={() => { if (confirm("Encerrar a aula agora?")) encerrar(); }}>
+            Encerrar
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -62,7 +62,7 @@
   --ok: #3dd384;
   --danger: #ff7a6e;
   color-scheme: dark;
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--ink);
 }
 
@@ -89,31 +89,36 @@
 
 html { -webkit-text-size-adjust: 100%; }
 body {
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
 }
 
 @utility btn {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-5 py-3 text-base font-bold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-5 py-3 text-base font-bold transition duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45;
 }
 @utility btn-primary {
-  @apply btn bg-brand text-brand-ink hover:brightness-110;
+  @apply btn bg-brand text-brand-ink shadow-[0_10px_30px_-12px_rgba(24,169,87,.8)] hover:brightness-110;
 }
 @utility btn-ghost {
-  @apply btn border border-line bg-surface text-ink hover:bg-surface-2;
+  @apply btn border border-line bg-white/[0.03] text-ink hover:border-white/20 hover:bg-white/[0.06];
 }
 @utility btn-accent {
-  @apply btn bg-accent text-white hover:brightness-110;
+  @apply btn bg-accent text-[#2a0a04] hover:brightness-110;
 }
 @utility card {
-  @apply rounded-3xl border border-line bg-surface p-5;
+  @apply rounded-3xl border border-line bg-surface bg-[linear-gradient(180deg,rgba(255,255,255,.035),transparent_60%)] p-5;
 }
 @utility chip {
-  @apply inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 text-sm font-semibold;
+  @apply inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-white/[0.03] px-4 text-sm font-semibold text-ink-soft transition hover:text-ink;
   &[aria-pressed="true"] {
-    @apply border-brand bg-brand-soft text-ink;
+    @apply border-brand/70 bg-brand/15 text-ink;
   }
+}
+/* Fundo do app: brilho suave no topo, como no site */
+@utility fundo-app {
+  background-image: radial-gradient(ellipse 80% 40% at 50% -10%, rgba(24,169,87,.16), transparent 70%), radial-gradient(ellipse 60% 30% at 100% 0%, rgba(47,128,237,.10), transparent 70%);
+  background-attachment: fixed;
 }
 :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
 
