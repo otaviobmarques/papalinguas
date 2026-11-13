@@ -83,12 +83,38 @@ def mascara_elipse(cw, ch):
     return cv2.GaussianBlur(m, (k, k), 0)
 
 
-def recorte(base, img, c):
+def mascara_cobertura(base, imgs, c):
+    """Máscara que cobre com opacidade total tudo o que muda em qualquer das imagens (com folga),
+    para o retrato nunca aparecer por baixo (ex.: cantos da boca fechada atrás da boca aberta)."""
+    x0, y0, x1, y1 = c
+    w, h = x1 - x0, y1 - y0
+    muda = np.zeros((h, w), np.uint8)
+    bb = cv2.GaussianBlur(base[y0:y1, x0:x1], (5, 5), 0)
+    for im in imgs:
+        d = cv2.absdiff(cv2.GaussianBlur(im[y0:y1, x0:x1], (5, 5), 0), bb).max(axis=2)
+        muda |= (d > 18).astype(np.uint8)
+    muda = cv2.morphologyEx(muda, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+    folga = max(9, int(min(w, h) * 0.09)) | 1
+    muda = cv2.dilate(muda, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (folga, folga)))
+    k = max(11, int(min(w, h) * 0.12)) | 1
+    m = cv2.GaussianBlur(muda.astype(np.float32), (k, k), 0)
+    m = np.clip(m * 1.6, 0, 1)  # o núcleo fica totalmente opaco; só a borda externa é suave
+    m = np.maximum(m, mascara_elipse(w, h) * 0.999)
+    # a borda da região nunca pode ficar opaca (senão aparece um retângulo)
+    borda = np.ones((h, w), np.float32)
+    e = max(4, int(min(w, h) * 0.06))
+    rampa = np.linspace(0, 1, e)
+    borda[:e, :] *= rampa[:, None]; borda[-e:, :] *= rampa[::-1][:, None]
+    borda[:, :e] *= rampa[None, :]; borda[:, -e:] *= rampa[::-1][None, :]
+    return m * borda
+
+
+def recorte(base, img, c, mascara=None):
     """Recorte RGBA da região c de img, com borda suave e cor ajustada ao retrato base."""
     x0, y0, x1, y1 = c
     p = img[y0:y1, x0:x1].astype(np.float32)
     b = base[y0:y1, x0:x1].astype(np.float32)
-    a = mascara_elipse(x1 - x0, y1 - y0)
+    a = mascara if mascara is not None else mascara_elipse(x1 - x0, y1 - y0)
     anel = (a > 0.05) & (a < 0.6)
     if anel.sum() > 50:  # compensa pequena diferença de exposição entre as fotos
         ganho = (b[anel].mean(axis=0) + 1) / (p[anel].mean(axis=0) + 1)
@@ -148,6 +174,7 @@ def processar(pasta, slug):
     surpresa_p = achar(pasta, "expressao_surpresa", "surpresa")
     if surpresa_p:
         bocas["surpresa"] = ler(surpresa_p)
+    escolhas = {}
     for v, L in VISEMA_PARA_BOCA.items():
         escolha = L if L in bocas else "C"  # sem a foto "surpresa": volta ao sorriso com dentes
         # boca torta (ex.: mordendo o lábio de um lado) fica estranha na fala: troca por uma centralizada
@@ -156,7 +183,11 @@ def processar(pasta, slug):
                 break
             print(f"  {slug}: boca {L} da posição {v} está deslocada para o lado; usando {alternativa}")
             escolha = alternativa
-        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, bocas[escolha], cb), [cv2.IMWRITE_WEBP_QUALITY, 85])
+        escolhas[v] = escolha
+    # uma máscara só para todas as bocas: cobre a união do que muda em qualquer uma delas
+    m_boca = mascara_cobertura(base, [bocas[e] for e in set(escolhas.values())], cb)
+    for v, escolha in escolhas.items():
+        cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, bocas[escolha], cb, m_boca), [cv2.IMWRITE_WEBP_QUALITY, 85])
     cv2.imwrite(os.path.join(saida, "olhos.webp"), recorte(base, olhos, co), [cv2.IMWRITE_WEBP_QUALITY, 85])
     info.update({"animado": True, "boca": frac(cb, LADO, LADO), "olhos": frac(co, LADO, LADO), "expressoes": {}})
 
