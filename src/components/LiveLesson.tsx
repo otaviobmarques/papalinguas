@@ -6,6 +6,7 @@ import { useLipSync, useNivelMicrofone, visemaDeLetra } from "@/lib/client/useLi
 import type { Visema } from "@/lib/domain/lipsync";
 import type { CenarioDemo, TutorDemo } from "@/lib/demo/data";
 import { roteiroDemo } from "@/lib/demo/roteiro";
+import { idDispositivo } from "@/lib/client/onboarding";
 
 /**
  * A3. Aula ao vivo (e O6 em versão simplificada).
@@ -13,6 +14,7 @@ import { roteiroDemo } from "@/lib/demo/roteiro";
  * Modo demonstração (sem backend): roteiro local com voz do navegador.
  */
 export interface ResumoAula {
+  aulaId?: string | null;
   segundos: number;
   missoesFeitas: number;
   falas: { quem: "aluno" | "tutor"; texto: string }[];
@@ -25,6 +27,8 @@ interface Props {
   segundosLimite: number;
   cotaRestanteSeg?: number;
   onEncerrar: (r: ResumoAula) => void;
+  /** Servidor recusou abrir (ex.: teste de nível já usado). Sem isso, mostra o erro na tela. */
+  onRecusa?: (d: { erro: string; mensagem?: string; nivel?: string | null }) => void;
   extraTopo?: React.ReactNode;
 }
 
@@ -32,7 +36,7 @@ type Fase = "conectando" | "ao_vivo" | "instavel" | "microfone_bloqueado" | "err
 
 const LANG_TTS = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
 
-export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaRestanteSeg, onEncerrar, extraTopo }: Props) {
+export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaRestanteSeg, onEncerrar, onRecusa, extraTopo }: Props) {
   const [fase, setFase] = useState<Fase>("conectando");
   const [estado, setEstado] = useState<EstadoVoz>("repouso");
   const [expressao, setExpressao] = useState<Expressao>("neutra");
@@ -71,16 +75,16 @@ export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaR
       window.speechSynthesis?.cancel();
       conexao.current?.fechar();
       mic?.getTracks().forEach((t) => t.stop());
-      if (aulaId.current) {
+      if (aulaId.current && modo !== "nivelamento") {
         await fetch(`/api/aulas/${aulaId.current}/encerrar`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ motivo }),
         }).catch(() => {});
       }
-      onEncerrar({ segundos, missoesFeitas: missoes.filter(Boolean).length, falas: falas.current });
+      onEncerrar({ aulaId: aulaId.current, segundos, missoesFeitas: missoes.filter(Boolean).length, falas: falas.current });
     },
-    [mic, missoes, onEncerrar, segundos],
+    [mic, missoes, modo, onEncerrar, segundos],
   );
 
   // ---------- modo demonstração ----------
@@ -139,13 +143,19 @@ export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaR
       }
       if (micStream && !cancelado) setMic(micStream);
 
-      if (modo !== "nivelamento") {
+      {
         try {
-          const r = await fetch("/api/aulas", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idioma: tutor.idioma, modo, cenarioSlug: cenario?.slug }),
-          });
+          const r = modo === "nivelamento"
+            ? await fetch("/api/nivel/iniciar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idioma: tutor.idioma, dispositivo: idDispositivo() }),
+              })
+            : await fetch("/api/aulas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idioma: tutor.idioma, modo, cenarioSlug: cenario?.slug }),
+              });
           if (r.ok) {
             const d = await r.json();
             aulaId.current = d.aulaId;
@@ -167,7 +177,12 @@ export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaR
             return;
           }
           const err = await r.json().catch(() => ({}));
-          if (err.erro !== "modo_demo") {
+          // sem login (401) ou sem backend (503): segue em demonstração
+          if (r.status !== 401 && err.erro !== "modo_demo") {
+            if (onRecusa) {
+              micStream?.getTracks().forEach((t) => t.stop());
+              return onRecusa(err);
+            }
             setAviso(err.mensagem ?? "Não foi possível abrir a aula.");
             setFase("erro");
             return;
@@ -254,7 +269,7 @@ export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaR
   }, [segundos]);
 
   useEffect(() => {
-    if (!aulaId.current || fase !== "ao_vivo") return;
+    if (!aulaId.current || fase !== "ao_vivo" || modo === "nivelamento") return;
     const t = setInterval(async () => {
       const r = await fetch(`/api/aulas/${aulaId.current}/heartbeat`, { method: "POST" }).catch(() => null);
       if (!r?.ok) return;
@@ -264,7 +279,7 @@ export default function LiveLesson({ tutor, modo, cenario, segundosLimite, cotaR
       if (d.acao === "encerrar") setRestante(0);
     }, 30_000);
     return () => clearInterval(t);
-  }, [fase]);
+  }, [fase, modo]);
 
   // Silêncio de 8 s: o tutor reformula (o modo real já faz isso pelo prompt)
   useEffect(() => {
