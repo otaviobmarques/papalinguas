@@ -4,6 +4,7 @@ import { requireUser, supabaseAdmin } from "@/lib/supabase/server";
 import { erro, exigeBackend } from "@/lib/services/http";
 import { asaasDoCofre } from "@/lib/providers/payments/asaasSetup";
 import { cpfValido, normalizarCpf } from "@/lib/domain/cpf";
+import { assinaturaVigente } from "@/lib/domain/cortesia";
 
 const Body = z.object({
   plano: z.enum(["essencial", "fluente"]),
@@ -90,7 +91,8 @@ export async function GET() {
   const user = await requireUser();
   if (!user) return erro(401, "nao_autenticado");
   const { data } = await supabaseAdmin().from("subscriptions")
-    .select("id, status, current_period_end, plans(code, period, minutes_per_cycle)")
+    .select("id, status, gateway, current_period_end, cancel_at_period_end, plans(code, period, minutes_per_cycle)")
     .eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (data && !assinaturaVigente(data)) return NextResponse.json({ assinatura: { ...data, status: "expirada" } });
   return NextResponse.json({ assinatura: data ?? null });
 }

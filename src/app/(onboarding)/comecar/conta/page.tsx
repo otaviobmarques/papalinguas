@@ -21,7 +21,8 @@ function Conta() {
   async function concluir() {
     // Vincula o progresso salvo no aparelho à conta nova
     if (sb) await vincularOnboarding(estado);
-    const destino = entrar && estado.assinante ? "/app" : "/comecar/nivel";
+    // Quem entra por "Já tenho conta" num aparelho novo (ex.: aluno cortesia) passa pelo cadastro e pelo aceite dos termos
+    const destino = !estado.aceiteTermos ? "/comecar/idioma" : entrar && estado.assinante ? "/app" : "/comecar/nivel";
     atualizar({ contaCriada: true, email, passo: destino });
     router.push(destino);
   }

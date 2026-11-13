@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import OnboardingShell from "@/components/OnboardingShell";
-import { useOnboarding } from "@/lib/client/onboarding";
+import { useOnboarding, vincularOnboarding } from "@/lib/client/onboarding";
 
 /** O4. Microfone e privacidade (LGPD; MVP só 18+) */
 export default function Microfone() {
@@ -12,12 +12,23 @@ export default function Microfone() {
   const [negado, setNegado] = useState(false);
   const pode = estado.aceiteTermos && estado.maioridade;
 
+  // Já logado (ex.: entrou por "Já tenho conta"): grava o cadastro e segue para o teste de nível
+  async function seguir(microfone: "permitido" | "negado") {
+    if (estado.contaCriada) {
+      await vincularOnboarding({ ...estado, microfone });
+      atualizar({ microfone, passo: "/comecar/nivel" });
+      router.push("/comecar/nivel");
+      return;
+    }
+    atualizar({ microfone, passo: "/comecar/conta" });
+    router.push("/comecar/conta");
+  }
+
   async function permitir() {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ audio: true });
       s.getTracks().forEach((t) => t.stop());
-      atualizar({ microfone: "permitido", passo: "/comecar/conta" });
-      router.push("/comecar/conta");
+      await seguir("permitido");
     } catch {
       atualizar({ microfone: "negado" });
       setNegado(true);
@@ -53,7 +64,7 @@ export default function Microfone() {
         <div role="alert" className="mt-4 rounded-2xl bg-warn-soft p-4 text-sm">
           <p className="font-bold text-warn">O microfone foi bloqueado.</p>
           <p className="mt-1">Para liberar, toque no cadeado ao lado do endereço do site e permita o microfone. Enquanto isso, você pode seguir em modo texto.</p>
-          <button className="btn-ghost mt-3 w-full" onClick={() => { atualizar({ passo: "/comecar/conta" }); router.push("/comecar/conta"); }}>Continuar em modo texto</button>
+          <button className="btn-ghost mt-3 w-full" onClick={() => seguir("negado")}>Continuar em modo texto</button>
         </div>
       )}
 

@@ -4,6 +4,7 @@ import { requireUser, supabaseAdmin } from "@/lib/supabase/server";
 import { erro, exigeBackend } from "@/lib/services/http";
 import { lerSettings, num } from "@/lib/services/settings";
 import { avaliarInicioDeAula, MENSAGENS_BLOQUEIO } from "@/lib/domain/quota";
+import { assinaturaVigente } from "@/lib/domain/cortesia";
 import { montarInstrucoes } from "@/lib/domain/tutorPrompt";
 import { openAIVoice } from "@/lib/providers/voice";
 import { azurePronunciation } from "@/lib/providers/pronunciation";
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
 
   const [u, sub, counter, packs, hoje, aulasHoje, profile] = await Promise.all([
     sb.from("users").select("status, suspended_until").eq("id", user.id).single(),
-    sb.from("subscriptions").select("id, status, past_due_since, plans(code, daily_limit_minutes)")
+    sb.from("subscriptions").select("id, status, past_due_since, cancel_at_period_end, current_period_end, plans(code, daily_limit_minutes)")
       .eq("user_id", user.id).in("status", ["ativa", "em_garantia", "inadimplente"])
       .order("created_at", { ascending: false }).limit(1).maybeSingle(),
     sb.from("usage_counters").select("cycle_seconds_quota, cycle_seconds_used, bonus_seconds")
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
   const gate = avaliarInicioDeAula({
     agora,
     usuario: { status: u.data.status, suspensoAte: u.data.suspended_until ? new Date(u.data.suspended_until) : null },
-    assinatura: sub.data ? { status: sub.data.status, inadimplenteDesde: sub.data.past_due_since ? new Date(sub.data.past_due_since) : null } : null,
+    assinatura: sub.data && assinaturaVigente(sub.data, agora) ? { status: sub.data.status, inadimplenteDesde: sub.data.past_due_since ? new Date(sub.data.past_due_since) : null } : null,
     cota: {
       cicloRestanteSeg: c ? Math.max(0, c.cycle_seconds_quota + c.bonus_seconds - c.cycle_seconds_used) : 0,
       extraRestanteSeg: (packs.data ?? []).reduce((s, p) => s + (p.seconds_total - p.seconds_used), 0),

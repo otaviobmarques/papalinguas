@@ -3,7 +3,7 @@ import type { Acao } from "./permissions";
 /** Telas do painel (Manual 11.3; Telas P1–P19) e a sprint prevista (Manual 18). */
 export const TELAS_ADMIN: { codigo: string; slug: string; nome: string; sprint: number; requer: Acao }[] = [
   { codigo: "P1", slug: "", nome: "Painel geral", sprint: 1, requer: "ver_painel" },
-  { codigo: "P2", slug: "alunos", nome: "Alunos", sprint: 5, requer: "ver_ficha" },
+  { codigo: "P2", slug: "alunos", nome: "Alunos", sprint: 1, requer: "ver_ficha" },
   { codigo: "P4", slug: "assinaturas", nome: "Assinaturas e pagamentos", sprint: 5, requer: "reembolsar" },
   { codigo: "P5", slug: "reembolsos", nome: "Reembolsos e garantia", sprint: 5, requer: "reembolsar" },
   { codigo: "P6", slug: "contestacoes", nome: "Contestações", sprint: 5, requer: "reembolsar" },
