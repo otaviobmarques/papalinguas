@@ -1,4 +1,5 @@
 "use client";
+import { LANGUAGES } from "@/lib/domain/types";
 import Icone from "@/components/Icone";
 import { iconeDoCenario } from "@/lib/client/iconeCenario";
 import Link from "next/link";
@@ -6,7 +7,6 @@ import { use } from "react";
 import { useOnboarding } from "@/lib/client/onboarding";
 import { resumoTela, useAluno, useCenarios } from "@/lib/client/aluno";
 
-const TTS = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
 
 /** A2.1. Detalhe do cenário */
 export default function DetalheCenario({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,7 +26,7 @@ export default function DetalheCenario({ params }: { params: Promise<{ slug: str
   const ouvir = (t: string) => {
     try {
       const u = new SpeechSynthesisUtterance(t);
-      u.lang = TTS[c.idioma];
+      u.lang = LANGUAGES[c.idioma].locale;
       speechSynthesis.cancel();
       speechSynthesis.speak(u);
     } catch {}

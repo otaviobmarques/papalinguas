@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { LANG_CODES, type LangCode } from "@/lib/domain/types";
 import { requireUser, supabaseAdmin } from "@/lib/supabase/server";
 import { erro, exigeBackend } from "@/lib/services/http";
 import { gerarTexto } from "@/lib/providers/text";
 import { estimarPorRegra, lerAvaliacao, pedidoAvaliacao, resultadoPulado, SISTEMA_AVALIADOR, type ResultadoNivel } from "@/lib/domain/nivel";
 
 const Body = z.union([
-  z.object({ pular: z.literal(true), idioma: z.enum(["en", "es", "pt"]) }),
+  z.object({ pular: z.literal(true), idioma: z.enum(LANG_CODES) }),
   z.object({
     aulaId: z.string().uuid(),
     dispositivo: z.string().min(8).max(100),
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
   if (!p.success) return erro(400, "requisicao_invalida");
   const sb = supabaseAdmin();
 
-  let idioma: "en" | "es" | "pt";
+  let idioma: LangCode;
   let resultado: ResultadoNivel;
 
   if ("pular" in p.data) {

@@ -1,4 +1,4 @@
-import type { Cefr, LangCode } from "./types";
+import { LANGUAGES, type Cefr, type LangCode } from "./types";
 
 /** Monta as instruções do tutor (Manual 3.2, passo 2). Regras de segurança fixas vêm primeiro. */
 export interface PromptInput {
@@ -27,7 +27,7 @@ export function regraCorrecao(p: Pick<PromptInput, "correcao" | "correcoesPorFal
   return `- Corrija com leveza: no máximo ${p.correcoesPorFala} correção por fala, repetindo a frase certa de forma natural ("diga assim"), sem interromper e sem dizer "errado".`;
 }
 
-const IDIOMA_NOME: Record<LangCode, string> = { en: "English", es: "Spanish", pt: "Brazilian Portuguese" };
+const IDIOMA_NOME = Object.fromEntries(Object.entries(LANGUAGES).map(([k, v]) => [k, v.ingles])) as Record<LangCode, string>;
 
 /** Língua de apoio: português para brasileiros; para quem aprende português, inglês. */
 export const linguaDeApoio = (idioma: LangCode) => (idioma === "pt" ? "inglês" : "português do Brasil");
@@ -45,6 +45,9 @@ export function regraApoio(p: Pick<PromptInput, "nivel" | "idioma" | "modo">): s
   const sempre = [
     `- Se o aluno disser que não entendeu, ficar perdido, pedir ajuda ou falar em ${apoio}, explique em ${apoio}, de forma simples e curta, e ensine como dizer aquilo em ${alvo}. Nunca continue só em ${alvo} quando o aluno mostrar que não está entendendo.`,
   ];
+  if (p.idioma === "ja") {
+    sempre.push("- Japonês: use o registro polido (です/ます) por padrão. Ao ensinar uma frase, fale devagar, repita e explique o sentido; quando ajudar, soletre a pronúncia em português (ex.: \"o-ha-yô\"). Não exija leitura de kanji.");
+  }
   if (p.modo === "nivelamento") return sempre;
   if (!iniciante) return sempre;
   return [

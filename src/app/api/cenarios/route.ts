@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { LANG_CODES } from "@/lib/domain/types";
 import { isSupabaseConfigured } from "@/lib/env";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { erro } from "@/lib/services/http";
@@ -7,7 +8,7 @@ import { erro } from "@/lib/services/http";
 /** GET /api/cenarios?idioma= — cenários publicados com a unidade (Manual 7). Conteúdo público do catálogo. */
 export async function GET(req: Request) {
   if (!isSupabaseConfigured()) return erro(503, "modo_demo");
-  const idioma = z.enum(["en", "es", "pt"]).safeParse(new URL(req.url).searchParams.get("idioma"));
+  const idioma = z.enum(LANG_CODES).safeParse(new URL(req.url).searchParams.get("idioma"));
   const consulta = supabaseAdmin().from("scenarios")
     .select("id, slug, title, situation, missions, vocabulary, themes, goals, estimated_minutes, fluente_only, units!inner(language, level, position, title, status)")
     .eq("status", "publicado").eq("units.status", "publicado");

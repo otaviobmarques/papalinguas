@@ -39,6 +39,7 @@ insert into public.tutors (slug, name, language, accent, gender, style, bio, ope
   ('bia',     'Bia',     'pt', 'paulista',   'feminino',  'alegre e paciente',      'Adora séries e feiras de rua.',        'sage',   'Você é a Bia, tutora de português para estrangeiros.'),
   ('caio',    'Caio',    'pt', 'carioca',    'masculino', 'descontraído',           'Surfista e fã de samba.',              'verse',  'Você é o Caio, tutor de português para estrangeiros.'),
   ('helena',  'Helena',  'pt', 'mineiro',    'feminino',  'calma e didática',       'Professora de história, ama café.',    'ballad', 'Você é a Helena, tutora de português para estrangeiros.');
+-- tutores de francês, italiano, alemão e japonês: migração 20261113000008
 
 insert into public.achievements (code, title, description) values
   ('sequencia_7',  '7 dias seguidos', 'Praticou 7 dias sem parar'),

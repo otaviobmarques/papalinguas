@@ -6,9 +6,9 @@ import { lerSettings, num } from "@/lib/services/settings";
 import { jaUsou, marcarUso } from "@/lib/services/antiabuso";
 import { montarInstrucoes } from "@/lib/domain/tutorPrompt";
 import { openAIVoice } from "@/lib/providers/voice";
-import type { LangCode } from "@/lib/domain/types";
+import { LANG_CODES, type LangCode } from "@/lib/domain/types";
 
-const Body = z.object({ idioma: z.enum(["en", "es", "pt"]), dispositivo: z.string().min(8).max(100) });
+const Body = z.object({ idioma: z.enum(LANG_CODES), dispositivo: z.string().min(8).max(100) });
 const DIA = 86_400_000;
 
 /**
