@@ -5,7 +5,8 @@ import { Suspense, useState } from "react";
 import LiveLesson, { type ResumoAula } from "@/components/LiveLesson";
 import TutorCharacter from "@/components/TutorCharacter";
 import { useOnboarding } from "@/lib/client/onboarding";
-import { CENARIOS, USO_DEMO, tutorPorSlug } from "@/lib/demo/data";
+import { tutorPorSlug } from "@/lib/demo/data";
+import { recarregarAluno, resumoTela, useAluno, useCenarios } from "@/lib/client/aluno";
 
 const EXEMPLOS: Record<string, string[]> = {
   en: ["Como se diz \"estou atrasado\"?", "Me ajuda a pedir um café", "Vamos falar sobre séries", "Como eu me apresento numa reunião?"],
@@ -20,13 +21,17 @@ function Aula() {
   const slug = useSearchParams().get("cenario");
   const [correcao, setCorrecao] = useState<"leve" | "detalhada">("leve");
   const [iniciado, setIniciado] = useState(false);
-  if (!pronto) return null;
-  const tutor = tutorPorSlug(estado.tutorSlug);
-  const cenario = CENARIOS.find((c) => c.slug === slug) ?? null;
+  const { aluno, carregando } = useAluno();
+  const cenarios = useCenarios();
+  if (!pronto || carregando || (slug && !cenarios)) return null;
+  const r = resumoTela(aluno, estado);
+  const tutor = tutorPorSlug(r.tutorSlug);
+  const cenario = cenarios?.find((c) => c.slug === slug) ?? null;
 
-  function fim(r: ResumoAula) {
+  function fim(res: ResumoAula) {
+    recarregarAluno();
     try {
-      sessionStorage.setItem("papalinguas:ultima-aula", JSON.stringify({ ...r, cenario: cenario?.slug ?? null }));
+      sessionStorage.setItem("papalinguas:ultima-aula", JSON.stringify({ ...res, cenario: cenario?.slug ?? null }));
     } catch {}
     router.replace("/app/relatorio");
   }
@@ -78,7 +83,7 @@ function Aula() {
       cenario={cenario}
       correcao={correcao}
       segundosLimite={20 * 60}
-      cotaRestanteSeg={(USO_DEMO.cotaMin - USO_DEMO.usadosMin) * 60}
+      cotaRestanteSeg={r.restanteSeg}
       onEncerrar={fim}
     />
   );

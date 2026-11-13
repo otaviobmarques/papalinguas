@@ -2,24 +2,28 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useOnboarding } from "@/lib/client/onboarding";
-import { CENARIOS } from "@/lib/demo/data";
+import { resumoTela, useAluno, useCenarios } from "@/lib/client/aluno";
 
 const ORDEM = ["A1", "A2", "B1", "B2", "C1"];
 
 /** A2. Aulas (biblioteca de cenários): todos os cenários do nível liberados */
 export default function Aulas() {
   const { estado } = useOnboarding();
-  const nivel = estado.nivel ?? "B1";
+  const { aluno } = useAluno();
+  const r = resumoTela(aluno, estado);
+  const nivel = r.nivel;
+  const carregados = useCenarios(r.idioma);
+  const CENARIOS = useMemo(() => carregados ?? [], [carregados]);
   const [busca, setBusca] = useState("");
   const [tema, setTema] = useState<string | null>(null);
   const temas = [...new Set(CENARIOS.flatMap((c) => c.temas))];
 
   const lista = useMemo(
     () => CENARIOS.filter((c) => (!tema || c.temas.includes(tema)) && c.titulo.toLowerCase().includes(busca.toLowerCase())),
-    [busca, tema],
+    [busca, tema, CENARIOS],
   );
   const unidades = [...new Set(lista.map((c) => c.unidade))];
-  const objetivo = CENARIOS.filter((c) => c.objetivos.includes(estado.objetivo ?? "carreira")).slice(0, 3);
+  const objetivo = CENARIOS.filter((c) => c.objetivos.includes(r.objetivo)).slice(0, 3);
 
   return (
     <main>
