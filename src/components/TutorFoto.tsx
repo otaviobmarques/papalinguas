@@ -18,13 +18,13 @@ interface Props {
 }
 
 /**
- * Troca de boca sem "fantasma": a nova entra por cima (50 ms) enquanto a anterior continua opaca
- * por baixo por mais 60 ms, então o retrato nunca aparece no meio da troca.
+ * Troca de boca sem "fantasma": a nova entra por cima (25 ms) enquanto a anterior continua opaca
+ * por baixo por mais 35 ms, então o retrato nunca aparece no meio da troca.
  * Só na volta ao repouso a boca some aos poucos (o destino é o próprio retrato).
  */
 function estiloBoca(v: number, ativo: number): React.CSSProperties {
-  if (v === ativo) return { opacity: 1, zIndex: 2, transition: "opacity 50ms ease-out" };
-  return { opacity: 0, zIndex: 1, transition: ativo === 0 ? "opacity 80ms ease-out" : "opacity 0s linear 60ms" };
+  if (v === ativo) return { opacity: 1, zIndex: 2, transition: "opacity 25ms ease-out" };
+  return { opacity: 0, zIndex: 1, transition: ativo === 0 ? "opacity 50ms ease-out" : "opacity 0s linear 35ms" };
 }
 
 const pos = (r: Regiao) => ({ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.w * 100}%`, height: `${r.h * 100}%` });

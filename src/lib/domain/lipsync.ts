@@ -47,7 +47,7 @@ export function normalizar(rms: number, pico: number): number {
 const SILENCIO = 0.012;
 // Ritmo de boca de uma pessoa (~5 trocas por segundo, medido nas vozes da OpenAI):
 const SEGURAR = 7; // cada posição fica no mínimo ~115 ms
-const QUIETO = 6; // só fecha a boca depois de ~100 ms de silêncio (pausas entre sílabas não contam)
+const QUIETO = 3; // fecha a boca depois de ~50 ms de silêncio (com 6 quadros ela ficava aberta ~155 ms depois da fala)
 
 /**
  * Limites calibrados com a voz real da OpenAI medida pelo AnalyserNode do navegador
