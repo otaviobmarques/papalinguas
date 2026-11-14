@@ -6,7 +6,7 @@ import { supabaseAdmin } from "@/lib/supabase/server";
 import { cifrar, decifrar } from "@/lib/security/secretBox";
 
 /** Cofre de chaves de integração (painel → Chaves de integração). */
-export type Provedor = "openai" | "anthropic" | "asaas" | "azure_speech";
+export type Provedor = "openai" | "anthropic" | "asaas" | "azure_speech" | "google_gemini";
 export type Slot = "principal" | "backup" | "webhook";
 export type StatusChave = "valida" | "invalida" | "nao_validada";
 

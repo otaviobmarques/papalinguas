@@ -11,9 +11,9 @@ import { registrarWebhookAsaas, validarAsaas } from "@/lib/providers/payments/as
 
 export type EstadoForm = { ok?: string; erro?: string } | null;
 
-const SLOT_DE: Record<Provedor, Slot> = { openai: "principal", anthropic: "backup", asaas: "principal", azure_speech: "principal" };
-const NOME: Record<Provedor, string> = { openai: "OpenAI (principal)", anthropic: "Anthropic (backup)", asaas: "Asaas (pagamentos)", azure_speech: "Azure Speech (pronúncia)" };
-const PROVEDORES = ["openai", "anthropic", "asaas", "azure_speech"] as const;
+const SLOT_DE: Record<Provedor, Slot> = { openai: "principal", anthropic: "backup", asaas: "principal", azure_speech: "principal", google_gemini: "principal" };
+const NOME: Record<Provedor, string> = { openai: "OpenAI (principal)", anthropic: "Anthropic (backup)", asaas: "Asaas (pagamentos)", azure_speech: "Azure Speech (pronúncia)", google_gemini: "Google Gemini (vídeos dos tutores)" };
+const PROVEDORES = ["openai", "anthropic", "asaas", "azure_speech", "google_gemini"] as const;
 
 /** Endereço público do app, para o Asaas avisar os pagamentos. */
 async function urlWebhook() {

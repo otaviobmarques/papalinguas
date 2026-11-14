@@ -24,7 +24,7 @@ export default async function Chaves() {
   const ver = (provider: string, slot: string) => {
     const r = registros.find((x) => x.provider === provider && x.slot === slot);
     if (!r) return null;
-    const prefixo = provider === "openai" ? "sk-proj-" : provider === "asaas" ? "$aact_" : provider === "azure_speech" ? "" : "sk-ant-";
+    const prefixo = provider === "openai" ? "sk-proj-" : provider === "asaas" ? "$aact_" : provider === "azure_speech" || provider === "google_gemini" ? "" : "sk-ant-";
     return { mascara: `${prefixo}…${r.last4}`, status: r.status, validadaEm: r.validated_at, atualizadaEm: r.updated_at };
   };
 
@@ -54,6 +54,7 @@ export default async function Chaves() {
           ] : undefined} />
         <ChaveCard provider="azure_speech" titulo="Azure Speech · pronúncia" descricao="Avaliação de pronúncia por palavra e por som (Microsoft Foundry / Azure AI Services)." placeholder="Chave de API do recurso" pedeRegiao atual={ver("azure_speech", "principal")}
           extras={ver("azure_speech", "principal") ? [{ rotulo: "Região", valor: registros.find((x) => x.provider === "azure_speech" && x.slot === "principal")?.external_ref ?? "—" }] : undefined} />
+        <ChaveCard provider="google_gemini" titulo="Google Gemini · vídeos" descricao="Gera os vídeos dos tutores (Veo). Crie a chave no Google AI Studio." placeholder="Chave de API do Google AI Studio" atual={ver("google_gemini", "principal")} />
         <ChaveCard provider="anthropic" titulo="Anthropic · backup" descricao="Plano B para textos: relatório pós-aula, memória do aluno e geração de conteúdo." placeholder="sk-ant-…" atual={ver("anthropic", "backup")} />
       </div>
     </main>
