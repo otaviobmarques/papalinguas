@@ -7,6 +7,8 @@ import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import { TUTORES } from "@/lib/demo/data";
 import { LANGUAGES, type LangCode } from "@/lib/domain/types";
 import { fotoDoTutor, temFotoAnimada } from "@/lib/tutores/fotos";
+import { temRive } from "@/lib/tutores/rive";
+import { temVideo } from "@/lib/tutores/videos";
 import Icone from "./Icone";
 
 const BANDEIRA: Record<string, string> = { parisiense: "🇫🇷", quebequense: "🇨🇦", romano: "🇮🇹", "milanês": "🇮🇹", berlinense: "🇩🇪", muniquense: "🇩🇪", "de Tóquio": "🇯🇵", "de Pequim": "🇨🇳", "de Xangai": "🇨🇳", americano: "🇺🇸", britânico: "🇬🇧", londrino: "🇬🇧", argentino: "🇦🇷", mexicano: "🇲🇽", espanhol: "🇪🇸", paulista: "🇧🇷", carioca: "🇧🇷", mineiro: "🇧🇷" };
@@ -58,7 +60,9 @@ export default function TutoresSite() {
           return (
             <li key={t.slug} className="holofote group overflow-hidden rounded-3xl border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:border-white/20">
               <div className="relative aspect-square overflow-hidden bg-[#efe3d3]">
-                {temFotoAnimada(t.slug) ? (
+                {temVideo(t.slug) || temRive(t.slug) ? (
+                  <TutorCharacter slug={t.slug} visual={t.visual} nome={t.nome} estado={fala ? "falando" : "repouso"} visema={fala ? visema : 0} className="absolute inset-0 h-full w-full" />
+                ) : temFotoAnimada(t.slug) ? (
                   <TutorFoto slug={t.slug} nome={t.nome} estado={fala ? "falando" : "repouso"} visema={fala ? visema : 0} className="absolute inset-0 h-full w-full" />
                 ) : foto ? (
                   <Image src={foto.card} alt={`${t.nome}, ${t.genero === "masculino" ? "tutor" : "tutora"} de IA`} fill sizes="(min-width:1024px) 270px, 50vw"
