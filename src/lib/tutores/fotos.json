@@ -32,29 +32,7 @@
   "maya": {
     "base": "/tutores/maya/base.webp",
     "card": "/tutores/maya/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3594,
-      "y": 0.4258,
-      "w": 0.2721,
-      "h": 0.3177
-    },
-    "olhos": {
-      "x": 0.3451,
-      "y": 0.276,
-      "w": 0.3164,
-      "h": 0.125
-    },
-    "expressoes": {
-      "feliz": "/tutores/maya/feliz.webp",
-      "surpresa": "/tutores/maya/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3255,
-      "y": 0.2565,
-      "w": 0.3555,
-      "h": 0.5065
-    }
+    "animado": false
   },
   "oliver": {
     "base": "/tutores/oliver/base.webp",
