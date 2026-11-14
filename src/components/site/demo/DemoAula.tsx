@@ -50,7 +50,7 @@ export default function DemoAula() {
 
       {/* tutora */}
       <div style={{ position: "absolute", left: 40, right: 40, top: 130, bottom: 34, borderRadius: 36, overflow: "hidden", background: "#efe3d3", transform: `scale(${0.96 + entrada * 0.04})` }}>
-        <TutorFoto slug="grace" nome="Grace" estado={falando ? "falando" : f > ALUNO && f < CORRECAO ? "ouvindo" : "repouso"} visema={visema}
+        <TutorFoto slug="grace-demo" nome="Grace" estado={falando ? "falando" : f > ALUNO && f < CORRECAO ? "ouvindo" : "repouso"} visema={visema}
           expressao={f > CORRECAO ? "sorriso" : "neutra"} piscando={PISCADAS.some((p) => f >= p && f < p + 4)} enquadramento="preencher" className="h-full w-full overflow-hidden" />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 48%, rgba(11,18,32,.6) 62%, rgba(11,18,32,.95) 80%)" }} />
         {/* legenda */}
