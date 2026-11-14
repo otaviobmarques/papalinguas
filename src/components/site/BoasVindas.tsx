@@ -11,11 +11,11 @@ export const BOAS_VINDAS = {
   tutora: "Maya",
   papel: "tutora de inglês",
   /** vídeo falado com som; deixe null até o arquivo existir */
-  video: null as string | null,
+  video: "/site/boas-vindas.mp4" as string | null,
   reserva: "/tutores/maya/falando.mp4",
   /** voz da Maya usada com o vídeo reserva enquanto o vídeo falado não existe */
   voz: "/site/boas-vindas-voz.mp3",
-  poster: "/tutores/maya/video-poster.jpg",
+  poster: "/site/boas-vindas-poster.jpg",
   legendas: ["Seja bem-vindo ao Papalinguas!", "Aqui você aprende inglês com naturalidade, 24 horas por dia."],
 };
 
