@@ -484,5 +484,32 @@
       "w": 0.4297,
       "h": 0.4857
     }
+  },
+  "maya-cartoon": {
+    "base": "/tutores/maya-cartoon/base.webp",
+    "card": "/tutores/maya-cartoon/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3672,
+      "y": 0.3698,
+      "w": 0.3177,
+      "h": 0.293
+    },
+    "olhos": {
+      "x": 0.3099,
+      "y": 0.2565,
+      "w": 0.4219,
+      "h": 0.194
+    },
+    "expressoes": {
+      "feliz": "/tutores/maya-cartoon/feliz.webp",
+      "surpresa": "/tutores/maya-cartoon/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.2904,
+      "y": 0.237,
+      "w": 0.4609,
+      "h": 0.4453
+    }
   }
 }

@@ -5,7 +5,8 @@ import type { EstadoVoz, Expressao } from "@/components/TutorCharacter";
 import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import type { Visema } from "@/lib/domain/lipsync";
 
-const TUTORES = [
+const TUTORES: { slug: string; nome: string; idioma: string; fala: string; audio?: string }[] = [
+  { slug: "maya-cartoon", nome: "Maya (cartoon)", idioma: "Inglês · teste do estilo cartoon 3D", fala: "Hi! I'm Maya. Ready to chat? Tell me, what did you do last weekend?", audio: "maya" },
   { slug: "camille", nome: "Camille", idioma: "Francês · sotaque parisiense", fala: "Bonjour ! Je suis Camille. On discute un peu ? Dis-moi, qu'est-ce que tu aimes faire le week-end ?" },
   { slug: "maya", nome: "Maya", idioma: "Inglês · sotaque americano", fala: "Hi! I'm Maya. Ready to chat? Tell me, what did you do last weekend?" },
   { slug: "oliver", nome: "Oliver", idioma: "Inglês · sotaque britânico", fala: "Hello there, I'm Oliver. Shall we begin? Take your time, there's no rush." },
@@ -37,7 +38,7 @@ function Cartao({ t }: { t: (typeof TUTORES)[number] }) {
         </div>
         <span className={`rounded-full px-3 py-1 text-xs font-bold ${estado === "falando" ? "bg-[#18A957] text-[#06210F]" : "bg-white/10 text-white/70"}`}>{estado}</span>
       </div>
-      <audio ref={setAudio} src={`/tutores/audio/${t.slug}.mp3`} preload="auto" crossOrigin="anonymous" />
+      <audio ref={setAudio} src={`/tutores/audio/${t.audio ?? t.slug}.mp3`} preload="auto" crossOrigin="anonymous" />
       <button className="mt-4 min-h-12 w-full rounded-2xl bg-[#18A957] font-extrabold text-[#06210F] hover:brightness-110" onClick={() => { if (!audio) return; audio.currentTime = 0; void audio.play(); }}>
         ▶ Ouvir {t.nome} (voz da OpenAI)
       </button>
