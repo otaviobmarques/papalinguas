@@ -19,7 +19,23 @@ loop() {
 }
 loop "$F" "$dir/falando.mp4"
 loop "$O" "$dir/ouvindo.mp4"
-ffmpeg -v error -y -i "$dir/ouvindo.mp4" -frames:v 1 -q:v 3 "$dir/video-poster.jpg"
+# imagem de abertura: o quadro do "ouvindo" mais parecido com o retrato (evita pegar um piscar)
+python3 - "$dir" "$IMG" <<'PY'
+import sys, cv2, numpy as np
+d, img = sys.argv[1], sys.argv[2]
+cap = cv2.VideoCapture(f"{d}/ouvindo.mp4"); quadros = []
+while True:
+    ok, q = cap.read()
+    if not ok: break
+    quadros.append(q)
+if img:
+    ref = cv2.imread(img); h, w = ref.shape[:2]
+    ref = cv2.resize(ref[:, (w - h) // 2:(w - h) // 2 + h], (720, 720)).astype(np.float32)
+    melhor = min(quadros[::3], key=lambda q: float(np.abs(q.astype(np.float32) - ref).mean()))
+else:
+    melhor = quadros[0]
+cv2.imwrite(f"{d}/video-poster.jpg", melhor, [cv2.IMWRITE_JPEG_QUALITY, 88])
+PY
 if [ -n "$IMG" ]; then
   python3 - "$IMG" "$dir" <<'PY'
 import sys

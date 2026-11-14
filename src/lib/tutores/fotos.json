@@ -140,29 +140,7 @@
   "julien": {
     "base": "/tutores/julien/base.webp",
     "card": "/tutores/julien/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3359,
-      "y": 0.3698,
-      "w": 0.3438,
-      "h": 0.3529
-    },
-    "olhos": {
-      "x": 0.3594,
-      "y": 0.2461,
-      "w": 0.2852,
-      "h": 0.1367
-    },
-    "expressoes": {
-      "feliz": "/tutores/julien/feliz.webp",
-      "surpresa": "/tutores/julien/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3164,
-      "y": 0.2266,
-      "w": 0.3828,
-      "h": 0.5156
-    }
+    "animado": false
   },
   "lena": {
     "base": "/tutores/lena/base.webp",
