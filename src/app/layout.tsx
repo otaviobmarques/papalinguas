@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: { default: SITE.titulo, template: "%s · Papalinguas" },
   description: SITE.descricao,
   applicationName: SITE.nome,
-  keywords: ["aprender inglês", "conversação em inglês", "tutor de inglês", "aprender espanhol", "português para estrangeiros", "aula de inglês por voz", "inglês com IA", "app de idiomas", "treinar entrevista em inglês"],
+  keywords: ["aprender inglês", "conversação em inglês", "tutor de inglês", "aprender espanhol", "português para estrangeiros", "aula de inglês por voz", "inglês com IA", "app de idiomas", "treinar entrevista em inglês", "aprender francês", "aprender italiano", "aprender alemão", "aprender japonês", "italiano para cidadania", "aprender mandarim", "aprender chinês"],
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Papalinguas", statusBarStyle: "black-translucent" },
   openGraph: { type: "website", locale: "pt_BR", siteName: SITE.nome, url: "/", title: SITE.titulo, description: SITE.descricao },

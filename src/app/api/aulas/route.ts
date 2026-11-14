@@ -8,10 +8,10 @@ import { assinaturaVigente } from "@/lib/domain/cortesia";
 import { montarInstrucoes } from "@/lib/domain/tutorPrompt";
 import { openAIVoice } from "@/lib/providers/voice";
 import { azurePronunciation } from "@/lib/providers/pronunciation";
-import type { KillSwitchMode, LangCode } from "@/lib/domain/types";
+import { LANG_CODES, type KillSwitchMode, type LangCode } from "@/lib/domain/types";
 
 const Body = z.object({
-  idioma: z.enum(["en", "es", "pt"]),
+  idioma: z.enum(LANG_CODES),
   cenarioId: z.string().uuid().optional(),
   cenarioSlug: z.string().max(80).optional(),
   modo: z.enum(["aula", "livre"]).default("aula"),

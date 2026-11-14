@@ -1,4 +1,5 @@
 import "server-only";
+import { LANGUAGES, type LangCode } from "@/lib/domain/types";
 import { lerChave, lerReferencia } from "@/lib/keys/store";
 import { emitirTokenAzure, normalizarRegiao } from "./azureSpeech";
 
@@ -11,10 +12,10 @@ export interface PronunciationToken {
   prosody: boolean;
 }
 export interface PronunciationProvider {
-  issueToken(language: "en" | "es" | "pt"): Promise<PronunciationToken>;
+  issueToken(language: LangCode): Promise<PronunciationToken>;
 }
 
-const LOCALES = { en: "en-US", es: "es-MX", pt: "pt-BR" } as const;
+const LOCALES = Object.fromEntries(Object.entries(LANGUAGES).map(([k, v]) => [k, v.locale])) as Record<LangCode, string>;
 
 export const azurePronunciation: PronunciationProvider = {
   async issueToken(language) {

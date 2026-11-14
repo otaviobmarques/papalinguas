@@ -1,14 +1,16 @@
 import type { TutorDemo } from "@/lib/demo/data";
+import { LANGUAGES } from "@/lib/domain/types";
 
 /** Idioma/sotaque do tutor para a voz do navegador (só no modo demonstração; a aula real usa a voz da OpenAI). */
 export function langDoTutor(t: Pick<TutorDemo, "idioma" | "sotaque">): string {
   if (t.idioma === "en") return t.sotaque === "britânico" ? "en-GB" : "en-US";
   if (t.idioma === "es") return t.sotaque === "espanhol" ? "es-ES" : "es-MX";
-  return "pt-BR";
+  if (t.idioma === "fr") return t.sotaque === "quebequense" ? "fr-CA" : "fr-FR";
+  return LANGUAGES[t.idioma].locale;
 }
 
-const MASC = /\b(male|man|daniel|david|george|arthur|fred|alex|thomas|oliver|rishi|aaron|jorge|diego|juan|pablo|carlos|enrique|felipe|ricardo|antonio|reed|eddy|rocko|grandpa|ralph|guy)\b/i;
-const FEM = /\b(female|woman|samantha|karen|moira|serena|martha|kate|susan|victoria|zira|hazel|luciana|paulina|monica|mónica|helena|francisca|joana|fernanda|marisol|sabina|flo|sandy|shelley|grandma)\b/i;
+const MASC = /\b(male|man|daniel|david|george|arthur|fred|alex|thomas|oliver|rishi|aaron|jorge|diego|juan|pablo|carlos|enrique|felipe|ricardo|antonio|reed|eddy|rocko|grandpa|ralph|guy|thomas|nicolas|luca|cosimo|markus|stefan|hans|otoya|ichiro|keita|hattori)\b/i;
+const FEM = /\b(female|woman|samantha|karen|moira|serena|martha|kate|susan|victoria|zira|hazel|luciana|paulina|monica|mónica|helena|francisca|joana|fernanda|marisol|sabina|flo|sandy|shelley|grandma|amelie|amélie|audrey|marie|alice|federica|elsa|anna|petra|katja|kyoko|haruka|ayumi|nanami)\b/i;
 
 /** Escolhe uma voz instalada do mesmo idioma/sotaque e, quando dá para saber pelo nome, do mesmo gênero do tutor. */
 export function vozParaTutor(t: Pick<TutorDemo, "idioma" | "sotaque" | "genero">): SpeechSynthesisVoice | undefined {

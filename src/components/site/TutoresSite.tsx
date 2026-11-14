@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import TutorCharacter from "@/components/TutorCharacter";
 import TutorFoto from "@/components/TutorFoto";
 import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import { TUTORES } from "@/lib/demo/data";
@@ -8,7 +9,7 @@ import { LANGUAGES, type LangCode } from "@/lib/domain/types";
 import { fotoDoTutor, temFotoAnimada } from "@/lib/tutores/fotos";
 import Icone from "./Icone";
 
-const BANDEIRA: Record<string, string> = { americano: "🇺🇸", britânico: "🇬🇧", mexicano: "🇲🇽", espanhol: "🇪🇸", paulista: "🇧🇷", carioca: "🇧🇷", mineiro: "🇧🇷" };
+const BANDEIRA: Record<string, string> = { parisiense: "🇫🇷", quebequense: "🇨🇦", romano: "🇮🇹", "milanês": "🇮🇹", berlinense: "🇩🇪", muniquense: "🇩🇪", "de Tóquio": "🇯🇵", "de Pequim": "🇨🇳", "de Xangai": "🇨🇳", americano: "🇺🇸", britânico: "🇬🇧", mexicano: "🇲🇽", espanhol: "🇪🇸", paulista: "🇧🇷", carioca: "🇧🇷", mineiro: "🇧🇷" };
 
 /** Tutores do site: foto, sotaque, estilo e a voz real (amostra gerada pela OpenAI). */
 export default function TutoresSite() {
@@ -16,7 +17,8 @@ export default function TutoresSite() {
   const [tocando, setTocando] = useState<string | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const { visema } = useLipSyncElemento(audio);
-  const lista = TUTORES.filter((t) => idioma === "todos" || t.idioma === idioma);
+  // Em "Todos", só quem já tem foto (os tutores novos aparecem ao escolher o idioma, com o desenho provisório)
+  const lista = TUTORES.filter((t) => (idioma === "todos" ? !!fotoDoTutor(t.slug) : t.idioma === idioma));
 
   useEffect(() => {
     if (!audio) return;
@@ -61,7 +63,9 @@ export default function TutoresSite() {
                 ) : foto ? (
                   <Image src={foto.card} alt={`${t.nome}, ${t.genero === "masculino" ? "tutor" : "tutora"} de IA`} fill sizes="(min-width:1024px) 270px, 50vw"
                     className={`object-cover transition duration-700 group-hover:scale-[1.04] ${fala ? "scale-[1.03]" : ""}`} />
-                ) : null}
+                ) : (
+                  <TutorCharacter slug={t.slug} visual={t.visual} nome={t.nome} estado={fala ? "falando" : "repouso"} visema={fala ? visema : 0} className="absolute inset-0 h-full w-full" />
+                )}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0b1220]/70 to-transparent" />
                 {fala && <span className="pointer-events-none absolute inset-0 rounded-t-3xl ring-4 ring-inset ring-brand/70 anim-ring" aria-hidden />}
                 <span className="absolute left-3 top-3 rounded-full bg-[#0b1220]/75 px-3 py-1 text-xs font-bold text-white backdrop-blur">

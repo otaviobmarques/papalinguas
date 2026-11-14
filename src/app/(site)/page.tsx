@@ -50,7 +50,7 @@ const FAQ = [
   { p: "Quantos minutos de conversa eu tenho?", r: `O Essencial inclui ${PLANOS.essencial.minutosCiclo} minutos por mês (cerca de 5 por dia) e o Fluente, ${PLANOS.fluente.minutosCiclo} minutos (cerca de 10 por dia). A revisão de cartões não gasta minutos. Se acabar, existe o pacote extra.` },
   { p: "Posso cancelar quando quiser?", r: "Sim, sem multa. Você pede o cancelamento pelo app ou por e-mail e continua com acesso até o fim do período já pago." },
   { p: "O que acontece com a minha voz?", r: "Sua voz é usada só para a conversa e para avaliar a pronúncia. Guardamos a transcrição para seus relatórios; o áudio bruto é apagado automaticamente em 30 dias. Você pode baixar ou apagar seus dados quando quiser." },
-  { p: "Quais idiomas posso aprender?", r: "Inglês, espanhol e português para estrangeiros. O plano Fluente permite estudar até 3 idiomas." },
+  { p: "Quais idiomas posso aprender?", r: "Inglês, espanhol, francês, italiano, alemão, japonês, mandarim e português para estrangeiros. O plano Essencial inclui um idioma por vez (dá para trocar) e o Fluente permite estudar até 3 idiomas." },
   { p: "Funciona no celular?", r: "Sim. O Papalinguas funciona no navegador do celular ou do computador e pode ser instalado na tela inicial, como um app." },
   { p: "Precisa ter 18 anos?", r: "Sim. Neste momento o Papalinguas é exclusivo para maiores de 18 anos." },
 ];
@@ -99,7 +99,7 @@ export default function Site() {
             <div>
               <Reveal>
                 <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-ink-soft backdrop-blur">
-                  <span className="size-2 rounded-full bg-brand shadow-[0_0_12px_#18a957]" /> Inglês · Espanhol · Português para estrangeiros
+                  <span className="size-2 rounded-full bg-brand shadow-[0_0_12px_#18a957]" /> Inglês · Espanhol · Francês · Italiano · Alemão · Japonês · Mandarim
                 </p>
               </Reveal>
               <Reveal delay={80}>
@@ -147,8 +147,8 @@ export default function Site() {
         <section aria-label="Destaques" className="mx-auto max-w-6xl px-4 py-16">
           <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line md:grid-cols-4">
             {[
-              [<Contador key="i" ate={3} />, "idiomas"],
-              [<Contador key="t" ate={8} />, "tutores com sotaques e estilos diferentes"],
+              [<Contador key="i" ate={8} />, "idiomas"],
+              [<Contador key="t" ate={18} />, "tutores com sotaques e estilos diferentes"],
               ["A1 → C1", "do zero ao avançado"],
               [<Contador key="g" ate={7} sufixo=" dias" />, "de garantia na primeira assinatura"],
             ].map(([n, t], i) => (
@@ -236,7 +236,7 @@ export default function Site() {
 
         {/* TUTORES */}
         <section id="tutores" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 sm:py-24">
-          <Titulo selo="Tutores" titulo="Escolha quem vai conversar com você" texto="Sotaques americano, britânico, mexicano, espanhol, paulista, carioca e mineiro. Calmo, animado, direto ou focado em carreira: tem um tutor do seu jeito." />
+          <Titulo selo="Tutores" titulo="Escolha quem vai conversar com você" texto="Sotaques de Nova York a Pequim, de Paris a Montreal, de Roma a Tóquio. Calmo, animado, direto ou focado em carreira: tem um tutor do seu jeito." />
           <div className="mt-12"><TutoresSite /></div>
         </section>
 

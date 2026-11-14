@@ -1,4 +1,5 @@
 "use client";
+import type { LangCode } from "@/lib/domain/types";
 import { useEffect, useMemo, useState } from "react";
 import { CENARIOS, USO_DEMO, type CenarioDemo } from "@/lib/demo/data";
 import type { OnboardingState } from "./onboarding";
@@ -7,7 +8,7 @@ import type { OnboardingState } from "./onboarding";
 export interface Aluno {
   nome: string;
   email: string;
-  perfil: { idioma: "en" | "es" | "pt"; nivel: string | null; confiancaNivel: number | null; nivelTestadoEm: string | null; objetivo: string | null; interesses: string[]; metaDiariaMin: number; tutorSlug: string | null } | null;
+  perfil: { idioma: LangCode; nivel: string | null; confiancaNivel: number | null; nivelTestadoEm: string | null; objetivo: string | null; interesses: string[]; metaDiariaMin: number; tutorSlug: string | null } | null;
   idiomas: string[];
   assinatura: { status: string; ativa: boolean; gateway: string; metodo: string | null; renovaEm: string | null; cancelaNoFim: boolean; emGarantia: boolean;
     plano: { codigo: string; nome: string; periodo: string | null; precoCentavos: number } | null } | null;

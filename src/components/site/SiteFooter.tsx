@@ -8,7 +8,7 @@ export default function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 text-sm md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
           <Logo assinatura />
-          <p className="mt-4 max-w-xs text-ink-soft">Tutores de inteligência artificial para você falar inglês, espanhol ou português com confiança.</p>
+          <p className="mt-4 max-w-xs text-ink-soft">Tutores de inteligência artificial para você falar um novo idioma com confiança: inglês, espanhol, francês, italiano, alemão, japonês, mandarim e português.</p>
         </div>
         <nav aria-label="Produto" className="flex flex-col gap-3">
           <p className="font-bold text-ink">Produto</p>

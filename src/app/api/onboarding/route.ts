@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { LANG_CODES } from "@/lib/domain/types";
 import { requireUser, supabaseAdmin } from "@/lib/supabase/server";
 import { erro, exigeBackend } from "@/lib/services/http";
 import { lerSettings } from "@/lib/services/settings";
 
 const Body = z.object({
-  idioma: z.enum(["en", "es", "pt"]),
+  idioma: z.enum(LANG_CODES),
   objetivo: z.enum(["carreira", "viagem", "prova", "morar_fora", "conversar"]),
   interesses: z.array(z.string().max(40)).max(20),
   metaDiaria: z.union([z.literal(5), z.literal(10), z.literal(15), z.literal(20)]),

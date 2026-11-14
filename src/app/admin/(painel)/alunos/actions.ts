@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { LANG_CODES } from "@/lib/domain/types";
 import { auditar, sessaoAdmin } from "@/lib/admin/auth";
 import { pode } from "@/lib/admin/permissions";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -14,7 +15,7 @@ export type EstadoCortesia = { ok?: string; erro?: string; convite?: Convite; ex
 const Form = z.object({
   nome: z.string().trim().min(2, "Informe o nome").max(120),
   email: z.string().trim().toLowerCase().email("E-mail inválido"),
-  idioma: z.enum(["en", "es", "pt"]),
+  idioma: z.enum(LANG_CODES),
   plano: z.enum(["essencial", "fluente"]),
   dias: z.coerce.number().refine((d) => [30, 90, 180, 365].includes(d), "Duração inválida"),
   motivo: z.string().trim().min(3, "Informe o motivo (vai para a auditoria)").max(200),
