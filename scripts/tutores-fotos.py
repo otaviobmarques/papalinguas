@@ -37,6 +37,8 @@ VISEMA_PARA_BOCA = {1: "D", 2: "surpresa", 3: "D", 4: "E", 5: "A", 6: "F"}
 # O chiado (F/V/S/CH, muito comum em francês, alemão e japonês) usa os dentes à mostra (C): a "lábio no dente"
 # gerada é quase fechada e, em trechos longos, parecia fala de boca fechada.
 VISEMA_PARA_BOCA_GERADOS = {1: "G", 2: "surpresa", 3: "D", 4: "E", 5: "A", 6: "C"}
+# Se houver a foto "H" (boca média de "a" na fala, boca_H_media.jpg), ela é a melhor para o "A":
+# marca o ritmo das sílabas sem exagero (a "G" de alguns tutores mostra a língua para fora).
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -204,7 +206,7 @@ def processar(pasta, slug, mapa=VISEMA_PARA_BOCA, contido=False):
     salvar_webp(os.path.join(saida, "card.webp"), cv2.resize(base, (CARD, CARD), interpolation=cv2.INTER_AREA), 80)
     info = {"base": f"/tutores/{slug}/base.webp", "card": f"/tutores/{slug}/card.webp", "animado": False}
 
-    letras = {L: achar(pasta, f"boca_{L.lower()}") for L in "ABCDEFG"}
+    letras = {L: achar(pasta, f"boca_{L.lower()}") for L in "ABCDEFGH"}
     olhos_p = achar(pasta, "olhos_fechados", "olhos")
     if not all(letras[L] for L in "ABCDEF") or not olhos_p:
         return info
@@ -223,6 +225,8 @@ def processar(pasta, slug, mapa=VISEMA_PARA_BOCA, contido=False):
     if surpresa_p:
         bocas["surpresa"] = ler(surpresa_p)
     escolhas = {}
+    if mapa is VISEMA_PARA_BOCA_GERADOS and bocas.get("H") is not None:
+        mapa = {**mapa, 1: "H"}
     for v, L in mapa.items():
         escolha = L if bocas.get(L) is not None else "C"  # sem a foto "surpresa": volta ao sorriso com dentes
         # boca torta (ex.: mordendo o lábio de um lado) fica estranha na fala: troca por uma centralizada

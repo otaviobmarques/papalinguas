@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classificar, estadoInicial, proximoVisema, frameDeFFT } from "@/lib/domain/lipsync";
+import { classificar, estadoInicial, proximoVisema, frameDeFFT, normalizar } from "@/lib/domain/lipsync";
 
 describe("lip sync", () => {
   // Faixas no formato real do AnalyserNode (dB em bytes): graves ~0,5, médios ~0,3, agudos ~0,17 do total
@@ -36,5 +36,34 @@ describe("lip sync", () => {
     const f = frameDeFFT(bins, 48000, 0.2);
     expect(f.low).toBeGreaterThan(0.8);
     expect(f.high).toBe(0);
+  });
+});
+
+describe("ganho automático do lip sync", () => {
+  // vogal aberta: volume alto, graves e médios equilibrados
+  const vogal = (rms: number) => ({ rms, low: 0.5, mid: 0.33, high: 0.17 });
+  const rodar = (escala: number) => {
+    let s = estadoInicial();
+    const vistos = new Set<number>();
+    for (let i = 0; i < 240; i++) {
+      const rms = (i % 20 < 12 ? 0.12 : 0.03) * escala; // sílabas: forte e fraco
+      s = proximoVisema(s, vogal(rms));
+      if (i > 60) vistos.add(s.visema);
+    }
+    return vistos;
+  };
+  it("voz baixa (40% do volume) abre a boca nas vogais como a voz normal", () => {
+    expect(rodar(1).has(1)).toBe(true);
+    expect(rodar(0.4).has(1)).toBe(true);
+  });
+  it("silêncio continua silêncio, mesmo com ganho", () => {
+    let s = estadoInicial();
+    for (let i = 0; i < 60; i++) s = proximoVisema(s, { rms: 0.008, low: 0.5, mid: 0.3, high: 0.2 });
+    expect(s.visema).toBe(0);
+  });
+  it("normalizar limita o ganho", () => {
+    expect(normalizar(0.05, 0.01)).toBeCloseTo(0.05 * 3);
+    expect(normalizar(0.2, 0.2)).toBeCloseTo(0.2);
+    expect(normalizar(0.4, 0.5)).toBeCloseTo(0.4 * 0.6);
   });
 });
