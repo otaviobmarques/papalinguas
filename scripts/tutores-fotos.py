@@ -90,6 +90,47 @@ def mascara_elipse(cw, ch):
     return cv2.GaussianBlur(m, (k, k), 0)
 
 
+def centro_labios(base):
+    """Centro dos lábios no retrato: são mais avermelhados (canal Cr) que a pele, na faixa central."""
+    h, w = base.shape[:2]
+    cr = cv2.cvtColor(base, cv2.COLOR_BGR2YCrCb)[:, :, 1].astype(np.float32)
+    x0, x1, y0, y1 = int(w * 0.37), int(w * 0.63), int(h * 0.32), int(h * 0.63)
+    reg = cv2.GaussianBlur(cr[y0:y1, x0:x1], (9, 9), 0)
+    ys, xs = np.nonzero(reg >= np.percentile(reg, 98.5))
+    return x0 + float(np.median(xs)), y0 + float(np.median(ys))
+
+
+def limite_boca(base, c):
+    """Elipse suave só em volta da boca (com espaço para o queixo descer), na área do recorte c.
+    Nos tutores gerados, as fotos de boca vêm com o contorno do rosto, o queixo e mechas de cabelo
+    um pouco diferentes; sem este limite, cada troca de boca mexia o rosto inteiro."""
+    x0, y0, x1, y1 = c
+    cx, cy = centro_labios(base)
+    lado = base.shape[0]
+    m = np.zeros((y1 - y0, x1 - x0), np.float32)
+    centro = (int(cx - x0), int(cy - y0))
+    rx = int(lado * 0.095)
+    cv2.ellipse(m, centro, (rx, int(lado * 0.06)), 0, 180, 360, 1.0, -1)  # metade de cima: até o bigode
+    cv2.ellipse(m, centro, (rx, int(lado * 0.088)), 0, 0, 180, 1.0, -1)    # metade de baixo: queixo descendo
+    k = int(lado * 0.035) | 1
+    return cv2.GaussianBlur(m, (k, k), 0)
+
+
+def igualar_tom(base, img, c):
+    """Encaixa a boca da foto no retrato por fusão de gradientes (seamless clone): o tom de pele em volta
+    vem do retrato e só o desenho da boca vem da foto. Evita a "mancha" de outra cor na borda do recorte."""
+    x0, y0, x1, y1 = c
+    m = (limite_boca(base, c) > 0.02).astype(np.uint8) * 255
+    mask = np.zeros(base.shape[:2], np.uint8)
+    mask[y0:y1, x0:x1] = m
+    mask[:2, :] = 0; mask[-2:, :] = 0; mask[:, :2] = 0; mask[:, -2:] = 0
+    ys, xs = np.nonzero(mask)
+    if len(xs) == 0:
+        return img
+    centro = (int((xs.min() + xs.max()) // 2), int((ys.min() + ys.max()) // 2))
+    return cv2.seamlessClone(img, base, mask, centro, cv2.NORMAL_CLONE)
+
+
 def mascara_cobertura(base, imgs, c):
     """Máscara que cobre com opacidade total tudo o que muda em qualquer das imagens (com folga),
     para o retrato nunca aparecer por baixo (ex.: cantos da boca fechada atrás da boca aberta)."""
@@ -152,7 +193,7 @@ def frac(c, w, h):
     return {"x": round(c[0] / w, 4), "y": round(c[1] / h, 4), "w": round((c[2] - c[0]) / w, 4), "h": round((c[3] - c[1]) / h, 4)}
 
 
-def processar(pasta, slug, mapa=VISEMA_PARA_BOCA):
+def processar(pasta, slug, mapa=VISEMA_PARA_BOCA, contido=False):
     base_p = achar(pasta, "base", f"{slug}_base")
     if not base_p:
         return None
@@ -194,6 +235,10 @@ def processar(pasta, slug, mapa=VISEMA_PARA_BOCA):
         escolhas[v] = escolha
     # uma máscara só para todas as bocas: cobre a união do que muda em qualquer uma delas
     m_boca = mascara_cobertura(base, [bocas[e] for e in set(escolhas.values())], cb)
+    if contido:
+        m_boca = m_boca * limite_boca(base, cb)
+        for e in set(escolhas.values()):
+            bocas[e] = igualar_tom(base, bocas[e], cb)
     for v, escolha in escolhas.items():
         cv2.imwrite(os.path.join(saida, f"boca-{v}.webp"), recorte(base, bocas[escolha], cb, m_boca), [cv2.IMWRITE_WEBP_QUALITY, 85])
     cv2.imwrite(os.path.join(saida, "olhos.webp"), recorte(base, olhos, co), [cv2.IMWRITE_WEBP_QUALITY, 85])
@@ -225,7 +270,7 @@ def main():
         pasta = os.path.join(entrada, slug)
         if not os.path.isdir(pasta):
             continue
-        info = processar(pasta, slug, mapa)
+        info = processar(pasta, slug, mapa, contido=mapa is VISEMA_PARA_BOCA_GERADOS)
         if info:
             todos[slug] = info
             print(f"{slug}: {'animado' if info['animado'] else 'só retrato'}")
