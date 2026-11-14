@@ -131,29 +131,7 @@
   "mei": {
     "base": "/tutores/mei/base.webp",
     "card": "/tutores/mei/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3411,
-      "y": 0.3698,
-      "w": 0.3398,
-      "h": 0.3529
-    },
-    "olhos": {
-      "x": 0.362,
-      "y": 0.276,
-      "w": 0.3698,
-      "h": 0.1211
-    },
-    "expressoes": {
-      "feliz": "/tutores/mei/feliz.webp",
-      "surpresa": "/tutores/mei/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3216,
-      "y": 0.2565,
-      "w": 0.4297,
-      "h": 0.4857
-    }
+    "animado": false
   },
   "maya-cartoon": {
     "base": "/tutores/maya-cartoon/base.webp",
