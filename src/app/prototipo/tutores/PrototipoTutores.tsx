@@ -1,6 +1,13 @@
 "use client";
 import { useState } from "react";
 import TutorFoto from "@/components/TutorFoto";
+import TutorCharacter from "@/components/TutorCharacter";
+import { temRive } from "@/lib/tutores/rive";
+import { temVideo } from "@/lib/tutores/videos";
+import type { TutorVisual } from "@/lib/demo/data";
+
+// só para o desenho de reserva (não usado quando há vídeo ou Rive)
+const VISUAL_PADRAO: TutorVisual = { pele: "#f1c9a5", cabelo: "#3b2416", estiloCabelo: "longo", roupa: "#e2583e" };
 import type { EstadoVoz, Expressao } from "@/components/TutorCharacter";
 import { useLipSyncElemento } from "@/lib/client/useLipSync";
 import type { Visema } from "@/lib/domain/lipsync";
@@ -31,7 +38,11 @@ function Cartao({ t }: { t: (typeof TUTORES)[number] }) {
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
       <div className="overflow-hidden rounded-3xl bg-[#efe3d3]">
-        <TutorFoto slug={t.slug} nome={t.nome} estado={estado} visema={teste ?? visema} expressao={expressao} className="aspect-square w-full" />
+        {temVideo(t.slug) || temRive(t.slug) ? (
+          <TutorCharacter slug={t.slug} visual={VISUAL_PADRAO} nome={t.nome} estado={estado} visema={teste ?? visema} expressao={expressao} className="aspect-square w-full" />
+        ) : (
+          <TutorFoto slug={t.slug} nome={t.nome} estado={estado} visema={teste ?? visema} expressao={expressao} className="aspect-square w-full" />
+        )}
       </div>
       <div className="mt-4 flex items-start justify-between gap-3">
         <div>
