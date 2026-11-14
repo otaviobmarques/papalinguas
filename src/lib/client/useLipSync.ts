@@ -43,6 +43,9 @@ export function useLipSync(stream: MediaStream | null): { visema: Visema; volume
   return saida;
 }
 
+/** Atraso aplicado ao som das amostras para coincidir com a boca (medido no navegador: a boca abre ~60 ms após o som). */
+export const ATRASO_SOM_S = 0.06;
+
 /**
  * Lip sync de um <audio> comum (amostras do site e do protótipo). O elemento passa pelo
  * AudioContext uma única vez (exigência do navegador) e continua tocando normalmente.
@@ -78,7 +81,12 @@ export function useLipSyncElemento(audio: HTMLAudioElement | null): { visema: Vi
         an.smoothingTimeConstant = 0.7;
         const src = ctx.createMediaElementSource(audio);
         src.connect(an);
-        an.connect(ctx.destination);
+        // o som sai um pouco depois do que é analisado: a boca leva ~60 ms para reagir,
+        // e assim voz e boca chegam juntas (aqui não há microfone, então atrasar o som é seguro)
+        const atraso = ctx.createDelay(0.5);
+        atraso.delayTime.value = ATRASO_SOM_S;
+        src.connect(atraso);
+        atraso.connect(ctx.destination);
       }
       void ctx.resume();
       cancelAnimationFrame(raf);
