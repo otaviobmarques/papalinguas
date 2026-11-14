@@ -4,6 +4,11 @@ import type { Visema } from "@/lib/domain/lipsync";
 import type { TutorVisual } from "@/lib/demo/data";
 import TutorFoto from "@/components/TutorFoto";
 import { temFotoAnimada } from "@/lib/tutores/fotos";
+import { temRive } from "@/lib/tutores/rive";
+import dynamic from "next/dynamic";
+
+// o motor do Rive só é baixado quando algum tutor usa um arquivo .riv
+const TutorRive = dynamic(() => import("@/components/rive/TutorRive"), { ssr: false });
 
 /**
  * Personagem do tutor (Manual 3.3 / M23).
@@ -81,6 +86,9 @@ function Cabelo({ v }: { v: TutorVisual }) {
 
 export default function TutorCharacter(props: Props) {
   const { slug, nome, estado, visema, expressao, acenando, className, enquadramento } = props;
+  if (temRive(slug)) {
+    return <TutorRive slug={slug!} nome={nome} estado={estado} visema={visema} expressao={expressao} acenando={acenando} className={className} enquadramento={enquadramento} />;
+  }
   if (temFotoAnimada(slug)) {
     return <TutorFoto slug={slug!} nome={nome} estado={estado} visema={visema} expressao={acenando ? "sorriso" : expressao} className={className} enquadramento={enquadramento} />;
   }

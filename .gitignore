@@ -44,3 +44,6 @@ next-env.d.ts
 
 # Python
 __pycache__/
+
+# motor do Rive copiado de node_modules no postinstall
+public/rive/
