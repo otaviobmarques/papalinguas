@@ -14,7 +14,8 @@ Cada quadro é alinhado ao retrato base (ECC afim) e só a região que muda é r
 Assim a cabeça, o cabelo e a luz ficam parados e apenas a boca e os olhos se mexem.
 
 Uso: pip install opencv-python-headless numpy
-     python3 scripts/tutores-fotos.py <pasta-com-subpastas-por-tutor>
+     python3 scripts/tutores-fotos.py <pasta-com-subpastas-por-tutor> [--gerados]
+     (--gerados: tutores feitos com scripts/tutores-gerar-openai.py; ver VISEMA_PARA_BOCA_GERADOS)
 """
 import json
 import os
@@ -30,6 +31,12 @@ CARD = 400
 # (abrindo demais e esticando para os lados). Usamos posições moderadas: "A" com a arredondada (D)
 # e "E/I", o som mais frequente, com a boca entreaberta da expressão "surpresa".
 VISEMA_PARA_BOCA = {1: "D", 2: "surpresa", 3: "D", 4: "E", 5: "A", 6: "F"}
+# Tutores gerados pela OpenAI (scripts/tutores-gerar-openai.py, opção --gerados): a "arredondada" (D)
+# deles é um "ô" bem marcado e, usada também no "A", deixava a boca com cara de "ô-ô-ô", fora do ritmo da fala.
+# Neles, o "A" usa a boca entreaberta da foto "língua" (G), que parece fala normal; o "O" continua com a D.
+# O chiado (F/V/S/CH, muito comum em francês, alemão e japonês) usa os dentes à mostra (C): a "lábio no dente"
+# gerada é quase fechada e, em trechos longos, parecia fala de boca fechada.
+VISEMA_PARA_BOCA_GERADOS = {1: "G", 2: "surpresa", 3: "D", 4: "E", 5: "A", 6: "C"}
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -145,7 +152,7 @@ def frac(c, w, h):
     return {"x": round(c[0] / w, 4), "y": round(c[1] / h, 4), "w": round((c[2] - c[0]) / w, 4), "h": round((c[3] - c[1]) / h, 4)}
 
 
-def processar(pasta, slug):
+def processar(pasta, slug, mapa=VISEMA_PARA_BOCA):
     base_p = achar(pasta, "base", f"{slug}_base")
     if not base_p:
         return None
@@ -175,10 +182,11 @@ def processar(pasta, slug):
     if surpresa_p:
         bocas["surpresa"] = ler(surpresa_p)
     escolhas = {}
-    for v, L in VISEMA_PARA_BOCA.items():
-        escolha = L if L in bocas else "C"  # sem a foto "surpresa": volta ao sorriso com dentes
+    for v, L in mapa.items():
+        escolha = L if bocas.get(L) is not None else "C"  # sem a foto "surpresa": volta ao sorriso com dentes
         # boca torta (ex.: mordendo o lábio de um lado) fica estranha na fala: troca por uma centralizada
-        for alternativa in ("surpresa", "A"):
+        # M/B/P (lábios fechados) nunca troca por uma boca aberta: a alternativa é a F, quase fechada
+        for alternativa in (("F",) if v == 5 else ("surpresa", "A")):
             if abs(desvio_horizontal(base, bocas[escolha], cb)) <= DESVIO_MAX or alternativa not in bocas:
                 break
             print(f"  {slug}: boca {L} da posição {v} está deslocada para o lado; usando {alternativa}")
@@ -209,6 +217,7 @@ def main():
         print(__doc__)
         sys.exit(1)
     entrada = sys.argv[1]
+    mapa = VISEMA_PARA_BOCA_GERADOS if "--gerados" in sys.argv[2:] else VISEMA_PARA_BOCA
     destino = os.path.join(RAIZ, "src", "lib", "tutores", "fotos.json")
     os.makedirs(os.path.dirname(destino), exist_ok=True)
     todos = json.load(open(destino)) if os.path.exists(destino) else {}
@@ -216,7 +225,7 @@ def main():
         pasta = os.path.join(entrada, slug)
         if not os.path.isdir(pasta):
             continue
-        info = processar(pasta, slug)
+        info = processar(pasta, slug, mapa)
         if info:
             todos[slug] = info
             print(f"{slug}: {'animado' if info['animado'] else 'só retrato'}")
