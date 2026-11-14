@@ -170,29 +170,7 @@
   "marco": {
     "base": "/tutores/marco/base.webp",
     "card": "/tutores/marco/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3242,
-      "y": 0.3763,
-      "w": 0.3346,
-      "h": 0.375
-    },
-    "olhos": {
-      "x": 0.3568,
-      "y": 0.2669,
-      "w": 0.2904,
-      "h": 0.1289
-    },
-    "expressoes": {
-      "feliz": "/tutores/marco/feliz.webp",
-      "surpresa": "/tutores/marco/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3047,
-      "y": 0.2474,
-      "w": 0.3737,
-      "h": 0.5234
-    }
+    "animado": false
   },
   "mei": {
     "base": "/tutores/mei/base.webp",
