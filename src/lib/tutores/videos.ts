@@ -5,7 +5,9 @@
  * Para ligar um tutor: coloque public/tutores/<slug>/falando.mp4 e ouvindo.mp4 (quadrados, sem som,
  * começando e terminando no mesmo quadro) e adicione o slug abaixo.
  */
-export const TUTORES_VIDEO: Record<string, { falando: string; ouvindo: string; poster: string }> = {};
+export const TUTORES_VIDEO: Record<string, { falando: string; ouvindo: string; poster: string }> = {
+  sofia: { falando: "/tutores/sofia/falando.mp4", ouvindo: "/tutores/sofia/ouvindo.mp4", poster: "/tutores/sofia/video-poster.jpg" },
+};
 
 export const temVideo = (slug?: string): boolean => !!slug && slug in TUTORES_VIDEO;
 
