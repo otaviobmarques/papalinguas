@@ -13,6 +13,7 @@ export async function validarChave(provider: Provedor, chave: string, regiao?: s
     const r = await validarAsaas(chave);
     return r.ok ? { ok: true } : { ok: false, motivo: r.motivo };
   }
+  if (provider === "google_gemini") return validarGemini(chave);
   if (provider === "openai") {
     if (!/^sk-/.test(chave)) return { ok: false, motivo: "Chaves da OpenAI começam com sk-." };
     try {
@@ -38,5 +39,18 @@ export async function validarChave(provider: Provedor, chave: string, regiao?: s
     if (e instanceof Anthropic.APIConnectionError) return { ok: false, motivo: "Não foi possível falar com a Anthropic agora." };
     if (e instanceof Anthropic.APIError) return { ok: false, motivo: `A Anthropic respondeu ${e.status}.` };
     return { ok: false, motivo: "Erro inesperado ao validar." };
+  }
+}
+
+/** Google Gemini (AI Studio): a lista de modelos é uma leitura sem custo. */
+async function validarGemini(chave: string): Promise<Validacao> {
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1", { headers: { "x-goog-api-key": chave } });
+    if (r.ok) return { ok: true };
+    if (r.status === 400 || r.status === 401 || r.status === 403) return { ok: false, motivo: `O Google recusou a chave (${r.status}).` };
+    if (r.status === 429) return { ok: false, motivo: "Limite atingido (429). Tente de novo em instantes." };
+    return { ok: false, motivo: `O Google respondeu ${r.status}.` };
+  } catch {
+    return { ok: false, motivo: "Não foi possível falar com o Google agora." };
   }
 }
