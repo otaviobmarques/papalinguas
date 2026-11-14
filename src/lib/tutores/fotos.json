@@ -27,29 +27,7 @@
   "mateo": {
     "base": "/tutores/mateo/base.webp",
     "card": "/tutores/mateo/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3424,
-      "y": 0.3958,
-      "w": 0.362,
-      "h": 0.3516
-    },
-    "olhos": {
-      "x": 0.3529,
-      "y": 0.2799,
-      "w": 0.3008,
-      "h": 0.1224
-    },
-    "expressoes": {
-      "feliz": "/tutores/mateo/feliz.webp",
-      "surpresa": "/tutores/mateo/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3229,
-      "y": 0.2604,
-      "w": 0.401,
-      "h": 0.5065
-    }
+    "animado": false
   },
   "maya": {
     "base": "/tutores/maya/base.webp",
