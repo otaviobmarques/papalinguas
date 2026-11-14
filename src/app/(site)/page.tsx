@@ -148,7 +148,7 @@ export default function Site() {
           <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line md:grid-cols-4">
             {[
               [<Contador key="i" ate={8} />, "idiomas"],
-              [<Contador key="t" ate={18} />, "tutores com sotaques e estilos diferentes"],
+              [<Contador key="t" ate={20} />, "tutores com sotaques e estilos diferentes"],
               ["A1 → C1", "do zero ao avançado"],
               [<Contador key="g" ate={7} sufixo=" dias" />, "de garantia na primeira assinatura"],
             ].map(([n, t], i) => (

@@ -511,5 +511,59 @@
       "w": 0.4609,
       "h": 0.4453
     }
+  },
+  "ruby": {
+    "base": "/tutores/ruby/base.webp",
+    "card": "/tutores/ruby/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3763,
+      "y": 0.3828,
+      "w": 0.306,
+      "h": 0.3125
+    },
+    "olhos": {
+      "x": 0.3372,
+      "y": 0.2773,
+      "w": 0.3945,
+      "h": 0.2148
+    },
+    "expressoes": {
+      "feliz": "/tutores/ruby/feliz.webp",
+      "surpresa": "/tutores/ruby/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3177,
+      "y": 0.2578,
+      "w": 0.4336,
+      "h": 0.457
+    }
+  },
+  "sofia": {
+    "base": "/tutores/sofia/base.webp",
+    "card": "/tutores/sofia/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3672,
+      "y": 0.4115,
+      "w": 0.3268,
+      "h": 0.2812
+    },
+    "olhos": {
+      "x": 0.3177,
+      "y": 0.2956,
+      "w": 0.4128,
+      "h": 0.1471
+    },
+    "expressoes": {
+      "feliz": "/tutores/sofia/feliz.webp",
+      "surpresa": "/tutores/sofia/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.2982,
+      "y": 0.276,
+      "w": 0.4518,
+      "h": 0.4362
+    }
   }
 }
