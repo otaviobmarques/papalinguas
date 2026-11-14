@@ -7,29 +7,7 @@
   "caio": {
     "base": "/tutores/caio/base.webp",
     "card": "/tutores/caio/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3711,
-      "y": 0.3698,
-      "w": 0.2812,
-      "h": 0.3529
-    },
-    "olhos": {
-      "x": 0.349,
-      "y": 0.2721,
-      "w": 0.3151,
-      "h": 0.125
-    },
-    "expressoes": {
-      "feliz": "/tutores/caio/feliz.webp",
-      "surpresa": "/tutores/caio/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3294,
-      "y": 0.2526,
-      "w": 0.3542,
-      "h": 0.4896
-    }
+    "animado": false
   },
   "grace": {
     "base": "/tutores/grace/base.webp",
