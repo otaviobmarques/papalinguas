@@ -145,29 +145,7 @@
   "lena": {
     "base": "/tutores/lena/base.webp",
     "card": "/tutores/lena/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3451,
-      "y": 0.3854,
-      "w": 0.3294,
-      "h": 0.3594
-    },
-    "olhos": {
-      "x": 0.3633,
-      "y": 0.2799,
-      "w": 0.2878,
-      "h": 0.138
-    },
-    "expressoes": {
-      "feliz": "/tutores/lena/feliz.webp",
-      "surpresa": "/tutores/lena/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3255,
-      "y": 0.2604,
-      "w": 0.3685,
-      "h": 0.5039
-    }
+    "animado": false
   },
   "lukas": {
     "base": "/tutores/lukas/base.webp",
