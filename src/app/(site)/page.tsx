@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const SAUDACOES = ["Hello!", "¡Hola!", "Olá!", "How are you?", "¿Qué tal?", "Tudo bem?", "Nice to meet you", "Mucho gusto", "Prazer!", "Let's talk", "Hablemos", "Bora conversar?"];
+const SAUDACOES = ["Hello!", "¡Hola!", "Bonjour !", "Ciao!", "Hallo!", "こんにちは", "你好！", "Olá!", "How are you?", "¿Qué tal?", "Ça va ?", "Come stai?", "Wie geht's?", "お元気ですか？", "你好吗？", "Tudo bem?", "Let's talk", "Hablemos", "On discute ?", "Parliamo!", "Lass uns reden", "話しましょう", "我们聊聊吧", "Bora conversar?"];
 
 const RECURSOS = [
   { icone: "voz", titulo: "Conversa em tempo real", texto: "O tutor responde em cerca de um segundo, com voz natural. Pediu para ir mais devagar? Ele vai." },

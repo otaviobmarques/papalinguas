@@ -149,8 +149,10 @@ body {
 .anim-respirar { animation: respirar 4.8s ease-in-out infinite; transform-origin: 50% 85%; }
 .anim-ouvir { animation: ouvir 3.4s ease-in-out infinite; transform-origin: 50% 85%; }
 .anim-fala { animation: fala 2.6s ease-in-out infinite; transform-origin: 50% 85%; }
+@keyframes legenda-entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.anim-legenda { animation: legenda-entra 160ms ease-out; }
 @media (prefers-reduced-motion: reduce) {
-  .anim-respirar, .anim-ouvir, .anim-fala { animation: none; }
+  .anim-respirar, .anim-ouvir, .anim-fala, .anim-legenda { animation: none; }
 }
 
 /* Mascote: piscar e balanço da cabeça */

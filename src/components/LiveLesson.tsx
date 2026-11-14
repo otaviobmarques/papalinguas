@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Icone from "@/components/Icone";
+import LegendaTutor from "@/components/aula/LegendaTutor";
 import TutorCharacter, { type EstadoVoz, type Expressao } from "@/components/TutorCharacter";
 import { conectarRealtime, pedidoTexto, type ConexaoRealtime, type EventoRealtime } from "@/lib/client/realtime";
 import { useLipSync, useNivelMicrofone, visemaDeLetra } from "@/lib/client/useLipSync";
@@ -396,7 +397,7 @@ export default function LiveLesson({ tutor, modo, cenario, correcao = "leve", se
         )}
         {/* legendas sobre a imagem */}
         <div className="absolute inset-x-3 bottom-3 space-y-2">
-          {legendas && legendaTutor && <p className="rounded-2xl bg-[#0b1220]/80 px-4 py-3 text-base font-semibold leading-snug backdrop-blur">{legendaTutor}</p>}
+          {legendas && <LegendaTutor texto={legendaTutor} falando={estado === "falando"} devagar={devagar} />}
           {falaAluno && <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-brand px-3 py-2 text-sm font-semibold text-brand-ink">{falaAluno}</p>}
         </div>
       </div>
