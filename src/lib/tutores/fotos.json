@@ -376,5 +376,113 @@
       "w": 0.4076,
       "h": 0.4505
     }
+  },
+  "hao": {
+    "base": "/tutores/hao/base.webp",
+    "card": "/tutores/hao/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3255,
+      "y": 0.3841,
+      "w": 0.3242,
+      "h": 0.3646
+    },
+    "olhos": {
+      "x": 0.375,
+      "y": 0.2995,
+      "w": 0.2721,
+      "h": 0.1758
+    },
+    "expressoes": {
+      "feliz": "/tutores/hao/feliz.webp",
+      "surpresa": "/tutores/hao/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.306,
+      "y": 0.2799,
+      "w": 0.3633,
+      "h": 0.4883
+    }
+  },
+  "kenji": {
+    "base": "/tutores/kenji/base.webp",
+    "card": "/tutores/kenji/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.2826,
+      "y": 0.3698,
+      "w": 0.4349,
+      "h": 0.4505
+    },
+    "olhos": {
+      "x": 0.3464,
+      "y": 0.2865,
+      "w": 0.2982,
+      "h": 0.1055
+    },
+    "expressoes": {
+      "feliz": "/tutores/kenji/feliz.webp",
+      "surpresa": "/tutores/kenji/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.263,
+      "y": 0.2669,
+      "w": 0.474,
+      "h": 0.5729
+    }
+  },
+  "marco": {
+    "base": "/tutores/marco/base.webp",
+    "card": "/tutores/marco/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3242,
+      "y": 0.3763,
+      "w": 0.3346,
+      "h": 0.375
+    },
+    "olhos": {
+      "x": 0.3568,
+      "y": 0.2669,
+      "w": 0.2904,
+      "h": 0.1289
+    },
+    "expressoes": {
+      "feliz": "/tutores/marco/feliz.webp",
+      "surpresa": "/tutores/marco/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3047,
+      "y": 0.2474,
+      "w": 0.3737,
+      "h": 0.5234
+    }
+  },
+  "mei": {
+    "base": "/tutores/mei/base.webp",
+    "card": "/tutores/mei/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3411,
+      "y": 0.3698,
+      "w": 0.3398,
+      "h": 0.3529
+    },
+    "olhos": {
+      "x": 0.362,
+      "y": 0.276,
+      "w": 0.3698,
+      "h": 0.1211
+    },
+    "expressoes": {
+      "feliz": "/tutores/mei/feliz.webp",
+      "surpresa": "/tutores/mei/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.3216,
+      "y": 0.2565,
+      "w": 0.4297,
+      "h": 0.4857
+    }
   }
 }
