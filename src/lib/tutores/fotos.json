@@ -128,29 +128,7 @@
   "lukas": {
     "base": "/tutores/lukas/base.webp",
     "card": "/tutores/lukas/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3451,
-      "y": 0.3698,
-      "w": 0.2917,
-      "h": 0.3594
-    },
-    "olhos": {
-      "x": 0.319,
-      "y": 0.2526,
-      "w": 0.3672,
-      "h": 0.1471
-    },
-    "expressoes": {
-      "feliz": "/tutores/lukas/feliz.webp",
-      "surpresa": "/tutores/lukas/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.2995,
-      "y": 0.2331,
-      "w": 0.4062,
-      "h": 0.5156
-    }
+    "animado": false
   },
   "yuki": {
     "base": "/tutores/yuki/base.webp",
