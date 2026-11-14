@@ -37,29 +37,7 @@
   "oliver": {
     "base": "/tutores/oliver/base.webp",
     "card": "/tutores/oliver/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3568,
-      "y": 0.4388,
-      "w": 0.2799,
-      "h": 0.3008
-    },
-    "olhos": {
-      "x": 0.3633,
-      "y": 0.2878,
-      "w": 0.2839,
-      "h": 0.1159
-    },
-    "expressoes": {
-      "feliz": "/tutores/oliver/feliz.webp",
-      "surpresa": "/tutores/oliver/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3372,
-      "y": 0.2682,
-      "w": 0.3294,
-      "h": 0.4909
-    }
+    "animado": false
   },
   "camille": {
     "base": "/tutores/camille/base.webp",
