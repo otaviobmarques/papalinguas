@@ -9,7 +9,7 @@ import { LANGUAGES, type LangCode } from "@/lib/domain/types";
 import { fotoDoTutor, temFotoAnimada } from "@/lib/tutores/fotos";
 import Icone from "./Icone";
 
-const BANDEIRA: Record<string, string> = { parisiense: "🇫🇷", quebequense: "🇨🇦", romano: "🇮🇹", "milanês": "🇮🇹", berlinense: "🇩🇪", muniquense: "🇩🇪", "de Tóquio": "🇯🇵", "de Pequim": "🇨🇳", "de Xangai": "🇨🇳", americano: "🇺🇸", britânico: "🇬🇧", mexicano: "🇲🇽", espanhol: "🇪🇸", paulista: "🇧🇷", carioca: "🇧🇷", mineiro: "🇧🇷" };
+const BANDEIRA: Record<string, string> = { parisiense: "🇫🇷", quebequense: "🇨🇦", romano: "🇮🇹", "milanês": "🇮🇹", berlinense: "🇩🇪", muniquense: "🇩🇪", "de Tóquio": "🇯🇵", "de Pequim": "🇨🇳", "de Xangai": "🇨🇳", americano: "🇺🇸", britânico: "🇬🇧", londrino: "🇬🇧", argentino: "🇦🇷", mexicano: "🇲🇽", espanhol: "🇪🇸", paulista: "🇧🇷", carioca: "🇧🇷", mineiro: "🇧🇷" };
 
 /** Tutores do site: foto, sotaque, estilo e a voz real (amostra gerada pela OpenAI). */
 export default function TutoresSite() {

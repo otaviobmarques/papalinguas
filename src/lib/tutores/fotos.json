@@ -512,36 +512,9 @@
       "h": 0.4453
     }
   },
-  "loira": {
-    "base": "/tutores/loira/base.webp",
-    "card": "/tutores/loira/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3672,
-      "y": 0.4115,
-      "w": 0.3268,
-      "h": 0.2812
-    },
-    "olhos": {
-      "x": 0.3177,
-      "y": 0.2956,
-      "w": 0.4128,
-      "h": 0.1471
-    },
-    "expressoes": {
-      "feliz": "/tutores/loira/feliz.webp",
-      "surpresa": "/tutores/loira/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.2982,
-      "y": 0.276,
-      "w": 0.4518,
-      "h": 0.4362
-    }
-  },
-  "ruiva": {
-    "base": "/tutores/ruiva/base.webp",
-    "card": "/tutores/ruiva/card.webp",
+  "ruby": {
+    "base": "/tutores/ruby/base.webp",
+    "card": "/tutores/ruby/card.webp",
     "animado": true,
     "boca": {
       "x": 0.3763,
@@ -556,14 +529,41 @@
       "h": 0.2148
     },
     "expressoes": {
-      "feliz": "/tutores/ruiva/feliz.webp",
-      "surpresa": "/tutores/ruiva/surpresa.webp"
+      "feliz": "/tutores/ruby/feliz.webp",
+      "surpresa": "/tutores/ruby/surpresa.webp"
     },
     "rosto": {
       "x": 0.3177,
       "y": 0.2578,
       "w": 0.4336,
       "h": 0.457
+    }
+  },
+  "sofia": {
+    "base": "/tutores/sofia/base.webp",
+    "card": "/tutores/sofia/card.webp",
+    "animado": true,
+    "boca": {
+      "x": 0.3672,
+      "y": 0.4115,
+      "w": 0.3268,
+      "h": 0.2812
+    },
+    "olhos": {
+      "x": 0.3177,
+      "y": 0.2956,
+      "w": 0.4128,
+      "h": 0.1471
+    },
+    "expressoes": {
+      "feliz": "/tutores/sofia/feliz.webp",
+      "surpresa": "/tutores/sofia/surpresa.webp"
+    },
+    "rosto": {
+      "x": 0.2982,
+      "y": 0.276,
+      "w": 0.4518,
+      "h": 0.4362
     }
   }
 }
