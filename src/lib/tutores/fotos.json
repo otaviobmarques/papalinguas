@@ -201,29 +201,7 @@
   "giulia": {
     "base": "/tutores/giulia/base.webp",
     "card": "/tutores/giulia/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3411,
-      "y": 0.3789,
-      "w": 0.3451,
-      "h": 0.3047
-    },
-    "olhos": {
-      "x": 0.3607,
-      "y": 0.2669,
-      "w": 0.2982,
-      "h": 0.1445
-    },
-    "expressoes": {
-      "feliz": "/tutores/giulia/feliz.webp",
-      "surpresa": "/tutores/giulia/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3216,
-      "y": 0.2474,
-      "w": 0.3841,
-      "h": 0.4557
-    }
+    "animado": false
   },
   "julien": {
     "base": "/tutores/julien/base.webp",
