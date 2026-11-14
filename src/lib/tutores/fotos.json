@@ -22,29 +22,7 @@
   "lucia": {
     "base": "/tutores/lucia/base.webp",
     "card": "/tutores/lucia/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3529,
-      "y": 0.4609,
-      "w": 0.2786,
-      "h": 0.2878
-    },
-    "olhos": {
-      "x": 0.3477,
-      "y": 0.3164,
-      "w": 0.3073,
-      "h": 0.125
-    },
-    "expressoes": {
-      "feliz": "/tutores/lucia/feliz.webp",
-      "surpresa": "/tutores/lucia/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3281,
-      "y": 0.2969,
-      "w": 0.3464,
-      "h": 0.4714
-    }
+    "animado": false
   },
   "mateo": {
     "base": "/tutores/mateo/base.webp",

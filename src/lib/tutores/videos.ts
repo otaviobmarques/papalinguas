@@ -6,6 +6,7 @@
  * começando e terminando no mesmo quadro) e adicione o slug abaixo.
  */
 export const TUTORES_VIDEO: Record<string, { falando: string; ouvindo: string; poster: string }> = {
+  lucia: { falando: "/tutores/lucia/falando.mp4", ouvindo: "/tutores/lucia/ouvindo.mp4", poster: "/tutores/lucia/video-poster.jpg" },
   lena: { falando: "/tutores/lena/falando.mp4", ouvindo: "/tutores/lena/ouvindo.mp4", poster: "/tutores/lena/video-poster.jpg" },
   kenji: { falando: "/tutores/kenji/falando.mp4", ouvindo: "/tutores/kenji/ouvindo.mp4", poster: "/tutores/kenji/video-poster.jpg" },
   julien: { falando: "/tutores/julien/falando.mp4", ouvindo: "/tutores/julien/ouvindo.mp4", poster: "/tutores/julien/video-poster.jpg" },
