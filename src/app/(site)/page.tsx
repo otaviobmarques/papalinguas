@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Mascote from "@/components/marca/Mascote";
 import CookieBanner from "@/components/site/CookieBanner";
-import DemoPlayer from "@/components/site/DemoLazy";
+import BoasVindas from "@/components/site/BoasVindas";
 import { Contador, HolofoteGlobal } from "@/components/site/Efeitos";
 import Icone from "@/components/site/Icone";
 import PlanosSite from "@/components/site/PlanosSite";
@@ -128,8 +128,8 @@ export default function Site() {
               </Reveal>
             </div>
             <Reveal delay={200} className="relative mx-auto w-full max-w-[440px]">
-              <DemoPlayer />
-              <div className="pointer-events-none absolute -left-12 bottom-0 hidden w-28 sm:block lg:-left-[4.5rem]">
+              <BoasVindas />
+              <div className="pointer-events-none absolute -left-12 bottom-36 hidden w-28 sm:block lg:-left-[4.5rem]">
                 <Mascote pose="acenando" className="w-full drop-shadow-2xl" />
               </div>
             </Reveal>
