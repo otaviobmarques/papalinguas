@@ -2,29 +2,7 @@
   "bia": {
     "base": "/tutores/bia/base.webp",
     "card": "/tutores/bia/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3581,
-      "y": 0.4089,
-      "w": 0.2982,
-      "h": 0.2904
-    },
-    "olhos": {
-      "x": 0.3477,
-      "y": 0.2708,
-      "w": 0.3177,
-      "h": 0.1289
-    },
-    "expressoes": {
-      "feliz": "/tutores/bia/feliz.webp",
-      "surpresa": "/tutores/bia/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.3281,
-      "y": 0.2513,
-      "w": 0.3568,
-      "h": 0.4674
-    }
+    "animado": false
   },
   "caio": {
     "base": "/tutores/caio/base.webp",

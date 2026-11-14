@@ -45,17 +45,48 @@ export default function TutorVideo({ slug, nome, estado = "repouso", visema = 0,
     setFalandoAgora(true);
   }, [falando, visema]);
 
+  // desempenho: o "ouvindo" só toca enquanto o tutor está na tela; o "falando" só carrega quando ele fala
+  const caixa = useRef<HTMLDivElement>(null);
+  const vOuvindo = useRef<HTMLVideoElement>(null);
+  const vFalando = useRef<HTMLVideoElement>(null);
+  const [visivel, setVisivel] = useState(true);
+  const [usouFala, setUsouFala] = useState(enquadramento === "preencher"); // na aula, já carrega o "falando"
+  useEffect(() => {
+    const el = caixa.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setVisivel(e.isIntersecting), { rootMargin: "100px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
+    if (falando) setUsouFala(true);
+  }, [falando]);
+  useEffect(() => {
+    const o = vOuvindo.current;
+    if (!o) return;
+    if (visivel) void o.play().catch(() => {});
+    else o.pause();
+  }, [visivel]);
+  useEffect(() => {
+    const f = vFalando.current;
+    if (!f || !usouFala) return;
+    if (visivel && falando) void f.play().catch(() => {});
+    else if (!falando) f.pause();
+  }, [visivel, falando, usouFala]);
+
   if (!v) return null;
   const zoom = enquadramento === "rosto" ? "scale-[1.9] origin-[50%_42%]" : "";
   const comum = "absolute inset-0 h-full w-full select-none object-cover";
 
   return (
-    <div className={`relative flex items-center justify-center ${className}`} role="img" aria-label={`${nome}, personagem de IA${falando ? ", falando" : ""}`}>
+    <div ref={caixa} className={`relative flex items-center justify-center ${className}`} role="img" aria-label={`${nome}, personagem de IA${falando ? ", falando" : ""}`}>
       <div className={enquadramento === "preencher" ? "absolute left-1/2 top-0 aspect-square h-full -translate-x-1/2" : `relative aspect-square h-full max-h-full max-w-full overflow-hidden ${enquadramento === "busto" ? "rounded-3xl" : ""}`}>
         <div className={`absolute inset-0 ${zoom}`}>
-          <video src={v.ouvindo} poster={v.poster} className={comum} autoPlay loop muted playsInline preload="auto" aria-hidden />
-          <video src={v.falando} className={`${comum} transition-opacity duration-150 ease-out`} style={{ opacity: falandoAgora ? 1 : 0 }}
-            autoPlay loop muted playsInline preload="auto" aria-hidden />
+          <video ref={vOuvindo} src={v.ouvindo} poster={v.poster} className={comum} loop muted playsInline preload="metadata" aria-hidden />
+          {usouFala && (
+            <video ref={vFalando} src={v.falando} className={`${comum} transition-opacity duration-150 ease-out`} style={{ opacity: falandoAgora ? 1 : 0 }}
+              loop muted playsInline preload="auto" aria-hidden />
+          )}
         </div>
       </div>
     </div>
