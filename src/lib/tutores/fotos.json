@@ -17,29 +17,7 @@
   "helena": {
     "base": "/tutores/helena/base.webp",
     "card": "/tutores/helena/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.3516,
-      "y": 0.4193,
-      "w": 0.2878,
-      "h": 0.3398
-    },
-    "olhos": {
-      "x": 0.3568,
-      "y": 0.3164,
-      "w": 0.2943,
-      "h": 0.1198
-    },
-    "expressoes": {
-      "feliz": "/tutores/helena/feliz.webp",
-      "surpresa": "/tutores/helena/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.332,
-      "y": 0.2969,
-      "w": 0.3385,
-      "h": 0.4818
-    }
+    "animado": false
   },
   "lucia": {
     "base": "/tutores/lucia/base.webp",
