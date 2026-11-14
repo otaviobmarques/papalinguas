@@ -231,29 +231,7 @@
   "kenji": {
     "base": "/tutores/kenji/base.webp",
     "card": "/tutores/kenji/card.webp",
-    "animado": true,
-    "boca": {
-      "x": 0.2826,
-      "y": 0.3698,
-      "w": 0.4349,
-      "h": 0.4505
-    },
-    "olhos": {
-      "x": 0.3464,
-      "y": 0.2865,
-      "w": 0.2982,
-      "h": 0.1055
-    },
-    "expressoes": {
-      "feliz": "/tutores/kenji/feliz.webp",
-      "surpresa": "/tutores/kenji/surpresa.webp"
-    },
-    "rosto": {
-      "x": 0.263,
-      "y": 0.2669,
-      "w": 0.474,
-      "h": 0.5729
-    }
+    "animado": false
   },
   "marco": {
     "base": "/tutores/marco/base.webp",
