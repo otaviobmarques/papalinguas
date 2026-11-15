@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Visema } from "@/lib/domain/lipsync";
 import type { EstadoVoz } from "@/components/TutorCharacter";
-import { mostrarFalando, TUTORES_VIDEO } from "@/lib/tutores/videos";
+import { mostrarFalando, TUTORES_VIDEO, VELOCIDADE_FALANDO } from "@/lib/tutores/videos";
 
 interface Props {
   slug: string;
@@ -70,6 +70,8 @@ export default function TutorVideo({ slug, nome, estado = "repouso", visema = 0,
   useEffect(() => {
     const f = vFalando.current;
     if (!f || !usouFala) return;
+    f.defaultPlaybackRate = VELOCIDADE_FALANDO;
+    f.playbackRate = VELOCIDADE_FALANDO;
     if (visivel && falando) void f.play().catch(() => {});
     else if (!falando) f.pause();
   }, [visivel, falando, usouFala]);
@@ -85,7 +87,8 @@ export default function TutorVideo({ slug, nome, estado = "repouso", visema = 0,
           <video ref={vOuvindo} src={v.ouvindo} poster={v.poster} className={comum} loop muted playsInline preload="metadata" aria-hidden />
           {usouFala && (
             <video ref={vFalando} src={v.falando} className={`${comum} transition-opacity duration-150 ease-out`} style={{ opacity: falandoAgora ? 1 : 0 }}
-              loop muted playsInline preload="auto" aria-hidden />
+              loop muted playsInline preload="auto" aria-hidden
+              onLoadedMetadata={(e) => { e.currentTarget.playbackRate = VELOCIDADE_FALANDO; }} />
           )}
         </div>
       </div>
