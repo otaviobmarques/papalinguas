@@ -27,6 +27,13 @@ export const TUTORES_VIDEO: Record<string, { falando: string; ouvindo: string; p
   sofia: { falando: "/tutores/sofia/falando.mp4", ouvindo: "/tutores/sofia/ouvindo.mp4", poster: "/tutores/sofia/video-poster.jpg" },
 };
 
+/**
+ * Velocidade do vídeo "falando". Os loops gerados mexem a boca ~2,5 a 3 vezes por segundo,
+ * e a fala real tem ~4 sílabas por segundo; tocando mais rápido, a boca acompanha a voz.
+ * Acima de ~1,5 a cabeça começa a parecer acelerada.
+ */
+export const VELOCIDADE_FALANDO = 1.4;
+
 export const temVideo = (slug?: string): boolean => !!slug && slug in TUTORES_VIDEO;
 
 /**
